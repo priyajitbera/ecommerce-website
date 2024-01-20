@@ -1,10 +1,12 @@
 package com.priyajit.ecommerce.user.management.controller;
 
 import com.priyajit.ecommerce.user.management.dto.CreateUserDto;
-import com.priyajit.ecommerce.user.management.entity.User;
+import com.priyajit.ecommerce.user.management.model.CreateUserModel;
+import com.priyajit.ecommerce.user.management.model.FindUserModel;
 import com.priyajit.ecommerce.user.management.service.service.UserService;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigInteger;
 import java.util.List;
 
 @RestController
@@ -18,14 +20,14 @@ public class UserControllerV1 {
     }
 
     @GetMapping
-    List<User> findUsers(
-            @RequestParam(name = "userIds") List<Long> userIds
+    List<FindUserModel> findUsers(
+            @RequestParam(name = "userIds") List<BigInteger> userIds
     ) {
         return userService.findUsers(userIds);
     }
 
     @PostMapping
-    List<User> createUser(
+    List<CreateUserModel> createUser(
             @RequestBody List<CreateUserDto> dtoList
     ) {
         return userService.createUsers(dtoList);
