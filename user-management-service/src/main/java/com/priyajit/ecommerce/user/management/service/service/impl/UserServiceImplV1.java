@@ -115,7 +115,7 @@ public class UserServiceImplV1 implements UserService {
                     }
 
                     // verify the email id is provided
-                    if (user.getEmail() == null) {
+                    if (user.getEmailId() == null) {
 
                         responseModel.setStatus(RequestEmailVerifcationSecretStatus.FAILURE);
                         responseModel.setMessage("Email id is not saved for this user");
@@ -129,21 +129,21 @@ public class UserServiceImplV1 implements UserService {
 
                     // send the secret via email to the email-id to be verified
                     EmailClientStatus emailClientStatus = sendEmailVerificationSecret(
-                            user.getEmail(), user.getEmailVerificationSecret()
+                            user.getEmailId(), user.getEmailVerificationSecret()
                     );
 
                     // email send SUCCESS
                     if (EmailClientStatus.SUCCESS == emailClientStatus) {
 
                         responseModel.setStatus(RequestEmailVerifcationSecretStatus.SUCCESS);
-                        responseModel.setMessage(String.format("Email verification secret sent to email id: %s", user.getEmail()));
+                        responseModel.setMessage(String.format("Email verification secret sent to email id: %s", user.getEmailId()));
                         return responseModel;
                     }
                     // email send FAILURE
                     else if (EmailClientStatus.FAILURE == emailClientStatus) {
 
                         responseModel.setStatus(RequestEmailVerifcationSecretStatus.FAILURE);
-                        responseModel.setMessage(String.format("Failed to send verification secret to email id: %s", user.getEmail()));
+                        responseModel.setMessage(String.format("Failed to send verification secret to email id: %s", user.getEmailId()));
                         return responseModel;
                     }
                     // ideally program control never reaches here as EmailClientStatus is either SUCCESS or FAILURE
@@ -168,6 +168,7 @@ public class UserServiceImplV1 implements UserService {
 
     /**
      * Method to find users by emailIds
+     *
      * @param emailIdList
      * @return
      */
@@ -175,7 +176,7 @@ public class UserServiceImplV1 implements UserService {
     public List<FindUserModel> findUsersByEmailIds(List<String> emailIdList) {
 
         // find users by given email
-        List<User> userList = userRepository.findAllByEmailIn(emailIdList);
+        List<User> userList = userRepository.findAllByEmailIdIn(emailIdList);
 
         // create response model and return
         return userList.stream()
@@ -243,7 +244,7 @@ public class UserServiceImplV1 implements UserService {
      */
     private User createUserFromDto(CreateUserDto dto) {
         return User.builder()
-                .email(dto.getEmail())
+                .emailId(dto.getEmail())
                 .name(dto.getName())
                 .build();
     }

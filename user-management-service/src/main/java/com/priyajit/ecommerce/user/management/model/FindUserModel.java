@@ -19,7 +19,7 @@ public class FindUserModel {
 
         return FindUserModel.builder()
                 .id(user.getId())
-                .email(user.getEmail())
+                .email(user.getEmailId())
                 .name(user.getName())
                 .build();
     }

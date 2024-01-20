@@ -28,7 +28,7 @@ public class User {
     private ZonedDateTime lastModified;
 
     @Column(unique = true)
-    private String email;
+    private String emailId;
 
     private String name;
 
