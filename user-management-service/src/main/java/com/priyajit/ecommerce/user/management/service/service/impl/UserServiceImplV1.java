@@ -167,6 +167,23 @@ public class UserServiceImplV1 implements UserService {
     }
 
     /**
+     * Method to find users by emailIds
+     * @param emailIdList
+     * @return
+     */
+    @Override
+    public List<FindUserModel> findUsersByEmailIds(List<String> emailIdList) {
+
+        // find users by given email
+        List<User> userList = userRepository.findAllByEmailIn(emailIdList);
+
+        // create response model and return
+        return userList.stream()
+                .map(FindUserModel::buildFrom)
+                .collect(Collectors.toList());
+    }
+
+    /**
      * Helper method to verify single user email
      *
      * @param verifyEmailDto

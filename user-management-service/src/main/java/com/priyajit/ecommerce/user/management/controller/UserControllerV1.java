@@ -30,6 +30,13 @@ public class UserControllerV1 {
         return userService.findUsers(userIds);
     }
 
+    @GetMapping("/by-email")
+    List<FindUserModel> findUsersByEmailIds(
+            @RequestParam(name = "emailIds") List<String> emailIdList
+    ) {
+        return userService.findUsersByEmailIds(emailIdList);
+    }
+
     @PostMapping
     List<CreateUserModel> createUser(
             @RequestBody List<CreateUserDto> dtoList
@@ -47,7 +54,7 @@ public class UserControllerV1 {
     @PostMapping("/verify-email")
     List<VerifyEmailModel> verifyEamil(
             @RequestBody List<VerifyEmailDto> dtoList
-    ){
+    ) {
         return userService.verifyUserEmails(dtoList);
     }
 }

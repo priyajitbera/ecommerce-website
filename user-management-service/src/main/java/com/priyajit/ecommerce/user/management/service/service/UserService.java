@@ -19,4 +19,6 @@ public interface UserService {
     List<RequestEmailVerificationSecretModel> requestEmailVerificationSecret(List<RequestEmailVerificationSecretDto> dtoList);
 
     List<VerifyEmailModel> verifyUserEmails(List<VerifyEmailDto> dtoList);
+
+    List<FindUserModel> findUsersByEmailIds(List<String> emailIdList);
 }
