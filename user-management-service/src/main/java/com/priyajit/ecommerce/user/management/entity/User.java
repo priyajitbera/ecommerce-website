@@ -38,4 +38,7 @@ public class User {
     private ZonedDateTime emailVerificationSecretGeneratedOn;
 
     private ZonedDateTime emailVerifiedOn;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.PERSIST)
+    private UserSecret userSecret;
 }

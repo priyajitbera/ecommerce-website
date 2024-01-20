@@ -5,6 +5,7 @@ import com.priyajit.ecommerce.user.management.dto.CreateUserDto;
 import com.priyajit.ecommerce.user.management.dto.RequestEmailVerificationSecretDto;
 import com.priyajit.ecommerce.user.management.dto.VerifyEmailDto;
 import com.priyajit.ecommerce.user.management.entity.User;
+import com.priyajit.ecommerce.user.management.entity.UserSecret;
 import com.priyajit.ecommerce.user.management.entity.enums.EmailClientStatus;
 import com.priyajit.ecommerce.user.management.entity.enums.EmailVerificationStatus;
 import com.priyajit.ecommerce.user.management.entity.enums.RequestEmailVerifcationSecretStatus;
@@ -16,6 +17,7 @@ import com.priyajit.ecommerce.user.management.repository.UserRepository;
 import com.priyajit.ecommerce.user.management.service.service.UserService;
 import org.springframework.context.annotation.Primary;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,12 +38,16 @@ public class UserServiceImplV1 implements UserService {
 
     private EmailClient emailClient;
 
+    private PasswordEncoder passwordEncoder;
+
     public UserServiceImplV1(
             UserRepository userRepository,
-            EmailClient emailClient
+            EmailClient emailClient,
+            PasswordEncoder passwordEncoder
     ) {
         this.userRepository = userRepository;
         this.emailClient = emailClient;
+        this.passwordEncoder = passwordEncoder;
     }
 
 
@@ -243,9 +249,23 @@ public class UserServiceImplV1 implements UserService {
      * @return
      */
     private User createUserFromDto(CreateUserDto dto) {
+
+        String encodedPassword =
+                dto.getPassword() == null ?
+                        null :
+                        passwordEncoder.encode(dto.getPassword());
+
+        ZonedDateTime passwordSetOn = encodedPassword == null ? null : ZonedDateTime.now();
+
         return User.builder()
                 .emailId(dto.getEmail())
                 .name(dto.getName())
+                .userSecret(
+                        UserSecret.builder()
+                                .password(encodedPassword)
+                                .passwordSetOn(passwordSetOn)
+                                .build()
+                )
                 .build();
     }
 }
