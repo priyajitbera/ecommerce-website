@@ -10,15 +10,17 @@
         <module name="cart-service" />
         <module name="payment-service" />
         <module name="product-catalog-service" />
-        <module name="notification-service" />
         <module name="user-management-service" />
         <module name="order-management-service" />
+        <module name="email-service" />
+        <module name="notification-service" />
       </profile>
     </annotationProcessing>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="cart-service" options="-parameters" />
+      <module name="email-service" options="-parameters" />
       <module name="notification-service" options="-parameters" />
       <module name="order-management-service" options="-parameters" />
       <module name="payment-service" options="-parameters" />
