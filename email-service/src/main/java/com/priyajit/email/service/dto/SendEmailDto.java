@@ -1,6 +1,6 @@
-package com.priyajit.ecommerce.service.dto;
+package com.priyajit.email.service.dto;
 
-import com.priyajit.ecommerce.service.enitity.enums.EmailMessageBodyType;
+import com.priyajit.email.service.enitity.enums.EmailMessageBodyType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,15 +9,18 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * DTO class to contain an Email message to deliver
+ */
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class SendEmailDto {
 
-    private List<String> toList;
-    private List<String> ccList;
-    private List<String> bccList;
+    private List<String> to;
+    private List<String> cc;
+    private List<String> bcc;
     private String subject;
     private String body;
     private EmailMessageBodyType bodyType;

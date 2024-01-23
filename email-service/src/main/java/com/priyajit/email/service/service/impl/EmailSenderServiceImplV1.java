@@ -1,13 +1,13 @@
-package com.priyajit.ecommerce.service.service.impl;
+package com.priyajit.email.service.service.impl;
 
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.simpleemail.AmazonSimpleEmailService;
 import com.amazonaws.services.simpleemail.model.*;
-import com.priyajit.ecommerce.service.dto.SendEmailDto;
-import com.priyajit.ecommerce.service.enitity.enums.EmailMessageBodyType;
-import com.priyajit.ecommerce.service.enitity.enums.EmailSendStatus;
-import com.priyajit.ecommerce.service.model.SendEmailModel;
-import com.priyajit.ecommerce.service.service.EmailSenderService;
+import com.priyajit.email.service.dto.SendEmailDto;
+import com.priyajit.email.service.enitity.enums.EmailMessageBodyType;
+import com.priyajit.email.service.enitity.enums.EmailSendStatus;
+import com.priyajit.email.service.model.SendEmailModel;
+import com.priyajit.email.service.service.EmailSenderService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -43,9 +43,9 @@ public class EmailSenderServiceImplV1 implements EmailSenderService {
 
         SendEmailRequest request = createSendEmailRequest(
                 AWS_SES_SENDER,
-                dto.getToList(),
-                dto.getCcList(),
-                dto.getBccList(),
+                dto.getTo(),
+                dto.getCc(),
+                dto.getBcc(),
                 dto.getSubject(),
                 dto.getBody(),
                 dto.getBodyType()
@@ -59,6 +59,7 @@ public class EmailSenderServiceImplV1 implements EmailSenderService {
                     .correlationIds(dto.getCorrelationIds())
                     .status(EmailSendStatus.SUCCESS)
                     .messageId(sendEmailResult.getMessageId())
+                    .correlationIds(dto.getCorrelationIds())
                     .build();
         } catch (Exception e) {
             log.error("Failed to send email {}", e.getMessage());
@@ -68,6 +69,7 @@ public class EmailSenderServiceImplV1 implements EmailSenderService {
                     .correlationIds(dto.getCorrelationIds())
                     .status(EmailSendStatus.FAILURE)
                     .failureReason(e.getMessage())
+                    .correlationIds(dto.getCorrelationIds())
                     .build();
         }
     }

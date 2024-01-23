@@ -1,4 +1,4 @@
-package com.priyajit.ecommerce.service.enitity.enums;
+package com.priyajit.email.service.enitity.enums;
 
 public enum EmailSendStatus {
 
