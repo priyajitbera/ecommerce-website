@@ -1,45 +1,55 @@
 <mxfile host="65bd71144e">
     <diagram id="8pjq1kX_kkjUbbWB-bO0" name="Page-1">
-        <mxGraphModel dx="1778" dy="1739" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" background="#333333" math="0" shadow="0">
+        <mxGraphModel dx="2238" dy="1412" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="850" pageHeight="1100" background="#000000" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
-                <mxCell id="28" value="Search Products" style="edgeStyle=elbowEdgeStyle;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;fontColor=#FFFF99;labelBackgroundColor=none;strokeColor=#FFFF99;" edge="1" parent="1" source="2" target="11">
+                <mxCell id="28" value="Search Products" style="edgeStyle=elbowEdgeStyle;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;fontColor=#FFFF99;labelBackgroundColor=none;strokeColor=#FFFF99;" parent="1" source="2" target="11" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="32" value="" style="edgeStyle=elbowEdgeStyle;html=1;fontColor=#FFFF99;labelBackgroundColor=none;strokeColor=#FFFF99;" edge="1" parent="1" source="2" target="9">
+                <mxCell id="32" value="" style="edgeStyle=elbowEdgeStyle;html=1;fontColor=#FFFF99;labelBackgroundColor=none;strokeColor=#FFFF99;" parent="1" source="2" target="9" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="2" value="Product Catalog Service" style="outlineConnect=0;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;shape=mxgraph.aws3.redshift;fillColor=#2E73B8;gradientColor=none;" vertex="1" parent="1">
+                <mxCell id="2" value="Product Catalog Service" style="outlineConnect=0;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;shape=mxgraph.aws3.redshift;fillColor=#2E73B8;gradientColor=none;" parent="1" vertex="1">
                     <mxGeometry x="321.24" y="200" width="80" height="80" as="geometry"/>
                 </mxCell>
-                <mxCell id="3" value="User Management Service" style="aspect=fixed;perimeter=ellipsePerimeter;html=1;align=center;shadow=0;dashed=0;spacingTop=3;image;image=img/lib/active_directory/user_accounts.svg;labelBackgroundColor=none;" vertex="1" parent="1">
+                <mxCell id="67" value="Email Verifcation Secret, Welcome Email" style="edgeStyle=elbowEdgeStyle;html=1;labelBackgroundColor=none;" edge="1" parent="1" source="3" target="14">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="790" y="250"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="3" value="User Management Service" style="aspect=fixed;perimeter=ellipsePerimeter;html=1;align=center;shadow=0;dashed=0;spacingTop=3;image;image=img/lib/active_directory/user_accounts.svg;labelBackgroundColor=none;" parent="1" vertex="1">
                     <mxGeometry x="320" y="-40" width="81.24" height="78.8" as="geometry"/>
                 </mxCell>
-                <mxCell id="56" style="edgeStyle=elbowEdgeStyle;html=1;labelBackgroundColor=none;strokeColor=#FF66B3;fontColor=#FF66B3;" edge="1" parent="1" source="7" target="57">
+                <mxCell id="56" style="edgeStyle=elbowEdgeStyle;html=1;labelBackgroundColor=none;strokeColor=#FF66B3;fontColor=#FF66B3;" parent="1" source="7" target="57" edge="1">
                     <mxGeometry relative="1" as="geometry">
                         <mxPoint x="490" y="970" as="targetPoint"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="7" value="Payment Service" style="image;html=1;image=img/lib/clip_art/finance/Credit_Card_128x128.png;labelBackgroundColor=none;" vertex="1" parent="1">
+                <mxCell id="7" value="Payment Service" style="image;html=1;image=img/lib/clip_art/finance/Credit_Card_128x128.png;labelBackgroundColor=none;" parent="1" vertex="1">
                     <mxGeometry x="319.38" y="840" width="80" height="80" as="geometry"/>
                 </mxCell>
-                <mxCell id="8" value="Notification&lt;br&gt;" style="aspect=fixed;html=1;points=[];align=center;image;fontSize=12;image=img/lib/azure2/other/Windows_Notification_Services.svg;labelBackgroundColor=none;" vertex="1" parent="1">
+                <mxCell id="8" value="Notification&lt;br&gt;" style="aspect=fixed;html=1;points=[];align=center;image;fontSize=12;image=img/lib/azure2/other/Windows_Notification_Services.svg;labelBackgroundColor=none;" parent="1" vertex="1">
                     <mxGeometry x="530" y="1150" width="80" height="80" as="geometry"/>
                 </mxCell>
-                <mxCell id="9" value="Product Service DataSource (MySql)" style="image;html=1;image=img/lib/clip_art/computers/Database_128x128.png;labelBackgroundColor=none;" vertex="1" parent="1">
+                <mxCell id="9" value="Product Service DataSource (MySql)" style="image;html=1;image=img/lib/clip_art/computers/Database_128x128.png;labelBackgroundColor=none;" parent="1" vertex="1">
                     <mxGeometry x="560" y="280" width="80" height="80" as="geometry"/>
                 </mxCell>
-                <mxCell id="10" value="Redis" style="sketch=0;aspect=fixed;html=1;points=[];align=center;image;fontSize=12;image=img/lib/mscae/Cache_Redis_Product.svg;labelBackgroundColor=none;" vertex="1" parent="1">
+                <mxCell id="10" value="Redis" style="sketch=0;aspect=fixed;html=1;points=[];align=center;image;fontSize=12;image=img/lib/mscae/Cache_Redis_Product.svg;labelBackgroundColor=none;" parent="1" vertex="1">
                     <mxGeometry x="130" y="1140" width="95.23" height="80" as="geometry"/>
                 </mxCell>
-                <mxCell id="11" value="Elastic Search" style="outlineConnect=0;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;shape=mxgraph.aws3.elasticsearch_service;fillColor=#F58534;gradientColor=none;" vertex="1" parent="1">
+                <mxCell id="11" value="Elastic Search" style="outlineConnect=0;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;shape=mxgraph.aws3.elasticsearch_service;fillColor=#F58534;gradientColor=none;" parent="1" vertex="1">
                     <mxGeometry x="560" y="120" width="80" height="60" as="geometry"/>
                 </mxCell>
-                <mxCell id="14" value="Kafka" style="sketch=0;points=[[0,0,0],[0.25,0,0],[0.5,0,0],[0.75,0,0],[1,0,0],[0,1,0],[0.25,1,0],[0.5,1,0],[0.75,1,0],[1,1,0],[0,0.25,0],[0,0.5,0],[0,0.75,0],[1,0.25,0],[1,0.5,0],[1,0.75,0]];outlineConnect=0;fontColor=#FFFFFF;gradientColor=#945DF2;gradientDirection=north;fillColor=#5A30B5;strokeColor=#ffffff;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.managed_streaming_for_kafka;" vertex="1" parent="1">
+                <mxCell id="69" value="Emails" style="edgeStyle=elbowEdgeStyle;html=1;labelBackgroundColor=none;" edge="1" parent="1" source="14" target="65">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="14" value="Kafka" style="sketch=0;points=[[0,0,0],[0.25,0,0],[0.5,0,0],[0.75,0,0],[1,0,0],[0,1,0],[0.25,1,0],[0.5,1,0],[0.75,1,0],[1,1,0],[0,0.25,0],[0,0.5,0],[0,0.75,0],[1,0.25,0],[1,0.5,0],[1,0.75,0]];outlineConnect=0;fontColor=#FFFFFF;gradientColor=#945DF2;gradientDirection=north;fillColor=#5A30B5;strokeColor=#ffffff;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.managed_streaming_for_kafka;" parent="1" vertex="1">
                     <mxGeometry x="840" y="440" width="78" height="78" as="geometry"/>
                 </mxCell>
-                <mxCell id="17" value="Login &amp;amp; Registration" style="edgeStyle=elbowEdgeStyle;html=1;fontColor=#FF9999;exitX=1;exitY=0.75;exitDx=0;exitDy=0;labelBackgroundColor=none;strokeColor=#FF9999;" edge="1" parent="1" source="16" target="38">
+                <mxCell id="17" value="Login &amp;amp; Registration" style="edgeStyle=elbowEdgeStyle;html=1;fontColor=#FF9999;exitX=1;exitY=0.75;exitDx=0;exitDy=0;labelBackgroundColor=none;strokeColor=#FF9999;" parent="1" source="16" target="38" edge="1">
                     <mxGeometry relative="1" as="geometry">
                         <mxPoint x="-249.0000000000109" y="439.46000000000004" as="sourcePoint"/>
                         <mxPoint x="1" y="439.9291803278693" as="targetPoint"/>
@@ -48,10 +58,10 @@
                         </Array>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="16" value="User" style="aspect=fixed;perimeter=ellipsePerimeter;html=1;align=center;shadow=0;dashed=0;spacingTop=3;image;image=img/lib/active_directory/user.svg;fontColor=#FFFFFF;labelBackgroundColor=none;" vertex="1" parent="1">
+                <mxCell id="16" value="User" style="aspect=fixed;perimeter=ellipsePerimeter;html=1;align=center;shadow=0;dashed=0;spacingTop=3;image;image=img/lib/active_directory/user.svg;fontColor=#FFFFFF;labelBackgroundColor=none;" parent="1" vertex="1">
                     <mxGeometry x="-440" y="200" width="30" height="81.08" as="geometry"/>
                 </mxCell>
-                <mxCell id="19" value="Login &amp;amp; Registration" style="edgeStyle=elbowEdgeStyle;html=1;fontColor=#FF9999;labelBackgroundColor=none;strokeColor=#FF9999;" edge="1" parent="1" source="18" target="3">
+                <mxCell id="19" value="Login &amp;amp; Registration" style="edgeStyle=elbowEdgeStyle;html=1;fontColor=#FF9999;labelBackgroundColor=none;strokeColor=#FF9999;" parent="1" source="18" target="3" edge="1">
                     <mxGeometry relative="1" as="geometry">
                         <mxPoint x="240" as="targetPoint"/>
                         <Array as="points">
@@ -59,7 +69,7 @@
                         </Array>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="26" value="Serch Products, Add Product" style="edgeStyle=elbowEdgeStyle;html=1;fontColor=#FFFF99;labelBackgroundColor=none;strokeColor=#FFFF99;" edge="1" parent="1" source="18" target="2">
+                <mxCell id="26" value="Serch Products, Add Product" style="edgeStyle=elbowEdgeStyle;html=1;fontColor=#FFFF99;labelBackgroundColor=none;strokeColor=#FFFF99;" parent="1" source="18" target="2" edge="1">
                     <mxGeometry relative="1" as="geometry">
                         <mxPoint x="240" y="240" as="targetPoint"/>
                         <Array as="points">
@@ -67,91 +77,100 @@
                         </Array>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="51" value="Place Order" style="edgeStyle=elbowEdgeStyle;html=1;labelBackgroundColor=none;strokeColor=#FFFF99;fontColor=#FFFF99;" edge="1" parent="1" source="18" target="42">
+                <mxCell id="51" value="Place Order" style="edgeStyle=elbowEdgeStyle;html=1;labelBackgroundColor=none;strokeColor=#FFFF99;fontColor=#FFFF99;" parent="1" source="18" target="42" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="55" value="Payment" style="edgeStyle=elbowEdgeStyle;html=1;labelBackgroundColor=none;strokeColor=#FFFF00;fontColor=#FFFF00;" edge="1" parent="1" source="18" target="7">
+                <mxCell id="55" value="Payment" style="edgeStyle=elbowEdgeStyle;html=1;labelBackgroundColor=none;strokeColor=#FFFF00;fontColor=#FFFF00;" parent="1" source="18" target="7" edge="1">
                     <mxGeometry relative="1" as="geometry">
                         <Array as="points">
                             <mxPoint x="160" y="660"/>
                         </Array>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="63" value="Add Product to Cart" style="edgeStyle=elbowEdgeStyle;html=1;labelBackgroundColor=none;strokeColor=#FF66B3;fontColor=#FF66B3;" edge="1" parent="1" source="18" target="33">
+                <mxCell id="63" value="Add Product to Cart" style="edgeStyle=elbowEdgeStyle;html=1;labelBackgroundColor=none;strokeColor=#FF66B3;fontColor=#FF66B3;" parent="1" source="18" target="33" edge="1">
                     <mxGeometry relative="1" as="geometry">
                         <Array as="points">
                             <mxPoint x="280" y="440"/>
                         </Array>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="18" value="API Gateway" style="outlineConnect=0;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;shape=mxgraph.aws3.api_gateway;fillColor=#D9A741;gradientColor=none;fontColor=#FFFFFF;" vertex="1" parent="1">
+                <mxCell id="18" value="API Gateway" style="outlineConnect=0;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;shape=mxgraph.aws3.api_gateway;fillColor=#D9A741;gradientColor=none;fontColor=#FFFFFF;" parent="1" vertex="1">
                     <mxGeometry y="400" width="80" height="80" as="geometry"/>
                 </mxCell>
-                <mxCell id="23" value="Search Products" style="edgeStyle=elbowEdgeStyle;html=1;fontColor=#FFFF99;labelBackgroundColor=none;strokeColor=#FFFF99;" edge="1" parent="1" source="22" target="38">
+                <mxCell id="23" value="Search Products" style="edgeStyle=elbowEdgeStyle;html=1;fontColor=#FFFF99;labelBackgroundColor=none;strokeColor=#FFFF99;" parent="1" source="22" target="38" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="22" value="User" style="aspect=fixed;perimeter=ellipsePerimeter;html=1;align=center;shadow=0;dashed=0;spacingTop=3;image;image=img/lib/active_directory/user.svg;fontColor=#FFFFFF;labelBackgroundColor=none;" vertex="1" parent="1">
+                <mxCell id="22" value="User" style="aspect=fixed;perimeter=ellipsePerimeter;html=1;align=center;shadow=0;dashed=0;spacingTop=3;image;image=img/lib/active_directory/user.svg;fontColor=#FFFFFF;labelBackgroundColor=none;" parent="1" vertex="1">
                     <mxGeometry x="-440" y="320" width="30" height="81.08" as="geometry"/>
                 </mxCell>
-                <mxCell id="30" value="Add Product to Cart" style="edgeStyle=elbowEdgeStyle;html=1;fontColor=#FF3399;labelBackgroundColor=none;strokeColor=#FF99CC;" edge="1" parent="1" source="29" target="38">
+                <mxCell id="30" value="Add Product to Cart" style="edgeStyle=elbowEdgeStyle;html=1;fontColor=#FF3399;labelBackgroundColor=none;strokeColor=#FF99CC;" parent="1" source="29" target="38" edge="1">
                     <mxGeometry x="-0.0012" relative="1" as="geometry">
                         <mxPoint x="-240" y="440" as="targetPoint"/>
                         <Array as="points"/>
                         <mxPoint as="offset"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="29" value="User" style="aspect=fixed;perimeter=ellipsePerimeter;html=1;align=center;shadow=0;dashed=0;spacingTop=3;image;image=img/lib/active_directory/user.svg;fontColor=#FFFFFF;labelBackgroundColor=none;" vertex="1" parent="1">
+                <mxCell id="29" value="User" style="aspect=fixed;perimeter=ellipsePerimeter;html=1;align=center;shadow=0;dashed=0;spacingTop=3;image;image=img/lib/active_directory/user.svg;fontColor=#FFFFFF;labelBackgroundColor=none;" parent="1" vertex="1">
                     <mxGeometry x="-440" y="440" width="30" height="81.08" as="geometry"/>
                 </mxCell>
-                <mxCell id="37" value="Add Product to Cart" style="edgeStyle=elbowEdgeStyle;html=1;fontColor=#FF66B3;labelBackgroundColor=none;strokeColor=#FF66B3;" edge="1" parent="1" source="33" target="14">
+                <mxCell id="37" value="Add Product to Cart" style="edgeStyle=elbowEdgeStyle;html=1;fontColor=#FF66B3;labelBackgroundColor=none;strokeColor=#FF66B3;" parent="1" source="33" target="14" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="46" style="edgeStyle=elbowEdgeStyle;html=1;labelBackgroundColor=none;strokeColor=#FF66B3;fontColor=#FF66B3;" edge="1" parent="1" source="33" target="45">
+                <mxCell id="46" style="edgeStyle=elbowEdgeStyle;html=1;labelBackgroundColor=none;strokeColor=#FF66B3;fontColor=#FF66B3;" parent="1" source="33" target="45" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="33" value="Cart Servcie" style="image;html=1;image=img/lib/clip_art/finance/Shopping_Cart_128x128.png;fontColor=#FFFFFF;labelBackgroundColor=none;" vertex="1" parent="1">
+                <mxCell id="33" value="Cart Servcie" style="image;html=1;image=img/lib/clip_art/finance/Shopping_Cart_128x128.png;fontColor=#FFFFFF;labelBackgroundColor=none;" parent="1" vertex="1">
                     <mxGeometry x="320.00000000000006" y="479" width="80" height="80" as="geometry"/>
                 </mxCell>
-                <mxCell id="40" style="edgeStyle=elbowEdgeStyle;html=1;labelBackgroundColor=none;strokeColor=#FFFF99;fontColor=#FFFF99;" edge="1" parent="1" source="38" target="18">
+                <mxCell id="40" style="edgeStyle=elbowEdgeStyle;html=1;labelBackgroundColor=none;strokeColor=#FFFF99;fontColor=#FFFF99;" parent="1" source="38" target="18" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="38" value="Load Balancer" style="outlineConnect=0;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;shape=mxgraph.aws3.classic_load_balancer;fillColor=#F58534;gradientColor=none;labelBackgroundColor=none;fontColor=#FFFF99;" vertex="1" parent="1">
+                <mxCell id="38" value="Load Balancer" style="outlineConnect=0;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;shape=mxgraph.aws3.classic_load_balancer;fillColor=#F58534;gradientColor=none;labelBackgroundColor=none;fontColor=#FFFF99;" parent="1" vertex="1">
                     <mxGeometry x="-160" y="400" width="80" height="80" as="geometry"/>
                 </mxCell>
-                <mxCell id="53" style="edgeStyle=elbowEdgeStyle;html=1;labelBackgroundColor=none;strokeColor=#FFFF99;fontColor=#FFFF99;" edge="1" parent="1" source="42" target="52">
+                <mxCell id="53" style="edgeStyle=elbowEdgeStyle;html=1;labelBackgroundColor=none;strokeColor=#FFFF99;fontColor=#FFFF99;" parent="1" source="42" target="52" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="42" value="Order Managerment Service" style="verticalLabelPosition=bottom;html=1;verticalAlign=top;align=center;strokeColor=none;fillColor=#00BEF2;shape=mxgraph.azure.cloud_service_package_file;labelBackgroundColor=none;fontColor=#FFFF99;" vertex="1" parent="1">
+                <mxCell id="42" value="Order Managerment Service" style="verticalLabelPosition=bottom;html=1;verticalAlign=top;align=center;strokeColor=none;fillColor=#00BEF2;shape=mxgraph.azure.cloud_service_package_file;labelBackgroundColor=none;fontColor=#FFFF99;" parent="1" vertex="1">
                     <mxGeometry x="320" y="680" width="78.76" height="70" as="geometry"/>
                 </mxCell>
-                <mxCell id="45" value="Cart Service DataSoource (MongoDB)" style="dashed=0;outlineConnect=0;html=1;align=center;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;shape=mxgraph.weblogos.mongodb;labelBackgroundColor=none;fontColor=#FFFF99;" vertex="1" parent="1">
+                <mxCell id="45" value="Cart Service DataSoource (MongoDB)" style="dashed=0;outlineConnect=0;html=1;align=center;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;shape=mxgraph.weblogos.mongodb;labelBackgroundColor=none;fontColor=#FFFF99;" parent="1" vertex="1">
                     <mxGeometry x="560" y="521.08" width="50" height="78.92" as="geometry"/>
                 </mxCell>
-                <mxCell id="50" value="Place Order" style="edgeStyle=elbowEdgeStyle;html=1;labelBackgroundColor=none;strokeColor=#FFFF99;fontColor=#FFFF99;" edge="1" parent="1" source="49" target="38">
+                <mxCell id="50" value="Place Order" style="edgeStyle=elbowEdgeStyle;html=1;labelBackgroundColor=none;strokeColor=#FFFF99;fontColor=#FFFF99;" parent="1" source="49" target="38" edge="1">
                     <mxGeometry relative="1" as="geometry">
                         <Array as="points">
                             <mxPoint x="-270" y="520"/>
                         </Array>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="49" value="User" style="aspect=fixed;perimeter=ellipsePerimeter;html=1;align=center;shadow=0;dashed=0;spacingTop=3;image;image=img/lib/active_directory/user.svg;fontColor=#FFFFFF;labelBackgroundColor=none;" vertex="1" parent="1">
+                <mxCell id="49" value="User" style="aspect=fixed;perimeter=ellipsePerimeter;html=1;align=center;shadow=0;dashed=0;spacingTop=3;image;image=img/lib/active_directory/user.svg;fontColor=#FFFFFF;labelBackgroundColor=none;" parent="1" vertex="1">
                     <mxGeometry x="-440" y="560" width="30" height="81.08" as="geometry"/>
                 </mxCell>
-                <mxCell id="52" value="Order Management Service DataSource (MySql)" style="image;html=1;image=img/lib/clip_art/computers/Database_128x128.png;labelBackgroundColor=none;" vertex="1" parent="1">
+                <mxCell id="52" value="Order Management Service DataSource (MySql)" style="image;html=1;image=img/lib/clip_art/computers/Database_128x128.png;labelBackgroundColor=none;" parent="1" vertex="1">
                     <mxGeometry x="560" y="675" width="80" height="80" as="geometry"/>
                 </mxCell>
-                <mxCell id="57" value="Payment Service DataSource (MySql)" style="image;html=1;image=img/lib/clip_art/computers/Database_128x128.png;labelBackgroundColor=none;" vertex="1" parent="1">
+                <mxCell id="57" value="Payment Service DataSource (MySql)" style="image;html=1;image=img/lib/clip_art/computers/Database_128x128.png;labelBackgroundColor=none;" parent="1" vertex="1">
                     <mxGeometry x="558" y="840" width="80" height="80" as="geometry"/>
                 </mxCell>
-                <mxCell id="60" value="Payment" style="edgeStyle=elbowEdgeStyle;html=1;labelBackgroundColor=none;strokeColor=#FFFF00;fontColor=#FFFF00;" edge="1" parent="1" source="59" target="38">
+                <mxCell id="60" value="Payment" style="edgeStyle=elbowEdgeStyle;html=1;labelBackgroundColor=none;strokeColor=#FFFF00;fontColor=#FFFF00;" parent="1" source="59" target="38" edge="1">
                     <mxGeometry relative="1" as="geometry">
                         <Array as="points">
                             <mxPoint x="-250" y="580"/>
                         </Array>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="59" value="User" style="aspect=fixed;perimeter=ellipsePerimeter;html=1;align=center;shadow=0;dashed=0;spacingTop=3;image;image=img/lib/active_directory/user.svg;fontColor=#FFFFFF;labelBackgroundColor=none;" vertex="1" parent="1">
+                <mxCell id="59" value="User" style="aspect=fixed;perimeter=ellipsePerimeter;html=1;align=center;shadow=0;dashed=0;spacingTop=3;image;image=img/lib/active_directory/user.svg;fontColor=#FFFFFF;labelBackgroundColor=none;" parent="1" vertex="1">
                     <mxGeometry x="-440" y="680" width="30" height="81.08" as="geometry"/>
+                </mxCell>
+                <mxCell id="73" value="Emails" style="edgeStyle=elbowEdgeStyle;html=1;labelBackgroundColor=none;" edge="1" parent="1" source="65" target="70">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="65" value="Email Service" style="outlineConnect=0;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;shape=mxgraph.aws3.email;fillColor=#D9A741;gradientColor=none;" vertex="1" parent="1">
+                    <mxGeometry x="1026" y="240" width="81" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="70" value="AWS SES" style="outlineConnect=0;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;shape=mxgraph.aws3.ses;fillColor=#D9A741;gradientColor=none;" vertex="1" parent="1">
+                    <mxGeometry x="1275" y="160" width="79.5" height="76.5" as="geometry"/>
                 </mxCell>
             </root>
         </mxGraphModel>
