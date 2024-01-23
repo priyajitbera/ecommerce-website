@@ -210,12 +210,29 @@ public class UserServiceImplV1 implements UserService {
             userRepository.saveAndFlush(user);
         }
 
+        sendSuccessfulEmailValidationMail(
+                user.getEmailId(),
+                user.getEmailVerifiedOn()
+        );
+
         // create response model and return
         return VerifyEmailModel.builder()
                 .userId(user.getId())
                 .verificationStatus(user.getEmailVerificationStatus())
                 .verifiedOn(user.getEmailVerifiedOn())
                 .build();
+    }
+
+    private EmailClientStatus sendSuccessfulEmailValidationMail(String emailId, ZonedDateTime verifiedOn) {
+
+        SendEmailDto emailDto = SendEmailDto.builder()
+                .to(List.of(emailId))
+                .subject("Email verification success!!")
+                .body(String.format("Your email id %s is verified successfully on %s", emailId, verifiedOn.toString())) // todo : create email templates
+                .correlationIds(Map.of("user-email-id", emailId, "source-service", "user-management-service"))
+                .build();
+
+        return emailClient.send(emailDto);
     }
 
     /**
