@@ -4,6 +4,7 @@ import com.priyajit.ecommerce.user.management.client.EmailClient;
 import com.priyajit.ecommerce.user.management.dto.CreateUserDto;
 import com.priyajit.ecommerce.user.management.dto.RequestEmailVerificationSecretDto;
 import com.priyajit.ecommerce.user.management.dto.VerifyEmailDto;
+import com.priyajit.ecommerce.user.management.dto.external.SendEmailDto;
 import com.priyajit.ecommerce.user.management.entity.User;
 import com.priyajit.ecommerce.user.management.entity.UserSecret;
 import com.priyajit.ecommerce.user.management.entity.enums.EmailClientStatus;
@@ -26,6 +27,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.math.BigInteger;
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -227,7 +229,15 @@ public class UserServiceImplV1 implements UserService {
 
         List<String> to = List.of(email);
         String emailBody = String.format("Your email verification secret is: %s", emailVerificationSecret);
-        return emailClient.send(to, List.of(), emailBody);
+
+        SendEmailDto emailDto = SendEmailDto.builder()
+                .to(List.of(email))
+                .subject("Verify your email")
+                .body(emailBody)
+                .correlationIds(Map.of("user-email-id", email, "source-service", "user-managerment-service"))
+                .build();
+
+        return emailClient.send(emailDto);
     }
 
     /**
