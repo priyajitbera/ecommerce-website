@@ -50,7 +50,7 @@ public class AwsSqsConfig {
         return new AWSStaticCredentialsProvider(
                 new BasicAWSCredentials(
                         awsSqsAccessKey,
-                        awsSqsRegion
+                        awsSqsSecretKey
                 )
         );
     }
