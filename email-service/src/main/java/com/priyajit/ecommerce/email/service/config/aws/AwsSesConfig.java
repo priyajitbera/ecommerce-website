@@ -1,12 +1,11 @@
-package com.priyajit.email.service.config;
+package com.priyajit.ecommerce.email.service.config;
 
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.regions.Regions;
 import com.amazonaws.services.simpleemail.AmazonSimpleEmailService;
 import com.amazonaws.services.simpleemail.AmazonSimpleEmailServiceClientBuilder;
+import com.priyajit.ecommerce.email.service.enitity.DbEnvironmentConfiguration;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -14,28 +13,31 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class AwsSesConfig {
 
-    @Value("${aws.ses.access.key}")
-    private String AWS_SES_ACCESS_KEY;
+    private String awsSesAccessKey;
 
-    @Value("${aws.ses.secret.key}")
-    private String AWS_SES_SECRET_KEY;
+    private String awsSesSecretKey;
 
-    @Value("${aws.ses.region}")
-    private Regions AWS_SES_REGION;
+    private String awsSesRegion;
 
-    @Value("${aws.ses.sender}")
-    private String AWS_SES_SENDER;
+
+    public AwsSesConfig(DbEnvironmentConfiguration dbEnvConfig) {
+
+        this.awsSesRegion = dbEnvConfig.getProperty(DbEnvironmentConfiguration.Keys.AWS_SES_REGION);
+        this.awsSesAccessKey = dbEnvConfig.getProperty(DbEnvironmentConfiguration.Keys.AWS_SES_ACCESS_KEY);
+        this.awsSesSecretKey = dbEnvConfig.getProperty(DbEnvironmentConfiguration.Keys.AWS_SES_SECRET_KEY);
+    }
 
     @Bean
     public AmazonSimpleEmailService amazonSimpleEmailService() {
 
         BasicAWSCredentials credentials = new BasicAWSCredentials(
-                AWS_SES_ACCESS_KEY,
-                AWS_SES_SECRET_KEY
+                awsSesAccessKey,
+                awsSesSecretKey
         );
+
         return AmazonSimpleEmailServiceClientBuilder.standard()
                 .withCredentials(new AWSStaticCredentialsProvider(credentials))
-                .withRegion(AWS_SES_REGION)
+                .withRegion(awsSesRegion)
                 .build();
     }
 }
