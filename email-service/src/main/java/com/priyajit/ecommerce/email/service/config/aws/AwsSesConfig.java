@@ -1,4 +1,4 @@
-package com.priyajit.ecommerce.email.service.config;
+package com.priyajit.ecommerce.email.service.config.aws;
 
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
@@ -13,12 +13,9 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class AwsSesConfig {
 
-    private String awsSesAccessKey;
-
-    private String awsSesSecretKey;
-
     private String awsSesRegion;
-
+    private String awsSesAccessKey;
+    private String awsSesSecretKey;
 
     public AwsSesConfig(DbEnvironmentConfiguration dbEnvConfig) {
 

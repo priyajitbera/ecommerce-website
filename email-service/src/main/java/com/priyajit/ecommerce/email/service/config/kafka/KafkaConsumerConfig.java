@@ -1,10 +1,11 @@
-package com.priyajit.email.service.config.kafka;
+package com.priyajit.ecommerce.email.service.config.kafka;
 
-import com.priyajit.email.service.dto.SendEmailDto;
+import com.priyajit.ecommerce.email.service.dto.SendEmailDto;
+import com.priyajit.ecommerce.email.service.enitity.DbEnvironmentConfiguration;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.serialization.StringDeserializer;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
@@ -14,21 +15,57 @@ import org.springframework.kafka.support.mapping.DefaultJackson2JavaTypeMapper;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
 @Configuration
 public class KafkaConsumerConfig {
 
-    @Value("${kafka.bootstrap-address}")
-    private String KAFKA_BOOTSTRAP_ADDRESS;
+    private Boolean kafkaConsumerConfigEnable;
+    private String kafkaBootstrapAddress;
+    private String kafkaGroupIdConfig;
+    private String kafkaTopic;
 
-    @Value("${kafka.group-id-config}")
-    private String KAFKA_GROUP_ID_CONFIG;
+    public KafkaConsumerConfig(DbEnvironmentConfiguration dbEnvConfig) {
+        this.kafkaConsumerConfigEnable = Boolean.valueOf(
+                dbEnvConfig.getProperty(DbEnvironmentConfiguration.Keys.KAFKA_CONSUMER_CONFIG_ENABLE)
+        );
+        if (this.kafkaConsumerConfigEnable) {
+            this.kafkaBootstrapAddress = dbEnvConfig.getProperty(DbEnvironmentConfiguration.Keys.KAFKA_BOOTSTRAP_ADDRESS);
+            this.kafkaGroupIdConfig = dbEnvConfig.getProperty(DbEnvironmentConfiguration.Keys.KAFKA_GROUP_ID_CONFIG);
+            this.kafkaTopic = dbEnvConfig.getProperty(DbEnvironmentConfiguration.Keys.KAFKA_TOPIC);
+        }
+    }
 
-    @Bean("emailListenerContainerFactory")
+    @Bean
+    public KafkaConsumer<String, SendEmailDto> kafkaConsumer() {
+
+        if (!this.kafkaConsumerConfigEnable) {
+            log.warn("kafkaConsumerConfigEnable is set to false, skipping kafkaConsumer configuration");
+            return null;
+        }
+
+        Map<String, Object> config = new HashMap<>();
+        config.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaBootstrapAddress);
+        config.put(ConsumerConfig.GROUP_ID_CONFIG, kafkaGroupIdConfig);
+        KafkaConsumer<String, SendEmailDto> kafkaConsumer = new KafkaConsumer<>(
+                config,
+                new StringDeserializer(),
+                new JsonDeserializer<>(SendEmailDto.class)
+        );
+
+        kafkaConsumer.subscribe(List.of(this.kafkaTopic));
+        return kafkaConsumer;
+    }
+
+    //    @Bean("emailListenerContainerFactory")
     public ConcurrentKafkaListenerContainerFactory<String, SendEmailDto> emailListenerContainerFactory() {
-        log.info("Configuring ConcurrentKafkaListenerContainerFactory");
+
+        if (!this.kafkaConsumerConfigEnable) {
+            log.warn("kafkaConsumerConfigEnable is set to false, skipping emailListenerContainerFactory configuration");
+            return null;
+        }
 
         ConcurrentKafkaListenerContainerFactory<String, SendEmailDto> factory =
                 new ConcurrentKafkaListenerContainerFactory<>();
@@ -39,11 +76,10 @@ public class KafkaConsumerConfig {
     }
 
     private ConsumerFactory<String, SendEmailDto> consumerFactory() {
-        log.info("Configuring ConsumerFactory");
 
         Map<String, Object> config = new HashMap<>();
-        config.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, KAFKA_BOOTSTRAP_ADDRESS);
-        config.put(ConsumerConfig.GROUP_ID_CONFIG, KAFKA_GROUP_ID_CONFIG);
+        config.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaBootstrapAddress);
+        config.put(ConsumerConfig.GROUP_ID_CONFIG, kafkaGroupIdConfig);
 
         DefaultJackson2JavaTypeMapper typeMapper = new DefaultJackson2JavaTypeMapper();
         Map<String, Class<?>> classMap = new HashMap<>();

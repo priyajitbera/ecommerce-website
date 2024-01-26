@@ -1,13 +1,13 @@
-package com.priyajit.email.service.service.impl;
+package com.priyajit.ecommerce.email.service.service.impl;
 
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.simpleemail.AmazonSimpleEmailService;
 import com.amazonaws.services.simpleemail.model.*;
-import com.priyajit.email.service.dto.SendEmailDto;
-import com.priyajit.email.service.enitity.enums.EmailMessageBodyType;
-import com.priyajit.email.service.enitity.enums.EmailSendStatus;
-import com.priyajit.email.service.model.SendEmailModel;
-import com.priyajit.email.service.service.EmailSenderService;
+import com.priyajit.ecommerce.email.service.enitity.enums.EmailSendStatus;
+import com.priyajit.ecommerce.email.service.dto.SendEmailDto;
+import com.priyajit.ecommerce.email.service.enitity.enums.EmailMessageBodyType;
+import com.priyajit.ecommerce.email.service.model.SendEmailModel;
+import com.priyajit.ecommerce.email.service.service.EmailSenderService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

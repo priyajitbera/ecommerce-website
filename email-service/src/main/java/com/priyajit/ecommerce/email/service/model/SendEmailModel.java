@@ -1,6 +1,6 @@
-package com.priyajit.email.service.model;
+package com.priyajit.ecommerce.email.service.model;
 
-import com.priyajit.email.service.enitity.enums.EmailSendStatus;
+import com.priyajit.ecommerce.email.service.enitity.enums.EmailSendStatus;
 import lombok.Builder;
 import lombok.Data;
 

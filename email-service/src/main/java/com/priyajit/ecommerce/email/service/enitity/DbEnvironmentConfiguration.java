@@ -1,4 +1,4 @@
-package com.priyajit.email.service.enitity;
+package com.priyajit.ecommerce.email.service.enitity;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -58,6 +58,7 @@ public class DbEnvironmentConfiguration {
         public final static String KAFKA_BOOTSTRAP_ADDRESS = "kafka.bootstrap-address";
         public final static String KAFKA_TOPIC = "kafka.topic";
         public final static String KAFKA_MAX_REQUEST_SIZE = "kafka.max-request-size";
+        public final static String KAFKA_GROUP_ID_CONFIG = "kafka.group-id-config";
 
         // AWS SQS
         public final static String AWS_SQS_CONFIG_ENABLE = "aws.sqs.config.enable";
@@ -65,6 +66,11 @@ public class DbEnvironmentConfiguration {
         public final static String AWS_SQS_QUEUE_URL = "aws.sqs.queue-url";
         public final static String AWS_SQS_ACCESS_KEY = "aws.sqs.access-key";
         public final static String AWS_SQS_SECRET_KEY = "aws.sqs.secret-key";
+
+        // AWS SES
+        public final static String AWS_SES_REGION = "aws.ses.region";
+        public final static String AWS_SES_ACCESS_KEY = "aws.ses.access-key";
+        public final static String AWS_SES_SECRET_KEY = "aws.ses.secret-key";
     }
 
     public static class Values {

@@ -1,8 +1,8 @@
-package com.priyajit.email.service.controller;
+package com.priyajit.ecommerce.email.service.controller;
 
-import com.priyajit.email.service.dto.SendEmailDto;
-import com.priyajit.email.service.model.SendEmailModel;
-import com.priyajit.email.service.service.EmailSenderService;
+import com.priyajit.ecommerce.email.service.dto.SendEmailDto;
+import com.priyajit.ecommerce.email.service.model.SendEmailModel;
+import com.priyajit.ecommerce.email.service.service.EmailSenderService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;

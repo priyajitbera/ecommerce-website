@@ -1,17 +1,22 @@
-package com.priyajit.email.service.enitity;
+package com.priyajit.ecommerce.email.service.enitity;
 
+import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.ZonedDateTime;
 
-@Entity
 @Builder
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Entity
+@Table(
+        // key should be unique to each DbEnvironmentConfiguration
+        uniqueConstraints = @UniqueConstraint(name = "UNIQ_CONFIG_KEY", columnNames = {"KEY_NAME", "CONFIGURATION_ID"})
+)
 public class DbEnvironmentConfigurationProperty {
 
     @Id

@@ -1,6 +1,6 @@
-package com.priyajit.email.service.dto;
+package com.priyajit.ecommerce.email.service.dto;
 
-import com.priyajit.email.service.enitity.enums.EmailMessageBodyType;
+import com.priyajit.ecommerce.email.service.enitity.enums.EmailMessageBodyType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
