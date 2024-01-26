@@ -1,6 +1,6 @@
 package com.priyajit.ecommerce.user.management.service.service.impl;
 
-import com.priyajit.ecommerce.user.management.client.EmailClient;
+import com.priyajit.ecommerce.user.management.component.EmailSender;
 import com.priyajit.ecommerce.user.management.dto.CreateUserDto;
 import com.priyajit.ecommerce.user.management.dto.RequestEmailVerificationSecretDto;
 import com.priyajit.ecommerce.user.management.dto.VerifyEmailDto;
@@ -38,18 +38,18 @@ public class UserServiceImplV1 implements UserService {
 
     private UserRepository userRepository;
 
-    private EmailClient emailClient;
-
     private PasswordEncoder passwordEncoder;
+
+    private EmailSender emailSender;
 
     public UserServiceImplV1(
             UserRepository userRepository,
-            EmailClient emailClient,
-            PasswordEncoder passwordEncoder
+            PasswordEncoder passwordEncoder,
+            EmailSender emailSender
     ) {
         this.userRepository = userRepository;
-        this.emailClient = emailClient;
         this.passwordEncoder = passwordEncoder;
+        this.emailSender = emailSender;
     }
 
 
@@ -232,7 +232,7 @@ public class UserServiceImplV1 implements UserService {
                 .correlationIds(Map.of("user-email-id", emailId, "source-service", "user-management-service"))
                 .build();
 
-        return emailClient.send(emailDto);
+        return emailSender.send(emailDto);
     }
 
     /**
@@ -254,7 +254,7 @@ public class UserServiceImplV1 implements UserService {
                 .correlationIds(Map.of("user-email-id", email, "source-service", "user-managerment-service"))
                 .build();
 
-        return emailClient.send(emailDto);
+        return emailSender.send(emailDto);
     }
 
     /**
