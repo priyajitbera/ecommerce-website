@@ -1,9 +1,11 @@
 package com.priyajit.ecommerce.user.management.config.kafka;
 
+import com.priyajit.ecommerce.user.management.client.EmailClient;
+import com.priyajit.ecommerce.user.management.client.impl.KafkaEmailClientImplV1;
+import com.priyajit.ecommerce.user.management.entity.DbEnvironmentConfiguration;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
@@ -19,17 +21,43 @@ import java.util.Map;
 @Configuration
 public class KafkaProducerConfig {
 
-    @Value("${kafka.bootstrap-address}")
+    private Boolean KAKFA_PRODUCER_CONFIG_ENABLE;
     private String KAFKA_BOOTSTRAP_ADDRESS;
-
-    @Value("${kafka.topic}")
     private String KAFKA_TOPIC;
-
-    @Value("${kafka.max-request-size}")
     private String KAFKA_MAX_REQUEST_SIZE;
 
-    @Bean
-    public ProducerFactory<String, Serializable> producerFactory() {
+    public KafkaProducerConfig(DbEnvironmentConfiguration dbEnvConfig) {
+
+        this.KAKFA_PRODUCER_CONFIG_ENABLE = Boolean.valueOf(
+                dbEnvConfig.getProperty(DbEnvironmentConfiguration.Keys.KAFKA_PRODUCER_CONFIG_ENABLE)
+        );
+
+        log.info("KAFKA_PRODUCER_CONFIG_ENABLE is set to: {}",
+                this.KAKFA_PRODUCER_CONFIG_ENABLE);
+
+        if (this.KAKFA_PRODUCER_CONFIG_ENABLE) {
+            this.KAFKA_BOOTSTRAP_ADDRESS = dbEnvConfig.getProperty(DbEnvironmentConfiguration.Keys.KAFKA_BOOTSTRAP_ADDRESS);
+            this.KAFKA_TOPIC = dbEnvConfig.getProperty(DbEnvironmentConfiguration.Keys.KAFKA_TOPIC);
+            this.KAFKA_MAX_REQUEST_SIZE = dbEnvConfig.getProperty(DbEnvironmentConfiguration.Keys.KAFKA_MAX_REQUEST_SIZE);
+        }
+    }
+
+    @Bean("kafkaEmailClientV1")
+    public EmailClient kafkaEmailClient() {
+        if (!this.KAKFA_PRODUCER_CONFIG_ENABLE) {
+            log.warn("KAFKA_PRODUCER_CONFIG_ENABLE is set to false, skipping {} configuration",
+                    KafkaEmailClientImplV1.class.getName());
+            return null;
+        }
+        return new KafkaEmailClientImplV1(kafkaTemplate(), KAFKA_TOPIC);
+    }
+
+    private KafkaTemplate<String, Serializable> kafkaTemplate() {
+
+        return new KafkaTemplate<>(producerFactory());
+    }
+
+    private ProducerFactory<String, Serializable> producerFactory() {
 
         Map<String, Object> configProps = new HashMap<>();
         configProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, KAFKA_BOOTSTRAP_ADDRESS);
@@ -42,12 +70,5 @@ public class KafkaProducerConfig {
                 new StringSerializer(),
                 new JsonSerializer<>()
         );
-    }
-
-    @Bean
-    public KafkaTemplate<String, Serializable> jsonKafkaTemplate(
-            ProducerFactory<String, Serializable> producerFactory
-    ) {
-        return new KafkaTemplate<>(producerFactory);
     }
 }

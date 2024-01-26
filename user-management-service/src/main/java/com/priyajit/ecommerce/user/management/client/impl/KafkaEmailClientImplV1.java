@@ -4,27 +4,25 @@ import com.priyajit.ecommerce.user.management.client.EmailClient;
 import com.priyajit.ecommerce.user.management.dto.external.SendEmailDto;
 import com.priyajit.ecommerce.user.management.entity.enums.EmailClientStatus;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Primary;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
-import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
 import java.util.concurrent.CompletableFuture;
 
 @Slf4j
-@Component
-@Primary
-public class EmailClientImplV1 implements EmailClient {
+public class KafkaEmailClientImplV1 implements EmailClient {
 
     private KafkaTemplate<String, Serializable> kafkaTemplate;
 
-    @Value("${kafka.topic}")
-    private String KAFKA_TOPIC;
+    private String kafkaTopic;
 
-    public EmailClientImplV1(KafkaTemplate<String, Serializable> kafkaTemplate) {
+    public KafkaEmailClientImplV1(
+            KafkaTemplate<String, Serializable> kafkaTemplate,
+            String kafkaTopic
+    ) {
         this.kafkaTemplate = kafkaTemplate;
+        this.kafkaTopic = kafkaTopic;
     }
 
     @Override
@@ -32,7 +30,7 @@ public class EmailClientImplV1 implements EmailClient {
             SendEmailDto dto
     ) {
         CompletableFuture<SendResult<String, Serializable>> future = kafkaTemplate.send(
-                KAFKA_TOPIC, dto
+                kafkaTopic, dto
         );
         try {
             SendResult<String, Serializable> result = future.get();
@@ -41,7 +39,7 @@ public class EmailClientImplV1 implements EmailClient {
             return EmailClientStatus.SUCCESS;
 
         } catch (Exception e) {
-            log.error("Error producing to kafka topic:{} | {}", KAFKA_TOPIC, e.getMessage());
+            log.error("Error producing to kafka topic:{} | {}", kafkaTopic, e.getMessage());
             e.printStackTrace();
             return EmailClientStatus.FAILURE;
         }

@@ -9,31 +9,23 @@ import com.priyajit.ecommerce.user.management.client.EmailClient;
 import com.priyajit.ecommerce.user.management.dto.external.SendEmailDto;
 import com.priyajit.ecommerce.user.management.entity.enums.EmailClientStatus;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.stereotype.Component;
-
-import java.io.Serializable;
 
 @Slf4j
-@Component("awsSqsEmailClientV1")
 public class AwsSqsEmailClientV1 implements EmailClient {
 
-    private KafkaTemplate<String, Serializable> kafkaTemplate;
 
     private AmazonSQS amazonSQS;
 
-    @Value("${aws.sqs.queue-url}")
-    private String AWS_SQS_QUEUE_URL;
+    private String awsSqsQueueUrl;
 
     private final static ObjectWriter jsonWriter = new ObjectMapper().writer().withDefaultPrettyPrinter();
 
     public AwsSqsEmailClientV1(
-            KafkaTemplate<String, Serializable> kafkaTemplate,
-            AmazonSQS amazonSQS
+            AmazonSQS amazonSQS,
+            String awsSqsQueueUrl
     ) {
-        this.kafkaTemplate = kafkaTemplate;
         this.amazonSQS = amazonSQS;
+        this.awsSqsQueueUrl = awsSqsQueueUrl;
     }
 
     @Override
@@ -44,17 +36,17 @@ public class AwsSqsEmailClientV1 implements EmailClient {
         try {
             String message = jsonWriter.writeValueAsString(dto);
             SendMessageRequest messageRequest = new SendMessageRequest()
-                    .withQueueUrl(AWS_SQS_QUEUE_URL)
+                    .withQueueUrl(awsSqsQueueUrl)
                     .withMessageBody(message);
 
             SendMessageResult messageResult = amazonSQS.sendMessage(messageRequest);
             log.info("Successfully send message:{} to queue:{}",
-                    messageResult.getMessageId(), AWS_SQS_QUEUE_URL);
+                    messageResult.getMessageId(), awsSqsQueueUrl);
 
             return EmailClientStatus.SUCCESS;
 
         } catch (Exception e) {
-            log.error("Failed to send message to queue:{} | {}", AWS_SQS_QUEUE_URL, e.getMessage());
+            log.error("Failed to send message to queue:{} | {}", awsSqsQueueUrl, e.getMessage());
             e.printStackTrace();
 
             return EmailClientStatus.FAILURE;
