@@ -2,6 +2,7 @@ package com.priyajit.ecommerce.email.service.config.aws;
 
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.regions.Regions;
 import com.amazonaws.services.simpleemail.AmazonSimpleEmailService;
 import com.amazonaws.services.simpleemail.AmazonSimpleEmailServiceClientBuilder;
 import com.priyajit.ecommerce.email.service.enitity.DbEnvironmentConfiguration;
@@ -32,9 +33,11 @@ public class AwsSesConfig {
                 awsSesSecretKey
         );
 
+        Regions regions = Regions.fromName(awsSesRegion);
+
         return AmazonSimpleEmailServiceClientBuilder.standard()
                 .withCredentials(new AWSStaticCredentialsProvider(credentials))
-                .withRegion(awsSesRegion)
+                .withRegion(regions)
                 .build();
     }
 }
