@@ -71,6 +71,7 @@ public class DbEnvironmentConfiguration {
         public final static String AWS_SES_REGION = "aws.ses.region";
         public final static String AWS_SES_ACCESS_KEY = "aws.ses.access-key";
         public final static String AWS_SES_SECRET_KEY = "aws.ses.secret-key";
+        public final static String AWS_SES_SENDER_KEY = "aws.ses.sender";
     }
 
     public static class Values {

@@ -1,16 +1,14 @@
 package com.priyajit.ecommerce.email.service.service.impl;
 
-import com.amazonaws.regions.Regions;
 import com.amazonaws.services.simpleemail.AmazonSimpleEmailService;
 import com.amazonaws.services.simpleemail.model.*;
-import com.priyajit.ecommerce.email.service.enitity.enums.EmailSendStatus;
 import com.priyajit.ecommerce.email.service.dto.SendEmailDto;
+import com.priyajit.ecommerce.email.service.enitity.DbEnvironmentConfiguration;
 import com.priyajit.ecommerce.email.service.enitity.enums.EmailMessageBodyType;
+import com.priyajit.ecommerce.email.service.enitity.enums.EmailSendStatus;
 import com.priyajit.ecommerce.email.service.model.SendEmailModel;
 import com.priyajit.ecommerce.email.service.service.EmailSenderService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
@@ -22,14 +20,17 @@ import java.util.stream.Collectors;
 @Primary
 public class EmailSenderServiceImplV1 implements EmailSenderService {
 
-    @Value("${aws.ses.region}")
-    private Regions AWS_SES_REGION;
+    private String awsSesSender;
 
-    @Value("${aws.ses.sender}")
-    private String AWS_SES_SENDER;
-
-    @Autowired
     private AmazonSimpleEmailService amazonSimpleEmailService;
+
+    public EmailSenderServiceImplV1(
+            AmazonSimpleEmailService amazonSimpleEmailService,
+            DbEnvironmentConfiguration dbEnvConfig
+    ) {
+        this.amazonSimpleEmailService = amazonSimpleEmailService;
+        this.awsSesSender = dbEnvConfig.getProperty(DbEnvironmentConfiguration.Keys.AWS_SES_SENDER_KEY);
+    }
 
     @Override
     public List<SendEmailModel> sendEmail(List<SendEmailDto> dtoList) {
@@ -42,7 +43,7 @@ public class EmailSenderServiceImplV1 implements EmailSenderService {
     private SendEmailModel sendEmail(SendEmailDto dto) {
 
         SendEmailRequest request = createSendEmailRequest(
-                AWS_SES_SENDER,
+                awsSesSender,
                 dto.getTo(),
                 dto.getCc(),
                 dto.getBcc(),
