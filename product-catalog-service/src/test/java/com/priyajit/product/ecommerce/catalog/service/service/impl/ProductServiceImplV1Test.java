@@ -587,7 +587,7 @@ class ProductServiceImplV1Test {
     private List<Product> mockUpdate(List<Product> products) {
 
         return products.stream()
-                .map(this::mockSave)
+                .map(this::mockUpdate)
                 .collect(Collectors.toList());
     }
 
