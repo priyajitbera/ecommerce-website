@@ -7,6 +7,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.util.comparator.Comparators;
 
 import java.time.ZonedDateTime;
+import java.util.List;
 import java.util.Objects;
 import java.util.SortedSet;
 
@@ -16,42 +17,42 @@ import java.util.SortedSet;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Product implements Comparable<Product> {
+public class ProductCategory implements Comparable<ProductCategory> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
     @CreationTimestamp
-    private ZonedDateTime createdOn;
+    private ZonedDateTime zonedDateTime;
 
     @UpdateTimestamp
     private ZonedDateTime lastModifiedOn;
 
-    private String title;
-    private String description;
+    private String name;
 
-    @OneToOne(mappedBy = "product", cascade = CascadeType.PERSIST)
-    private ProductPrice price;
+    @ManyToOne
+    @JoinColumn(foreignKey = @ForeignKey(name = "FK__PRODUCT_CATEGORY_PARENT_CATEGORY_ID__01"))
+    private ProductCategory parentCategory;
 
-    @OneToMany(mappedBy = "product")
+    @OneToMany(mappedBy = "parentCategory")
     @OrderBy("id ASC")
-    private SortedSet<ProductImage> images;
+    private SortedSet<ProductCategory> childCategories;
 
-    @ManyToMany(mappedBy = "taggedProducts")
-    @OrderBy("id ASC")
-    private SortedSet<ProductCategory> taggedCategories;
-
-    @OneToMany(mappedBy = "product")
-    @OrderBy("id ASC")
-    private SortedSet<ProductReview> reviews;
+    @ManyToMany
+    @JoinTable(
+            name = "CATEGORY_PRODUCT_MAP",
+            foreignKey = @ForeignKey(name = "FK__CATEGORY_PRODUCT_MAP__PRODUCT_CATEGORY_ID_01"),
+            inverseForeignKey = @ForeignKey(name = "FK__CATEGORY_PRODUCT_MAP__PRODUCT_ID__01")
+    )
+    private List<Product> taggedProducts;
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Product product = (Product) o;
-        return Objects.equals(id, product.id);
+        ProductCategory that = (ProductCategory) o;
+        return Objects.equals(id, that.id);
     }
 
     @Override
@@ -59,8 +60,9 @@ public class Product implements Comparable<Product> {
         return Objects.hash(id);
     }
 
+
     @Override
-    public int compareTo(Product o) {
+    public int compareTo(ProductCategory o) {
         return Comparators.comparable().compare(this.getId(), o.getId());
     }
 }

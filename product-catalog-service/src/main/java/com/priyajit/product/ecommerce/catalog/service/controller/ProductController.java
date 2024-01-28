@@ -1,14 +1,18 @@
 package com.priyajit.product.ecommerce.catalog.service.controller;
 
 import com.priyajit.product.ecommerce.catalog.service.dto.CreateProductDto;
+import com.priyajit.product.ecommerce.catalog.service.dto.DeleteProductDto;
 import com.priyajit.product.ecommerce.catalog.service.dto.UpdateProductDto;
-import com.priyajit.product.ecommerce.catalog.service.entity.Product;
+import com.priyajit.product.ecommerce.catalog.service.model.PaginatedProductList;
+import com.priyajit.product.ecommerce.catalog.service.model.ProductModel;
 import com.priyajit.product.ecommerce.catalog.service.service.ProductService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequestMapping("/product")
 public class ProductController {
@@ -21,45 +25,32 @@ public class ProductController {
     }
 
     @GetMapping
-    List<Product> findProducts(
-            @RequestParam(required = false) List<Long> productIds,
+    PaginatedProductList findProducts(
+            @RequestParam List<String> productIds,
             @RequestParam(name = "pageIndex", required = false, defaultValue = "0") Integer pageIndex,
             @RequestParam(name = "pageSize", required = false, defaultValue = "10") Integer pageSize
-    ) {
+    ) throws InterruptedException {
         return productService.findProducts(productIds, pageIndex, pageSize);
     }
 
-    @GetMapping("/categories")
-    List<String> findProductCategories() {
-        return productService.findProductCategories();
-    }
-
-    @GetMapping("/category/{category}")
-    List<Product> findProductsByCategories(
-            @PathVariable(name = "category") String category
-    ) {
-        return productService.findProductByCategories(category);
-    }
-
     @PostMapping
-    List<Product> createProducts(
-            @RequestBody List<CreateProductDto> dtoList
+    List<ProductModel> createProducts(
+            @RequestBody List<CreateProductDto> dtos
     ) {
-        return productService.createProducts(dtoList);
+        return productService.createProducts(dtos);
     }
 
-    @PatchMapping("/{productId}")
-    Product updateProduct(
-            @PathVariable(name = "productId") Long productId,
-            @RequestBody UpdateProductDto dto
+    @PatchMapping
+    List<ProductModel> updateProducts(
+            @RequestBody List<UpdateProductDto> dtos
     ) {
-        return productService.updateProduct(productId, dto);
+        return productService.updateProducts(dtos);
     }
 
-    @DeleteMapping("/{productId}")
-    Product deleteProduct(
-            @PathVariable(name = "productId") Long productId
+    @DeleteMapping
+    List<ProductModel> deleteProduct(
+            @RequestBody List<DeleteProductDto> dtos
     ) {
-        return productService.deleteProduct(productId);
+        return productService.deleteProducts(dtos);
     }
 }

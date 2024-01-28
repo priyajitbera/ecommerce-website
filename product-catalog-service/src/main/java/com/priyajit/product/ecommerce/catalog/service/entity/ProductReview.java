@@ -8,7 +8,6 @@ import org.springframework.util.comparator.Comparators;
 
 import java.time.ZonedDateTime;
 import java.util.Objects;
-import java.util.SortedSet;
 
 @Entity
 @Getter
@@ -16,42 +15,35 @@ import java.util.SortedSet;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Product implements Comparable<Product> {
+public class ProductReview implements Comparable<ProductReview> {
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
     @CreationTimestamp
-    private ZonedDateTime createdOn;
+    private ZonedDateTime zonedDateTime;
 
     @UpdateTimestamp
     private ZonedDateTime lastModifiedOn;
 
-    private String title;
-    private String description;
+    private String reviewerId;
 
-    @OneToOne(mappedBy = "product", cascade = CascadeType.PERSIST)
-    private ProductPrice price;
+    private Double rating;
+    private String reviewTitle;
+    private String reviewDescription;
 
-    @OneToMany(mappedBy = "product")
-    @OrderBy("id ASC")
-    private SortedSet<ProductImage> images;
-
-    @ManyToMany(mappedBy = "taggedProducts")
-    @OrderBy("id ASC")
-    private SortedSet<ProductCategory> taggedCategories;
-
-    @OneToMany(mappedBy = "product")
-    @OrderBy("id ASC")
-    private SortedSet<ProductReview> reviews;
+    @ManyToOne
+    @JoinColumn(foreignKey = @ForeignKey(name = "FK__PRODUCT_REVIEW__PRODUCT_ID__01"))
+    private Product product;
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Product product = (Product) o;
-        return Objects.equals(id, product.id);
+        ProductReview that = (ProductReview) o;
+        return Objects.equals(id, that.id);
     }
 
     @Override
@@ -60,7 +52,7 @@ public class Product implements Comparable<Product> {
     }
 
     @Override
-    public int compareTo(Product o) {
+    public int compareTo(ProductReview o) {
         return Comparators.comparable().compare(this.getId(), o.getId());
     }
 }
