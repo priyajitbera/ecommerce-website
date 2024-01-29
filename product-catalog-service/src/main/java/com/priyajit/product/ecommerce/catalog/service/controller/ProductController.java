@@ -29,7 +29,7 @@ public class ProductController {
             @RequestParam List<String> productIds,
             @RequestParam(name = "pageIndex", required = false, defaultValue = "0") Integer pageIndex,
             @RequestParam(name = "pageSize", required = false, defaultValue = "10") Integer pageSize
-    ) throws InterruptedException {
+    ) {
         return productService.findProducts(productIds, pageIndex, pageSize);
     }
 
