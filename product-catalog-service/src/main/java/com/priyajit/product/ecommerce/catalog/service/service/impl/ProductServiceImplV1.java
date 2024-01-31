@@ -229,7 +229,7 @@ public class ProductServiceImplV1 implements ProductService {
             }
             SortedSet<ProductImage> productImages = product.getImages();
             productImages.clear();
-            fetchProductImages(dto.getProductImageIds()).forEach(productImages::add);
+            productImages.addAll(fetchProductImages(dto.getProductImageIds()));
         }
 
         // update taggedProductCategories
@@ -239,7 +239,7 @@ public class ProductServiceImplV1 implements ProductService {
             }
             SortedSet<ProductCategory> productCategories = product.getTaggedCategories();
             productCategories.clear();
-            fetchProductCategories(dto.getTaggedCategoryIds()).forEach(productCategories::add);
+            productCategories.addAll(fetchProductCategories(dto.getTaggedCategoryIds()));
         }
     }
 
