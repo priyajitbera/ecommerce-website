@@ -24,7 +24,7 @@ public class ProductCategory implements Comparable<ProductCategory> {
     private String id;
 
     @CreationTimestamp
-    private ZonedDateTime zonedDateTime;
+    private ZonedDateTime createdOn;
 
     @UpdateTimestamp
     private ZonedDateTime lastModifiedOn;
@@ -36,7 +36,7 @@ public class ProductCategory implements Comparable<ProductCategory> {
     private ProductCategory parentCategory;
 
     @OneToMany(mappedBy = "parentCategory")
-    @OrderBy("id ASC")
+//    @OrderBy("id ASC")
     private SortedSet<ProductCategory> childCategories;
 
     @ManyToMany

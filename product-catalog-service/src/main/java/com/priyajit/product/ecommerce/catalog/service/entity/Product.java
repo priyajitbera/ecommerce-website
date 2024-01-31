@@ -35,15 +35,15 @@ public class Product implements Comparable<Product> {
     private ProductPrice price;
 
     @OneToMany(mappedBy = "product")
-    @OrderBy("id ASC")
+//    @OrderBy("id ASC")
     private SortedSet<ProductImage> images;
 
     @ManyToMany(mappedBy = "taggedProducts")
-    @OrderBy("id ASC")
+//    @OrderBy("id ASC")
     private SortedSet<ProductCategory> taggedCategories;
 
     @OneToMany(mappedBy = "product")
-    @OrderBy("id ASC")
+//    @OrderBy("id ASC")
     private SortedSet<ProductReview> reviews;
 
     @Override
