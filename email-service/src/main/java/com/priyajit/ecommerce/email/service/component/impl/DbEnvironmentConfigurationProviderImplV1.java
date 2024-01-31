@@ -40,7 +40,7 @@ public class DbEnvironmentConfigurationProviderImplV1 implements DbEnvironmentCo
 
         // when more than one active configuration found
         if (activeConfigs.size() > 1) {
-            log.warn("{} active EnvironmentConfiguration found, expected is 1, selecting first one");
+            log.warn("{} active EnvironmentConfiguration found, expected is 1, selecting first one", activeConfigs.size());
         }
 
         DbEnvironmentConfiguration activeConfig = allConfigs.get(0);
