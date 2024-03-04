@@ -10,10 +10,11 @@ import com.priyajit.ecommerce.product.catalog.service.exception.ProductImageNotF
 import com.priyajit.ecommerce.product.catalog.service.exception.ProductNotFoundException;
 import com.priyajit.ecommerce.product.catalog.service.model.PaginatedProductList;
 import com.priyajit.ecommerce.product.catalog.service.model.ProductModel;
-import com.priyajit.ecommerce.product.catalog.service.repository.CurrencyRepository;
-import com.priyajit.ecommerce.product.catalog.service.repository.ProductCategoryRepository;
-import com.priyajit.ecommerce.product.catalog.service.repository.ProductImageRepository;
-import com.priyajit.ecommerce.product.catalog.service.repository.ProductRepository;
+import com.priyajit.ecommerce.product.catalog.service.repository.querydsl.ProductRepositoryQueryDsl;
+import com.priyajit.ecommerce.product.catalog.service.repository.querymethod.CurrencyRepositoryQueryMethod;
+import com.priyajit.ecommerce.product.catalog.service.repository.querymethod.ProductCategoryRepositoryQueryMethod;
+import com.priyajit.ecommerce.product.catalog.service.repository.querymethod.ProductImageRepositoryQueryMethod;
+import com.priyajit.ecommerce.product.catalog.service.repository.querymethod.ProductRepositoryQueryMethod;
 import com.priyajit.ecommerce.product.catalog.service.service.ProductService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -30,22 +31,25 @@ import java.util.stream.Collectors;
 @Service
 public class ProductServiceImplV1 implements ProductService {
 
-    private ProductRepository productRepository;
-    private ProductCategoryRepository productCategoryRepository;
-    private ProductImageRepository productImageRepository;
-    private CurrencyRepository currencyRepository;
+    private ProductRepositoryQueryMethod productRepositoryQueryMethod;
+    private ProductRepositoryQueryDsl productRepositoryQueryDsl;
+    private ProductCategoryRepositoryQueryMethod productCategoryRepositoryQueryMethod;
+    private ProductImageRepositoryQueryMethod productImageRepositoryQueryMethod;
+    private CurrencyRepositoryQueryMethod currencyRepositoryQueryMethod;
 
     public ProductServiceImplV1(
-            ProductRepository productRepository,
-            ProductCategoryRepository productCategoryRepository,
-            ProductImageRepository productImageRepository,
-            CurrencyRepository currencyRepository
+            ProductRepositoryQueryMethod productRepositoryQueryMethod,
+            ProductRepositoryQueryDsl productRepositoryQueryDsl,
+            ProductCategoryRepositoryQueryMethod productCategoryRepositoryQueryMethod,
+            ProductImageRepositoryQueryMethod productImageRepositoryQueryMethod,
+            CurrencyRepositoryQueryMethod currencyRepositoryQueryMethod
     ) {
 
-        this.productRepository = productRepository;
-        this.productCategoryRepository = productCategoryRepository;
-        this.productImageRepository = productImageRepository;
-        this.currencyRepository = currencyRepository;
+        this.productRepositoryQueryMethod = productRepositoryQueryMethod;
+        this.productRepositoryQueryDsl = productRepositoryQueryDsl;
+        this.productCategoryRepositoryQueryMethod = productCategoryRepositoryQueryMethod;
+        this.productImageRepositoryQueryMethod = productImageRepositoryQueryMethod;
+        this.currencyRepositoryQueryMethod = currencyRepositoryQueryMethod;
     }
 
     /**
@@ -58,11 +62,25 @@ public class ProductServiceImplV1 implements ProductService {
      */
     @Override
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public PaginatedProductList findProducts(List<String> productIds, int pageIndex, int pageSize) {
+    public PaginatedProductList findProducts(
+            @Nullable List<String> productIds,
+            @Nullable String productNamePart,
+            @Nullable List<String> productCategoryIds,
+            @Nullable List<String> productCategoryNames,
+            int pageIndex,
+            int pageSize
+    ) {
 
         PageRequest pageRequest = PageRequest.of(pageIndex, pageSize);
 
-        Page<Product> productPage = productRepository.findByIdIn(productIds, pageRequest);
+        Page<Product> productPage = productRepositoryQueryDsl.findProducts(
+                productIds,
+                productNamePart,
+                productCategoryIds,
+                productCategoryNames,
+                pageIndex,
+                pageSize
+        );
 
         // create response model and return
         return PaginatedProductList.from(productPage);
@@ -82,7 +100,7 @@ public class ProductServiceImplV1 implements ProductService {
                 .map(this::buildProductFromDto)
                 .collect(Collectors.toList());
 
-        List<Product> products = productRepository.saveAllAndFlush(productList);
+        List<Product> products = productRepositoryQueryMethod.saveAllAndFlush(productList);
 
         // create response models and return
         return fromProducts(products);
@@ -120,7 +138,7 @@ public class ProductServiceImplV1 implements ProductService {
      */
     private ProductPrice buildProductPrice(long price, String currencyId) {
 
-        Currency currency = currencyRepository.findById(currencyId)
+        Currency currency = currencyRepositoryQueryMethod.findById(currencyId)
                 .orElseThrow(CurrencyNotFoundException.supplier(currencyId));
 
         return ProductPrice.builder()
@@ -138,7 +156,7 @@ public class ProductServiceImplV1 implements ProductService {
     private List<ProductImage> fetchProductImages(List<String> productImageIds) {
         if (productImageIds == null) return List.of(); // empty list
 
-        return productImageIds.stream().map(imageId -> productImageRepository.findById(imageId)
+        return productImageIds.stream().map(imageId -> productImageRepositoryQueryMethod.findById(imageId)
                         .orElseThrow(ProductImageNotFoundException.supplier(imageId)))
                 .collect(Collectors.toList());
     }
@@ -155,7 +173,7 @@ public class ProductServiceImplV1 implements ProductService {
         if (categoryIds == null) return List.of(); // empty list
 
         return categoryIds.stream()
-                .map(categoryId -> productCategoryRepository.findById(categoryId)
+                .map(categoryId -> productCategoryRepositoryQueryMethod.findById(categoryId)
                         .orElseThrow(ProductCategoryNotFoundException.supplier((categoryId))))
                 .collect(Collectors.toList());
     }
@@ -171,14 +189,14 @@ public class ProductServiceImplV1 implements ProductService {
     public List<ProductModel> updateProducts(List<UpdateProductDto> dtos) {
 
         List<Product> updatedProducts = dtos.stream().map(dto -> {
-            Product product = productRepository.findById(dto.getProductId())
+            Product product = productRepositoryQueryMethod.findById(dto.getProductId())
                     .orElseThrow(ProductNotFoundException.supplier(dto.getProductId()));
 
             updateProductFromDto(product, dto);
             return product;
         }).collect(Collectors.toList());
 
-        List<Product> savedProducts = productRepository.saveAllAndFlush(updatedProducts);
+        List<Product> savedProducts = productRepositoryQueryMethod.saveAllAndFlush(updatedProducts);
 
         // create response model and return
         return savedProducts.stream()
@@ -217,7 +235,7 @@ public class ProductServiceImplV1 implements ProductService {
                 product.setPrice(ProductPrice.builder().product(product).build());
             }
             ProductPrice productPrice = product.getPrice();
-            Currency currency = currencyRepository.findById(dto.getCurrencyId())
+            Currency currency = currencyRepositoryQueryMethod.findById(dto.getCurrencyId())
                     .orElseThrow(CurrencyNotFoundException.supplier(dto.getCurrencyId()));
             productPrice.setCurrency(currency);
         }
@@ -253,11 +271,11 @@ public class ProductServiceImplV1 implements ProductService {
     @Transactional
     public List<ProductModel> deleteProducts(List<DeleteProductDto> dtos) {
 
-        List<Product> toDelete = dtos.stream().map(dto -> productRepository.findById(dto.getProductId())
+        List<Product> toDelete = dtos.stream().map(dto -> productRepositoryQueryMethod.findById(dto.getProductId())
                         .orElseThrow(ProductNotFoundException.supplier(dto.getProductId())))
                 .collect(Collectors.toList());
 
-        productRepository.deleteAll(toDelete);
+        productRepositoryQueryMethod.deleteAll(toDelete);
 
         return fromProducts(toDelete);
     }

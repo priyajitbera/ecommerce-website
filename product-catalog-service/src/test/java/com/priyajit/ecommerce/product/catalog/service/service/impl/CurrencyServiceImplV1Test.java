@@ -3,7 +3,7 @@ package com.priyajit.ecommerce.product.catalog.service.service.impl;
 import com.priyajit.ecommerce.product.catalog.service.dto.CreateCurrencyDto;
 import com.priyajit.ecommerce.product.catalog.service.entity.Currency;
 import com.priyajit.ecommerce.product.catalog.service.model.CurrencyModel;
-import com.priyajit.ecommerce.product.catalog.service.repository.CurrencyRepository;
+import com.priyajit.ecommerce.product.catalog.service.repository.querymethod.CurrencyRepositoryQueryMethod;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -25,7 +25,7 @@ import static org.mockito.BDDMockito.when;
 class CurrencyServiceImplV1Test {
 
     @Mock
-    private CurrencyRepository currencyRepository;
+    private CurrencyRepositoryQueryMethod currencyRepositoryQueryMethod;
 
     @InjectMocks
     private CurrencyServiceImplV1 currencyService;
@@ -40,7 +40,7 @@ class CurrencyServiceImplV1Test {
         );
 
         // mock method calls
-        when(currencyRepository.saveAllAndFlush(Mockito.anyList()))
+        when(currencyRepositoryQueryMethod.saveAllAndFlush(Mockito.anyList()))
                 .then(i -> mockSave(i.getArgument(0, List.class)));
 
         // act
@@ -73,7 +73,7 @@ class CurrencyServiceImplV1Test {
         List<Currency> currencies = List.of(currency1, currency2);
 
         // mock methods
-        when(currencyRepository.findAllByIdInOrNameIn(ids, null))
+        when(currencyRepositoryQueryMethod.findAllByIdInOrNameIn(ids, null))
                 .thenReturn(currencies);
         // act
         List<CurrencyModel> currencyModels = currencyService.findCurrencies(ids, null);
@@ -100,7 +100,7 @@ class CurrencyServiceImplV1Test {
         List<Currency> currencies = List.of(currency1, currency2);
 
         // mock methods
-        when(currencyRepository.findAllByIdInOrNameIn(null, names))
+        when(currencyRepositoryQueryMethod.findAllByIdInOrNameIn(null, names))
                 .thenReturn(currencies);
         // act
         List<CurrencyModel> currencyModels = currencyService.findCurrencies(null, names);

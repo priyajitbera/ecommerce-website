@@ -1,4 +1,4 @@
-package com.priyajit.ecommerce.product.catalog.service.repository;
+package com.priyajit.ecommerce.product.catalog.service.repository.querymethod;
 
 import com.priyajit.ecommerce.product.catalog.service.entity.Product;
 import org.springframework.data.domain.Page;
@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface ProductRepository extends JpaRepository<Product, String> {
+public interface ProductRepositoryQueryMethod extends JpaRepository<Product, String> {
 
     Page<Product> findByIdIn(List<String> ids, PageRequest pageRequest);
 }

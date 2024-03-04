@@ -2,7 +2,7 @@ package com.priyajit.ecommerce.product.catalog.service.component.impl;
 
 import com.priyajit.ecommerce.product.catalog.service.component.DbEnvironmentConfigurationProvider;
 import com.priyajit.ecommerce.product.catalog.service.entity.DbEnvironmentConfiguration;
-import com.priyajit.ecommerce.product.catalog.service.repository.DbEnvironmentConfigurationRepository;
+import com.priyajit.ecommerce.product.catalog.service.repository.querymethod.DbEnvironmentConfigurationRepositoryQueryMethod;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -12,12 +12,12 @@ import java.util.stream.Collectors;
 @Slf4j
 @Component
 public class DbEnvironmentConfigurationProviderImplV1 implements DbEnvironmentConfigurationProvider {
-    private DbEnvironmentConfigurationRepository dbEnvironmentConfigurationRepository;
+    private DbEnvironmentConfigurationRepositoryQueryMethod dbEnvironmentConfigurationRepositoryQueryMethod;
 
     public DbEnvironmentConfigurationProviderImplV1(
-            DbEnvironmentConfigurationRepository dbEnvironmentConfigurationRepository
+            DbEnvironmentConfigurationRepositoryQueryMethod dbEnvironmentConfigurationRepositoryQueryMethod
     ) {
-        this.dbEnvironmentConfigurationRepository = dbEnvironmentConfigurationRepository;
+        this.dbEnvironmentConfigurationRepositoryQueryMethod = dbEnvironmentConfigurationRepositoryQueryMethod;
     }
 
     @Override
@@ -25,7 +25,7 @@ public class DbEnvironmentConfigurationProviderImplV1 implements DbEnvironmentCo
 
         // fetch all configs from DB
         List<DbEnvironmentConfiguration> allConfigs
-                = dbEnvironmentConfigurationRepository.findAll();
+                = dbEnvironmentConfigurationRepositoryQueryMethod.findAll();
 
         // filter out the active configuration, expected to have only one active config
         List<DbEnvironmentConfiguration> activeConfigs = allConfigs.stream()

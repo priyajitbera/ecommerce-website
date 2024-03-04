@@ -1,7 +1,10 @@
 package com.priyajit.ecommerce.product.catalog.service.service.impl;
 
+import com.priyajit.ecommerce.product.catalog.service.dto.CreateProductDto;
 import com.priyajit.ecommerce.product.catalog.service.dto.DeleteProductDto;
+import com.priyajit.ecommerce.product.catalog.service.dto.UpdateProductDto;
 import com.priyajit.ecommerce.product.catalog.service.entity.Currency;
+import com.priyajit.ecommerce.product.catalog.service.entity.Product;
 import com.priyajit.ecommerce.product.catalog.service.entity.ProductCategory;
 import com.priyajit.ecommerce.product.catalog.service.entity.ProductImage;
 import com.priyajit.ecommerce.product.catalog.service.exception.CurrencyNotFoundException;
@@ -10,13 +13,11 @@ import com.priyajit.ecommerce.product.catalog.service.exception.ProductImageNotF
 import com.priyajit.ecommerce.product.catalog.service.exception.ProductNotFoundException;
 import com.priyajit.ecommerce.product.catalog.service.model.PaginatedProductList;
 import com.priyajit.ecommerce.product.catalog.service.model.ProductModel;
-import com.priyajit.ecommerce.product.catalog.service.repository.CurrencyRepository;
-import com.priyajit.ecommerce.product.catalog.service.repository.ProductCategoryRepository;
-import com.priyajit.ecommerce.product.catalog.service.repository.ProductImageRepository;
-import com.priyajit.ecommerce.product.catalog.service.dto.CreateProductDto;
-import com.priyajit.ecommerce.product.catalog.service.dto.UpdateProductDto;
-import com.priyajit.ecommerce.product.catalog.service.entity.Product;
-import com.priyajit.ecommerce.product.catalog.service.repository.ProductRepository;
+import com.priyajit.ecommerce.product.catalog.service.repository.querydsl.ProductRepositoryQueryDsl;
+import com.priyajit.ecommerce.product.catalog.service.repository.querymethod.CurrencyRepositoryQueryMethod;
+import com.priyajit.ecommerce.product.catalog.service.repository.querymethod.ProductCategoryRepositoryQueryMethod;
+import com.priyajit.ecommerce.product.catalog.service.repository.querymethod.ProductImageRepositoryQueryMethod;
+import com.priyajit.ecommerce.product.catalog.service.repository.querymethod.ProductRepositoryQueryMethod;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -24,7 +25,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -40,13 +40,15 @@ import static org.mockito.BDDMockito.when;
 class ProductServiceImplV1Test {
 
     @Mock
-    private ProductRepository productRepository;
+    private ProductRepositoryQueryMethod productRepositoryQueryMethod;
     @Mock
-    private ProductCategoryRepository productCategoryRepository;
+    private ProductRepositoryQueryDsl productRepositoryQueryDsl;
     @Mock
-    private ProductImageRepository productImageRepository;
+    private ProductCategoryRepositoryQueryMethod productCategoryRepositoryQueryMethod;
     @Mock
-    private CurrencyRepository currencyRepository;
+    private ProductImageRepositoryQueryMethod productImageRepositoryQueryMethod;
+    @Mock
+    private CurrencyRepositoryQueryMethod currencyRepositoryQueryMethod;
 
     @InjectMocks
     private ProductServiceImplV1 productService;
@@ -89,19 +91,19 @@ class ProductServiceImplV1Test {
         Currency currency2 = Currency.builder().id(currencyId2).build();
 
         // mock method calls
-        when(productRepository.saveAllAndFlush(
+        when(productRepositoryQueryMethod.saveAllAndFlush(
                 Mockito.anyList())).then(i -> mockSave(i.getArgument(0, List.class)));
-        when(productCategoryRepository.findById(productCategoryId1))
+        when(productCategoryRepositoryQueryMethod.findById(productCategoryId1))
                 .thenReturn(Optional.of(productCategory1));
-        when(productCategoryRepository.findById(productCategoryId2))
+        when(productCategoryRepositoryQueryMethod.findById(productCategoryId2))
                 .thenReturn(Optional.of(productCategory2));
-        when(productImageRepository.findById(productImageId1))
+        when(productImageRepositoryQueryMethod.findById(productImageId1))
                 .thenReturn(Optional.of(productImage1));
-        when(productImageRepository.findById(productImageId2))
+        when(productImageRepositoryQueryMethod.findById(productImageId2))
                 .thenReturn(Optional.of(productImage2));
-        when(currencyRepository.findById(currencyId1))
+        when(currencyRepositoryQueryMethod.findById(currencyId1))
                 .thenReturn(Optional.of(currency1));
-        when(currencyRepository.findById(currencyId2))
+        when(currencyRepositoryQueryMethod.findById(currencyId2))
                 .thenReturn(Optional.of(currency2));
 
 
@@ -157,7 +159,7 @@ class ProductServiceImplV1Test {
         Currency currency1 = Currency.builder().id(currencyId1).build();
 
         // mock method calls
-        when(productCategoryRepository.findById(productCategoryId1))
+        when(productCategoryRepositoryQueryMethod.findById(productCategoryId1))
                 .thenReturn(Optional.empty());
 
         // act & assert
@@ -187,9 +189,9 @@ class ProductServiceImplV1Test {
         Currency currency1 = Currency.builder().id(currencyId1).build();
 
         // mock method calls
-        when(productCategoryRepository.findById(productCategoryId1))
+        when(productCategoryRepositoryQueryMethod.findById(productCategoryId1))
                 .thenReturn(Optional.of(productCategory1));
-        when(productImageRepository.findById(productImageId1))
+        when(productImageRepositoryQueryMethod.findById(productImageId1))
                 .thenReturn(Optional.empty());
 
         // act & assert
@@ -220,11 +222,11 @@ class ProductServiceImplV1Test {
         ProductImage productImage1 = ProductImage.builder().id(productImageId1).build();
 
         // mock method calls
-        when(productCategoryRepository.findById(productCategoryId1))
+        when(productCategoryRepositoryQueryMethod.findById(productCategoryId1))
                 .thenReturn(Optional.of(productCategory1));
-        when(productImageRepository.findById(productImageId1))
+        when(productImageRepositoryQueryMethod.findById(productImageId1))
                 .thenReturn(Optional.of(productImage1));
-        when(currencyRepository.findById(currencyId1))
+        when(currencyRepositoryQueryMethod.findById(currencyId1))
                 .thenReturn(Optional.empty());
 
         // act & assert
@@ -246,12 +248,15 @@ class ProductServiceImplV1Test {
         List<Product> products = List.of(product1, product2);
 
         // mock method call
-        given(productRepository.findByIdIn(productIds, PageRequest.of(page, pageSize)))
+        given(productRepositoryQueryDsl.findProducts(productIds, null, null, null, page, pageSize))
                 .willReturn(new PageImpl<>(products));
 
         // act
         PaginatedProductList productPage = productService.findProducts(
                 productIds,
+                null,
+                null,
+                null,
                 page,
                 pageSize
         );
@@ -279,12 +284,15 @@ class ProductServiceImplV1Test {
         List<Product> products = List.of();// empty list
 
         // mock method calls
-        given(productRepository.findByIdIn(productIds, PageRequest.of(page, pageSize)))
+        given(productRepositoryQueryDsl.findProducts(productIds, null, null, null, page, pageSize))
                 .willReturn(new PageImpl<>(products));
 
         // act
         PaginatedProductList productPage = productService.findProducts(
                 productIds,
+                null,
+                null,
+                null,
                 page,
                 pageSize
         );
@@ -341,21 +349,21 @@ class ProductServiceImplV1Test {
         Currency currency2 = Currency.builder().id(currencyId2).build();
 
         // mock method calls
-        when(productRepository.findById(productId1)).thenReturn(Optional.of(product1));
-        when(productRepository.findById(productId2)).thenReturn(Optional.of(product2));
-        when(productRepository.saveAllAndFlush(
+        when(productRepositoryQueryMethod.findById(productId1)).thenReturn(Optional.of(product1));
+        when(productRepositoryQueryMethod.findById(productId2)).thenReturn(Optional.of(product2));
+        when(productRepositoryQueryMethod.saveAllAndFlush(
                 Mockito.anyList())).then(i -> mockUpdate(i.getArgument(0, List.class)));
-        when(productCategoryRepository.findById(productCategoryId1))
+        when(productCategoryRepositoryQueryMethod.findById(productCategoryId1))
                 .thenReturn(Optional.of(productCategory1));
-        when(productCategoryRepository.findById(productCategoryId2))
+        when(productCategoryRepositoryQueryMethod.findById(productCategoryId2))
                 .thenReturn(Optional.of(productCategory2));
-        when(productImageRepository.findById(productImageId1))
+        when(productImageRepositoryQueryMethod.findById(productImageId1))
                 .thenReturn(Optional.of(productImage1));
-        when(productImageRepository.findById(productImageId2))
+        when(productImageRepositoryQueryMethod.findById(productImageId2))
                 .thenReturn(Optional.of(productImage2));
-        when(currencyRepository.findById(currencyId1))
+        when(currencyRepositoryQueryMethod.findById(currencyId1))
                 .thenReturn(Optional.of(currency1));
-        when(currencyRepository.findById(currencyId2))
+        when(currencyRepositoryQueryMethod.findById(currencyId2))
                 .thenReturn(Optional.of(currency2));
 
         // act
@@ -399,7 +407,7 @@ class ProductServiceImplV1Test {
         ProductCategory productCategory1 = ProductCategory.builder().id(productCategoryId1).build();
 
         // mock method calls
-        when(productRepository.findById(productId1)).thenReturn(Optional.empty());
+        when(productRepositoryQueryMethod.findById(productId1)).thenReturn(Optional.empty());
 
         // act & assert
         assertThrows(ProductNotFoundException.class, () -> productService.updateProducts(dtos));
@@ -430,12 +438,12 @@ class ProductServiceImplV1Test {
         Currency currency1 = Currency.builder().id(currencyId1).build();
 
         // mock method calls
-        when(productRepository.findById(productId1)).thenReturn(Optional.of(product1));
-        when(productCategoryRepository.findById(productCategoryId1))
+        when(productRepositoryQueryMethod.findById(productId1)).thenReturn(Optional.of(product1));
+        when(productCategoryRepositoryQueryMethod.findById(productCategoryId1))
                 .thenReturn(Optional.empty());
-        when(productImageRepository.findById(productImageId1))
+        when(productImageRepositoryQueryMethod.findById(productImageId1))
                 .thenReturn(Optional.of(productImage1));
-        when(currencyRepository.findById(currencyId1))
+        when(currencyRepositoryQueryMethod.findById(currencyId1))
                 .thenReturn(Optional.of(currency1));
         // act & assert
         assertThrows(ProductCategoryNotFoundException.class, () -> productService.updateProducts(dtos));
@@ -464,10 +472,10 @@ class ProductServiceImplV1Test {
         Currency currency1 = Currency.builder().id(currencyId1).build();
 
         // mock method calls
-        when(productRepository.findById(productId1)).thenReturn(Optional.of(product1));
-        when(productImageRepository.findById(productImageId1))
+        when(productRepositoryQueryMethod.findById(productId1)).thenReturn(Optional.of(product1));
+        when(productImageRepositoryQueryMethod.findById(productImageId1))
                 .thenReturn(Optional.empty());
-        when(currencyRepository.findById(currencyId1))
+        when(currencyRepositoryQueryMethod.findById(currencyId1))
                 .thenReturn(Optional.of(currency1));
 
         // act & assert
@@ -497,9 +505,9 @@ class ProductServiceImplV1Test {
         Product product1 = Product.builder().id(productId1).createdOn(ZonedDateTime.now()).lastModifiedOn(ZonedDateTime.now()).build();
 
         // mock method calls
-        when(productRepository.findById(productId1)).thenReturn(Optional.of(product1));
+        when(productRepositoryQueryMethod.findById(productId1)).thenReturn(Optional.of(product1));
 
-        when(currencyRepository.findById(currencyId1))
+        when(currencyRepositoryQueryMethod.findById(currencyId1))
                 .thenReturn(Optional.empty());
 
         // act & assert
@@ -520,9 +528,9 @@ class ProductServiceImplV1Test {
         Product product2 = Product.builder().id(productId2).build();
 
         // mock method calls
-        when(productRepository.findById(productId1))
+        when(productRepositoryQueryMethod.findById(productId1))
                 .thenReturn(Optional.of(product1));
-        when(productRepository.findById(productId2))
+        when(productRepositoryQueryMethod.findById(productId2))
                 .thenReturn(Optional.of(product2));
 
         // act
@@ -543,7 +551,7 @@ class ProductServiceImplV1Test {
         );
 
         // mock method calls
-        when(productRepository.findById(productId1))
+        when(productRepositoryQueryMethod.findById(productId1))
                 .thenReturn(Optional.empty());
 
         // act & assert

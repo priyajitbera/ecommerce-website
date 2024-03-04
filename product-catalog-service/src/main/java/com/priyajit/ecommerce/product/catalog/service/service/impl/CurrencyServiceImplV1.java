@@ -3,7 +3,7 @@ package com.priyajit.ecommerce.product.catalog.service.service.impl;
 import com.priyajit.ecommerce.product.catalog.service.dto.CreateCurrencyDto;
 import com.priyajit.ecommerce.product.catalog.service.entity.Currency;
 import com.priyajit.ecommerce.product.catalog.service.model.CurrencyModel;
-import com.priyajit.ecommerce.product.catalog.service.repository.CurrencyRepository;
+import com.priyajit.ecommerce.product.catalog.service.repository.querymethod.CurrencyRepositoryQueryMethod;
 import com.priyajit.ecommerce.product.catalog.service.service.CurrencyService;
 import org.springframework.stereotype.Service;
 
@@ -14,10 +14,10 @@ import java.util.stream.Collectors;
 @Service
 public class CurrencyServiceImplV1 implements CurrencyService {
 
-    private CurrencyRepository currencyRepository;
+    private CurrencyRepositoryQueryMethod currencyRepositoryQueryMethod;
 
-    public CurrencyServiceImplV1(CurrencyRepository currencyRepository) {
-        this.currencyRepository = currencyRepository;
+    public CurrencyServiceImplV1(CurrencyRepositoryQueryMethod currencyRepositoryQueryMethod) {
+        this.currencyRepositoryQueryMethod = currencyRepositoryQueryMethod;
     }
 
     @Override
@@ -28,7 +28,7 @@ public class CurrencyServiceImplV1 implements CurrencyService {
                 .map(this::createCurrencyFromDto)
                 .collect(Collectors.toList());
 
-        return currencyRepository.saveAllAndFlush(currencies).stream()
+        return currencyRepositoryQueryMethod.saveAllAndFlush(currencies).stream()
                 .map(CurrencyModel::from)
                 .collect(Collectors.toList());
     }
@@ -36,7 +36,7 @@ public class CurrencyServiceImplV1 implements CurrencyService {
     @Override
     public List<CurrencyModel> findCurrencies(List<String> ids, List<String> names) {
 
-        return currencyRepository.findAllByIdInOrNameIn(ids, names)
+        return currencyRepositoryQueryMethod.findAllByIdInOrNameIn(ids, names)
                 .stream()
                 .map(CurrencyModel::from)
                 .collect(Collectors.toList());

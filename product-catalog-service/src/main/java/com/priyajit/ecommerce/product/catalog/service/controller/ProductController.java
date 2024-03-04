@@ -26,11 +26,17 @@ public class ProductController {
 
     @GetMapping
     PaginatedProductList findProducts(
-            @RequestParam List<String> productIds,
+            @RequestParam(required = false) List<String> productIds,
+            @RequestParam(required = false) String productNamePart,
+            @RequestParam(required = false) List<String> produdctCategoryIds,
+            @RequestParam(required = false) List<String> productCategoryNames,
             @RequestParam(name = "pageIndex", required = false, defaultValue = "0") Integer pageIndex,
             @RequestParam(name = "pageSize", required = false, defaultValue = "10") Integer pageSize
     ) {
-        return productService.findProducts(productIds, pageIndex, pageSize);
+        return productService.findProducts(
+                productIds, productNamePart, produdctCategoryIds, productCategoryNames,
+                pageIndex, pageSize
+        );
     }
 
     @PostMapping

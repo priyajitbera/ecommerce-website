@@ -1,15 +1,23 @@
 package com.priyajit.ecommerce.product.catalog.service.service;
 
+import com.priyajit.ecommerce.product.catalog.service.dto.CreateProductDto;
 import com.priyajit.ecommerce.product.catalog.service.dto.DeleteProductDto;
+import com.priyajit.ecommerce.product.catalog.service.dto.UpdateProductDto;
 import com.priyajit.ecommerce.product.catalog.service.model.PaginatedProductList;
 import com.priyajit.ecommerce.product.catalog.service.model.ProductModel;
-import com.priyajit.ecommerce.product.catalog.service.dto.CreateProductDto;
-import com.priyajit.ecommerce.product.catalog.service.dto.UpdateProductDto;
+import org.springframework.lang.Nullable;
 
 import java.util.List;
 
 public interface ProductService {
-    PaginatedProductList findProducts(List<String> productIds, int pageIndex, int pageSize);
+    PaginatedProductList findProducts(
+            @Nullable List<String> productIds,
+            @Nullable String productNamePart,
+            @Nullable List<String> productCategoryIds,
+            @Nullable List<String> productCategoryNames,
+            int pageIndex,
+            int pageSize
+    );
 
     List<ProductModel> createProducts(List<CreateProductDto> dtoList);
 

@@ -3,7 +3,7 @@ package com.priyajit.ecommerce.product.catalog.service.service.impl;
 import com.priyajit.ecommerce.product.catalog.service.dto.CreateProductCategoryDto;
 import com.priyajit.ecommerce.product.catalog.service.entity.ProductCategory;
 import com.priyajit.ecommerce.product.catalog.service.model.ProductCategoryModel;
-import com.priyajit.ecommerce.product.catalog.service.repository.ProductCategoryRepository;
+import com.priyajit.ecommerce.product.catalog.service.repository.querymethod.ProductCategoryRepositoryQueryMethod;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -24,7 +24,7 @@ import static org.mockito.BDDMockito.when;
 class ProductCategoriesServiceImplv1Test {
 
     @Mock
-    private ProductCategoryRepository productCategoryRepository;
+    private ProductCategoryRepositoryQueryMethod productCategoryRepositoryQueryMethod;
 
     @InjectMocks
     private ProductCategoriesServiceImplv1 productCategoriesService;
@@ -49,9 +49,9 @@ class ProductCategoriesServiceImplv1Test {
                 .build();
 
         // mock method calls
-        when(productCategoryRepository.findById(parentCategoryId))
+        when(productCategoryRepositoryQueryMethod.findById(parentCategoryId))
                 .thenReturn(Optional.of(parentCategory));
-        when(productCategoryRepository.saveAllAndFlush(Mockito.anyList()))
+        when(productCategoryRepositoryQueryMethod.saveAllAndFlush(Mockito.anyList()))
                 .then(i -> mockSave(i.getArgument(0, List.class)));
 
         // act
@@ -84,7 +84,7 @@ class ProductCategoriesServiceImplv1Test {
                         .name(name2)
                         .build()
         );
-        when(productCategoryRepository.findByIdInOrNameIn(ids, null))
+        when(productCategoryRepositoryQueryMethod.findByIdInOrNameIn(ids, null))
                 .thenReturn(productCategories);
         List<ProductCategoryModel> productCategoryModels = productCategoriesService.findProductCategories(ids, null);
         assertNotNull(productCategoryModels);
@@ -111,7 +111,7 @@ class ProductCategoriesServiceImplv1Test {
                         .name(name2)
                         .build()
         );
-        when(productCategoryRepository.findByIdInOrNameIn(null, names))
+        when(productCategoryRepositoryQueryMethod.findByIdInOrNameIn(null, names))
                 .thenReturn(productCategories);
         List<ProductCategoryModel> productCategoryModels = productCategoriesService.findProductCategories(null, names);
         assertNotNull(productCategoryModels);
