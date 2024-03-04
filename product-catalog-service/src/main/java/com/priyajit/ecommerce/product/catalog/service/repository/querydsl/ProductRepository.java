@@ -6,7 +6,7 @@ import org.springframework.lang.Nullable;
 
 import java.util.List;
 
-public interface ProductRepositoryQueryDsl {
+public interface ProductRepository {
 
     Page<Product> findProducts(
             @Nullable List<String> productIds,

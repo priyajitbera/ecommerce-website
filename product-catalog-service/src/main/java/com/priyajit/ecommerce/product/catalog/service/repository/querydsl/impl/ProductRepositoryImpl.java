@@ -1,7 +1,7 @@
 package com.priyajit.ecommerce.product.catalog.service.repository.querydsl.impl;
 
 import com.priyajit.ecommerce.product.catalog.service.entity.Product;
-import com.priyajit.ecommerce.product.catalog.service.repository.querydsl.ProductRepositoryQueryDsl;
+import com.priyajit.ecommerce.product.catalog.service.repository.querydsl.ProductRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
@@ -18,11 +18,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class ProductRepositoryQueryDslImpl implements ProductRepositoryQueryDsl {
+public class ProductRepositoryImpl implements ProductRepository {
 
     private EntityManager entityManager;
 
-    public ProductRepositoryQueryDslImpl(EntityManager entityManager) {
+    public ProductRepositoryImpl(EntityManager entityManager) {
         this.entityManager = entityManager;
     }
 

@@ -13,7 +13,7 @@ import com.priyajit.ecommerce.product.catalog.service.exception.ProductImageNotF
 import com.priyajit.ecommerce.product.catalog.service.exception.ProductNotFoundException;
 import com.priyajit.ecommerce.product.catalog.service.model.PaginatedProductList;
 import com.priyajit.ecommerce.product.catalog.service.model.ProductModel;
-import com.priyajit.ecommerce.product.catalog.service.repository.querydsl.ProductRepositoryQueryDsl;
+import com.priyajit.ecommerce.product.catalog.service.repository.querydsl.ProductRepository;
 import com.priyajit.ecommerce.product.catalog.service.repository.querymethod.CurrencyRepositoryQueryMethod;
 import com.priyajit.ecommerce.product.catalog.service.repository.querymethod.ProductCategoryRepositoryQueryMethod;
 import com.priyajit.ecommerce.product.catalog.service.repository.querymethod.ProductImageRepositoryQueryMethod;
@@ -42,7 +42,7 @@ class ProductServiceImplV1Test {
     @Mock
     private ProductRepositoryQueryMethod productRepositoryQueryMethod;
     @Mock
-    private ProductRepositoryQueryDsl productRepositoryQueryDsl;
+    private ProductRepository productRepository;
     @Mock
     private ProductCategoryRepositoryQueryMethod productCategoryRepositoryQueryMethod;
     @Mock
@@ -248,7 +248,7 @@ class ProductServiceImplV1Test {
         List<Product> products = List.of(product1, product2);
 
         // mock method call
-        given(productRepositoryQueryDsl.findProducts(productIds, null, null, null, page, pageSize))
+        given(productRepository.findProducts(productIds, null, null, null, page, pageSize))
                 .willReturn(new PageImpl<>(products));
 
         // act
@@ -284,7 +284,7 @@ class ProductServiceImplV1Test {
         List<Product> products = List.of();// empty list
 
         // mock method calls
-        given(productRepositoryQueryDsl.findProducts(productIds, null, null, null, page, pageSize))
+        given(productRepository.findProducts(productIds, null, null, null, page, pageSize))
                 .willReturn(new PageImpl<>(products));
 
         // act

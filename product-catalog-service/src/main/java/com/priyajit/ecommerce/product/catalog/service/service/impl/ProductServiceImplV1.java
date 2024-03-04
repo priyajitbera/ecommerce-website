@@ -10,7 +10,7 @@ import com.priyajit.ecommerce.product.catalog.service.exception.ProductImageNotF
 import com.priyajit.ecommerce.product.catalog.service.exception.ProductNotFoundException;
 import com.priyajit.ecommerce.product.catalog.service.model.PaginatedProductList;
 import com.priyajit.ecommerce.product.catalog.service.model.ProductModel;
-import com.priyajit.ecommerce.product.catalog.service.repository.querydsl.ProductRepositoryQueryDsl;
+import com.priyajit.ecommerce.product.catalog.service.repository.querydsl.ProductRepository;
 import com.priyajit.ecommerce.product.catalog.service.repository.querymethod.CurrencyRepositoryQueryMethod;
 import com.priyajit.ecommerce.product.catalog.service.repository.querymethod.ProductCategoryRepositoryQueryMethod;
 import com.priyajit.ecommerce.product.catalog.service.repository.querymethod.ProductImageRepositoryQueryMethod;
@@ -32,21 +32,21 @@ import java.util.stream.Collectors;
 public class ProductServiceImplV1 implements ProductService {
 
     private ProductRepositoryQueryMethod productRepositoryQueryMethod;
-    private ProductRepositoryQueryDsl productRepositoryQueryDsl;
+    private ProductRepository productRepository;
     private ProductCategoryRepositoryQueryMethod productCategoryRepositoryQueryMethod;
     private ProductImageRepositoryQueryMethod productImageRepositoryQueryMethod;
     private CurrencyRepositoryQueryMethod currencyRepositoryQueryMethod;
 
     public ProductServiceImplV1(
             ProductRepositoryQueryMethod productRepositoryQueryMethod,
-            ProductRepositoryQueryDsl productRepositoryQueryDsl,
+            ProductRepository productRepository,
             ProductCategoryRepositoryQueryMethod productCategoryRepositoryQueryMethod,
             ProductImageRepositoryQueryMethod productImageRepositoryQueryMethod,
             CurrencyRepositoryQueryMethod currencyRepositoryQueryMethod
     ) {
 
         this.productRepositoryQueryMethod = productRepositoryQueryMethod;
-        this.productRepositoryQueryDsl = productRepositoryQueryDsl;
+        this.productRepository = productRepository;
         this.productCategoryRepositoryQueryMethod = productCategoryRepositoryQueryMethod;
         this.productImageRepositoryQueryMethod = productImageRepositoryQueryMethod;
         this.currencyRepositoryQueryMethod = currencyRepositoryQueryMethod;
@@ -73,7 +73,7 @@ public class ProductServiceImplV1 implements ProductService {
 
         PageRequest pageRequest = PageRequest.of(pageIndex, pageSize);
 
-        Page<Product> productPage = productRepositoryQueryDsl.findProducts(
+        Page<Product> productPage = productRepository.findProducts(
                 productIds,
                 productNamePart,
                 productCategoryIds,
