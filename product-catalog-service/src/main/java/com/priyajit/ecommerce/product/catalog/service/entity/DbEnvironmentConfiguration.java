@@ -84,6 +84,12 @@ public class DbEnvironmentConfiguration {
         public final static String AWS_SES_ACCESS_KEY = "aws.ses.access-key";
         public final static String AWS_SES_SECRET_KEY = "aws.ses.secret-key";
         public final static String AWS_SES_SENDER_KEY = "aws.ses.sender";
+
+        // AWS S3
+        public final static String AWS_S3_REGION = "aws.s3.region";
+        public final static String AWS_S3_ACCESS_KEY = "aws.s3.access-key";
+        public final static String AWS_S3_SECRET_KEY = "aws.s3.secret-key";
+        public final static String AWS_S3_BUCKET_NAME = "aws.s3.bucket-name";
     }
 
     public static class Values {
