@@ -22,7 +22,7 @@ public class ProductImage implements Comparable<ProductImage> {
     private String id;
 
     @CreationTimestamp
-    private ZonedDateTime zonedDateTime;
+    private ZonedDateTime createdOn;
 
     @UpdateTimestamp
     private ZonedDateTime lastModifiedOn;
