@@ -2,7 +2,10 @@ package com.priyajit.ecommerce.product.catalog.service.controller;
 
 import com.priyajit.ecommerce.product.catalog.service.dto.CreateProductDto;
 import com.priyajit.ecommerce.product.catalog.service.dto.DeleteProductDto;
+import com.priyajit.ecommerce.product.catalog.service.dto.IndexProductsInElasticSearchDto;
 import com.priyajit.ecommerce.product.catalog.service.dto.UpdateProductDto;
+import com.priyajit.ecommerce.product.catalog.service.model.DeleteProductsInElasticSearchModel;
+import com.priyajit.ecommerce.product.catalog.service.model.IndexProductsInElasticSearchModel;
 import com.priyajit.ecommerce.product.catalog.service.model.PaginatedProductList;
 import com.priyajit.ecommerce.product.catalog.service.model.ProductModel;
 import com.priyajit.ecommerce.product.catalog.service.service.ProductService;
@@ -39,6 +42,22 @@ public class ProductController {
         );
     }
 
+    @GetMapping("/search")
+    PaginatedProductList search(
+            @RequestParam(required = false) List<String> productIds,
+            @RequestParam(required = false) String productNamePart,
+            @RequestParam(required = false) String productDescriptionPart,
+            @RequestParam(required = false) List<String> produdctCategoryIds,
+            @RequestParam(required = false) List<String> productCategoryNames,
+            @RequestParam(name = "pageIndex", required = false, defaultValue = "0") Integer pageIndex,
+            @RequestParam(name = "pageSize", required = false, defaultValue = "10") Integer pageSize
+    ) {
+        return productService.search(
+                productIds, productNamePart, productDescriptionPart, produdctCategoryIds, productCategoryNames,
+                pageIndex, pageSize
+        );
+    }
+
     @PostMapping
     List<ProductModel> createProducts(
             @RequestBody List<CreateProductDto> dtos
@@ -58,5 +77,19 @@ public class ProductController {
             @RequestBody List<DeleteProductDto> dtos
     ) {
         return productService.deleteProducts(dtos);
+    }
+
+    @PostMapping("/elastic-search/index")
+    IndexProductsInElasticSearchModel indexProductsInElasticSearch(
+            @RequestBody IndexProductsInElasticSearchDto indexProductsInElasticSearchDto
+    ) {
+        return productService.indexProductsInElasticSearch(indexProductsInElasticSearchDto);
+    }
+
+    @DeleteMapping("/elastic-search/delete")
+    DeleteProductsInElasticSearchModel deleteProductsInElasticSearch(
+            @RequestBody IndexProductsInElasticSearchDto dto
+    ) {
+        return productService.deleteProductsInElasticSearch(dto);
     }
 }

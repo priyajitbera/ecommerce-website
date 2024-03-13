@@ -3,6 +3,7 @@ package com.priyajit.ecommerce.product.catalog.service.model;
 import com.priyajit.ecommerce.product.catalog.service.entity.Product;
 import com.priyajit.ecommerce.product.catalog.service.entity.ProductCategory;
 import com.priyajit.ecommerce.product.catalog.service.entity.ProductImage;
+import com.priyajit.ecommerce.product.catalog.service.esdoc.ProductDoc;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,11 +20,35 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class PaginatedProductList {
 
+    public static PaginatedProductList buildFrom(Page<ProductDoc> page) {
+        return PaginatedProductList.builder()
+                .totalPages(page.getTotalPages())
+                .totalElements(page.getTotalElements())
+                .size(page.getSize())
+                .number(page.getNumber())
+                .products(ProductModel.buildFrom(page.getContent()))
+                .build();
+    }
+
     @Data
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
     public static class ProductModel {
+
+        public static List<ProductModel> buildFrom(List<ProductDoc> productDocs) {
+            if (productDocs == null) return null;
+            return productDocs.stream().map(ProductModel::buildFrom).collect(Collectors.toList());
+        }
+
+        public static ProductModel buildFrom(ProductDoc productDoc) {
+            return ProductModel.builder()
+                    .id(productDoc.getId())
+                    .title(productDoc.getTitle())
+                    .description(productDoc.getDescription())
+                    .build();
+        }
+
 
         @Data
         @Builder

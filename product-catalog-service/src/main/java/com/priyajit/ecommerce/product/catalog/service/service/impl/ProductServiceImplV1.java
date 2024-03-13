@@ -2,12 +2,17 @@ package com.priyajit.ecommerce.product.catalog.service.service.impl;
 
 import com.priyajit.ecommerce.product.catalog.service.dto.CreateProductDto;
 import com.priyajit.ecommerce.product.catalog.service.dto.DeleteProductDto;
+import com.priyajit.ecommerce.product.catalog.service.dto.IndexProductsInElasticSearchDto;
 import com.priyajit.ecommerce.product.catalog.service.dto.UpdateProductDto;
 import com.priyajit.ecommerce.product.catalog.service.entity.*;
+import com.priyajit.ecommerce.product.catalog.service.esdoc.ProductDoc;
+import com.priyajit.ecommerce.product.catalog.service.esrepository.ProductDocRepository;
 import com.priyajit.ecommerce.product.catalog.service.exception.CurrencyNotFoundException;
 import com.priyajit.ecommerce.product.catalog.service.exception.ProductCategoryNotFoundException;
 import com.priyajit.ecommerce.product.catalog.service.exception.ProductImageNotFoundException;
 import com.priyajit.ecommerce.product.catalog.service.exception.ProductNotFoundException;
+import com.priyajit.ecommerce.product.catalog.service.model.DeleteProductsInElasticSearchModel;
+import com.priyajit.ecommerce.product.catalog.service.model.IndexProductsInElasticSearchModel;
 import com.priyajit.ecommerce.product.catalog.service.model.PaginatedProductList;
 import com.priyajit.ecommerce.product.catalog.service.model.ProductModel;
 import com.priyajit.ecommerce.product.catalog.service.repository.querydsl.ProductRepository;
@@ -16,6 +21,7 @@ import com.priyajit.ecommerce.product.catalog.service.repository.querymethod.Pro
 import com.priyajit.ecommerce.product.catalog.service.repository.querymethod.ProductImageRepositoryQueryMethod;
 import com.priyajit.ecommerce.product.catalog.service.repository.querymethod.ProductRepositoryQueryMethod;
 import com.priyajit.ecommerce.product.catalog.service.service.ProductService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.lang.Nullable;
@@ -23,11 +29,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class ProductServiceImplV1 implements ProductService {
 
@@ -36,13 +44,15 @@ public class ProductServiceImplV1 implements ProductService {
     private ProductCategoryRepositoryQueryMethod productCategoryRepositoryQueryMethod;
     private ProductImageRepositoryQueryMethod productImageRepositoryQueryMethod;
     private CurrencyRepositoryQueryMethod currencyRepositoryQueryMethod;
+    private ProductDocRepository productDocRepository;
 
     public ProductServiceImplV1(
             ProductRepositoryQueryMethod productRepositoryQueryMethod,
             ProductRepository productRepository,
             ProductCategoryRepositoryQueryMethod productCategoryRepositoryQueryMethod,
             ProductImageRepositoryQueryMethod productImageRepositoryQueryMethod,
-            CurrencyRepositoryQueryMethod currencyRepositoryQueryMethod
+            CurrencyRepositoryQueryMethod currencyRepositoryQueryMethod,
+            ProductDocRepository productDocRepository
     ) {
 
         this.productRepositoryQueryMethod = productRepositoryQueryMethod;
@@ -50,6 +60,7 @@ public class ProductServiceImplV1 implements ProductService {
         this.productCategoryRepositoryQueryMethod = productCategoryRepositoryQueryMethod;
         this.productImageRepositoryQueryMethod = productImageRepositoryQueryMethod;
         this.currencyRepositoryQueryMethod = currencyRepositoryQueryMethod;
+        this.productDocRepository = productDocRepository;
     }
 
     /**
@@ -102,7 +113,6 @@ public class ProductServiceImplV1 implements ProductService {
 
         List<Product> products = productRepositoryQueryMethod.saveAllAndFlush(productList);
 
-        // create response models and return
         return fromProducts(products);
     }
 
@@ -278,6 +288,78 @@ public class ProductServiceImplV1 implements ProductService {
         productRepositoryQueryMethod.deleteAll(toDelete);
 
         return fromProducts(toDelete);
+    }
+
+    @Override
+    public PaginatedProductList search(
+            @Nullable List<String> productIds,
+            @Nullable String productNamePart,
+            @Nullable String productDescriptionPart,
+            @Nullable List<String> produdctCategoryIds,
+            @Nullable List<String> productCategoryNames,
+            int pageIndex, int pageSize
+    ) {
+
+        Page<ProductDoc> productDocPage = productDocRepository.search(
+                productIds,
+                productNamePart,
+                productDescriptionPart,
+                produdctCategoryIds,
+                productCategoryNames,
+                pageIndex, pageSize
+        );
+
+        return PaginatedProductList.buildFrom(productDocPage);
+    }
+
+    @Override
+    public IndexProductsInElasticSearchModel indexProductsInElasticSearch(IndexProductsInElasticSearchDto dto) {
+        if (dto == null || dto.getProductIds() == null)
+            throw new IllegalArgumentException("Expected non null value for IndexProductsInElasticSearchDto and product ids");
+
+        // fetch products from main DB
+        List<Product> products = productRepositoryQueryMethod.findAllById(dto.getProductIds());
+
+        // index products
+        List<String> indexProductsIds = productDocRepository.indexAll(ProductDoc.buildFrom(products));
+
+        // update index audit info
+        products.forEach(product -> {
+            product.setElasticSearchIndexedOn(ZonedDateTime.now());
+            product.setIsIndexedOnElasticSearch(true);
+        });
+        productRepositoryQueryMethod.saveAllAndFlush(products);
+
+        return IndexProductsInElasticSearchModel.builder()
+                .productIds(indexProductsIds)
+                .build();
+    }
+
+    @Override
+    public DeleteProductsInElasticSearchModel deleteProductsInElasticSearch(IndexProductsInElasticSearchDto dto) {
+        if (dto == null || dto.getProductIds() == null)
+            throw new IllegalArgumentException("Expected non null value for IndexProductsInElasticSearchDto and product ids");
+
+        // fetch products from main DB
+        List<Product> products = productRepositoryQueryMethod.findAllById(dto.getProductIds());
+
+        List<String> productIds = products.stream()
+                .map(Product::getId)
+                .collect(Collectors.toList());
+
+        // index products
+        List<String> indexProductsIds = productDocRepository.deleteAll(productIds);
+
+        // update index audit info
+        products.forEach(product -> {
+            product.setElasticSearchIndexedOn(null);
+            product.setIsIndexedOnElasticSearch(false);
+        });
+        productRepositoryQueryMethod.saveAllAndFlush(products);
+
+        return DeleteProductsInElasticSearchModel.builder()
+                .productIds(indexProductsIds)
+                .build();
     }
 
     /**

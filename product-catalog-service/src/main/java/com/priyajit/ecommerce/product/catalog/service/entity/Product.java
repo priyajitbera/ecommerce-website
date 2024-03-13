@@ -43,6 +43,9 @@ public class Product implements Comparable<Product> {
     @OneToMany(mappedBy = "product")
     private SortedSet<ProductReview> reviews;
 
+    private Boolean isIndexedOnElasticSearch;
+    private ZonedDateTime elasticSearchIndexedOn;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

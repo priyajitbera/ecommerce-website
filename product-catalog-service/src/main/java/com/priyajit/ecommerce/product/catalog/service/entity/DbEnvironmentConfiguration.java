@@ -90,8 +90,21 @@ public class DbEnvironmentConfiguration {
         public final static String AWS_S3_ACCESS_KEY = "aws.s3.access-key";
         public final static String AWS_S3_SECRET_KEY = "aws.s3.secret-key";
         public final static String AWS_S3_BUCKET_NAME = "aws.s3.bucket-name";
+
+        // Elasticsearch
+        public final static String ELASTIC_SEARCH_URL = "es.url";
+        public final static String ELASTIC_SEARCH_API_KEY = "es.api-key";
+        public final static String ELASTIC_SEARCH_PRODUCT_INDEX = "es.product-index";
+        public final static String ELASTIC_SEARCH_TRUST_STORE_TYPE = "es.trust-store-type"; // eg: pkcs12
+        public final static String ELASTIC_SEARCH_TRUST_STORE_SOURCE = "es.trust-store-source";
+        public final static String ELASTIC_SEARCH_TRUST_STORE_PASSWORD = "es.trust-store-password";
+        public final static String ELASTIC_SEARCH_TRUST_STORE_PATH = "es.trust-store-path";
+        public final static String ELASTIC_SEARCH_TRUST_STORE_S3_KEY = "es.trust-store-s3-key"; // the key to refer the truststore file stored in S3 bucket
     }
 
     public static class Values {
+        // Elasticsearch
+        public final static String ELASTIC_SEARCH_TRUST_STORE_SOURCE_FILE_SYSTEM = "FILE_SYSTEM"; // to fetch the truststore file from filesystem
+        public final static String ELASTIC_SEARCH_TRUST_STORE_SOURCE_AWS_S3 = "AWS_S3"; // to fetch the truststore file from S3 bucket
     }
 }
