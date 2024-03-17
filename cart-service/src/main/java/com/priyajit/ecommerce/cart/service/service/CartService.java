@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface CartService {
 
-    CartModel findCart(Long userId);
+    CartModel findCart(String userId);
 
     List<CartModel> createCarts(List<CreateCartDto> dtoList);
 

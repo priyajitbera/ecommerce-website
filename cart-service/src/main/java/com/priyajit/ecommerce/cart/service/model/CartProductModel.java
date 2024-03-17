@@ -11,6 +11,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class CartProductModel {
 
-    private Long productId;
+    private String productId;
     private Long quantity;
 }

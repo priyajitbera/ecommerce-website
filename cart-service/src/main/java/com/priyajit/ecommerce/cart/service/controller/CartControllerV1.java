@@ -2,7 +2,6 @@ package com.priyajit.ecommerce.cart.service.controller;
 
 import com.priyajit.ecommerce.cart.service.dto.AddProductRequestDto;
 import com.priyajit.ecommerce.cart.service.dto.CreateCartDto;
-import com.priyajit.ecommerce.cart.service.entity.Cart;
 import com.priyajit.ecommerce.cart.service.model.CartModel;
 import com.priyajit.ecommerce.cart.service.service.CartService;
 import org.springframework.web.bind.annotation.*;
@@ -21,7 +20,7 @@ public class CartControllerV1 {
 
     @GetMapping
     CartModel findCarts(
-            @RequestParam(name = "userId") Long userId
+            @RequestParam(name = "userId") String userId
     ) {
         return cartService.findCart(userId);
     }

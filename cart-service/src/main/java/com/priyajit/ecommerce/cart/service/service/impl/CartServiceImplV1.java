@@ -2,8 +2,8 @@ package com.priyajit.ecommerce.cart.service.service.impl;
 
 import com.priyajit.ecommerce.cart.service.dto.AddProductRequestDto;
 import com.priyajit.ecommerce.cart.service.dto.CreateCartDto;
-import com.priyajit.ecommerce.cart.service.entity.Cart;
-import com.priyajit.ecommerce.cart.service.entity.CartProduct;
+import com.priyajit.ecommerce.cart.service.mogodoc.Cart;
+import com.priyajit.ecommerce.cart.service.mogodoc.CartProduct;
 import com.priyajit.ecommerce.cart.service.model.CartModel;
 import com.priyajit.ecommerce.cart.service.model.CartProductModel;
 import com.priyajit.ecommerce.cart.service.repository.CartRepository;
@@ -26,7 +26,7 @@ public class CartServiceImplV1 implements CartService {
     }
 
     @Override
-    public CartModel findCart(Long userId) {
+    public CartModel findCart(String userId) {
         Cart cart = cartRepository.findByUserId(userId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         return createCartModel(cart);
     }
@@ -34,13 +34,23 @@ public class CartServiceImplV1 implements CartService {
     @Override
     public List<CartModel> createCarts(List<CreateCartDto> dtoList) {
 
+        // find Carts which already exists for a userId, do not create duplicate Cart of those userIds
+        var userIds = dtoList.stream().map(CreateCartDto::getUserId).collect(Collectors.toList());
+        var existingCarts = cartRepository.findAllByUserIdIn(userIds);
+        var userIdsWithExistingCarts = existingCarts.stream().map(Cart::getUserId).collect(Collectors.toSet());
+
         List<Cart> cartList = dtoList.stream()
+                .filter(dto -> !userIdsWithExistingCarts.contains(dto.getUserId())) // filter out userIds having existing cart
                 .map(this::createCartFromDto)
                 .collect(Collectors.toList());
 
-        return cartRepository.saveAllAndFlush(cartList).stream()
-                .map(this::createCartModel)
-                .collect(Collectors.toList());
+        var savedCarts = cartRepository.saveAll(cartList);
+
+        // create response models & return
+        var responseModels = new ArrayList<CartModel>();
+        responseModels.addAll(existingCarts.stream().map(this::createCartModel).collect(Collectors.toList()));
+        responseModels.addAll(savedCarts.stream().map(this::createCartModel).collect(Collectors.toList()));
+        return responseModels;
     }
 
     @Override
@@ -57,14 +67,13 @@ public class CartServiceImplV1 implements CartService {
             CartProduct cartProduct = CartProduct.builder()
                     .productId(dto.getProductId())
                     .quantity(dto.getQuantity())
-                    .cart(cart)
                     .build();
             cart.getProducts().add(cartProduct);
         } else {
             cartProducts.get(0).setQuantity(cartProducts.get(0).getQuantity() + dto.getQuantity());
         }
 
-        cartRepository.saveAndFlush(cart);
+        cartRepository.save(cart);
 
         return createCartModel(cart);
     }

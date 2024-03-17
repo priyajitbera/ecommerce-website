@@ -11,5 +11,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class CreateCartDto {
 
-    private Long userId;
+    private String userId;
 }
