@@ -284,15 +284,18 @@ public class UserServiceImplV1 implements UserService {
 
         ZonedDateTime passwordSetOn = encodedPassword == null ? null : ZonedDateTime.now();
 
-        return User.builder()
+        User user = User.builder()
                 .emailId(dto.getEmail())
                 .name(dto.getName())
-                .userSecret(
-                        UserSecret.builder()
-                                .password(encodedPassword)
-                                .passwordSetOn(passwordSetOn)
-                                .build()
-                )
                 .build();
+        UserSecret userSecret = UserSecret.builder()
+                .password(encodedPassword)
+                .passwordSetOn(passwordSetOn)
+                .build();
+
+        user.setUserSecret(userSecret);
+        userSecret.setUser(user);
+
+        return user;
     }
 }

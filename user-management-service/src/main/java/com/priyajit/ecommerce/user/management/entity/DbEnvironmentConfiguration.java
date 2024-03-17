@@ -71,10 +71,15 @@ public class DbEnvironmentConfiguration {
         public final static String AWS_SQS_QUEUE_URL = "aws.sqs.queue-url";
         public final static String AWS_SQS_ACCESS_KEY = "aws.sqs.access-key";
         public final static String AWS_SQS_SECRET_KEY = "aws.sqs.secret-key";
+
+        // JWT
+        public final static String JWT_VALIDITY_MILLIS = "jwt.validity-millis";
+        public final static String JWT_SECRET_KEY = "jwt.secret-key";
     }
 
     public static class Values {
         public final static String EMAIL_SENDING_STRATEGY_AWS_SQS = "AWS_SQS";
         public final static String EMAIL_SENDING_STRATEGY_KAFKA = "KAFKA";
+
     }
 }
