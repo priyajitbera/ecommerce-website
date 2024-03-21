@@ -362,6 +362,15 @@ public class ProductServiceImplV1 implements ProductService {
                 .build();
     }
 
+    @Override
+    public ProductModel getProduct(String productId) {
+
+        var product = productRepositoryQueryMethod.findById(productId)
+                .orElseThrow(ProductNotFoundException.supplier(productId));
+
+        return ProductModel.from(product);
+    }
+
     /**
      * Helper method to create response models List<ProductModel> from List<Product> products
      *

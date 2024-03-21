@@ -92,4 +92,9 @@ public class ProductController {
     ) {
         return productService.deleteProductsInElasticSearch(dto);
     }
+
+    @GetMapping("/get")
+    ProductModel getProduct(@RequestParam("productId") String productId) {
+        return productService.getProduct(productId);
+    }
 }
