@@ -15,6 +15,7 @@ import com.priyajit.ecommerce.product.catalog.service.model.DeleteProductsInElas
 import com.priyajit.ecommerce.product.catalog.service.model.IndexProductsInElasticSearchModel;
 import com.priyajit.ecommerce.product.catalog.service.model.PaginatedProductList;
 import com.priyajit.ecommerce.product.catalog.service.model.ProductModel;
+import com.priyajit.ecommerce.product.catalog.service.redisrepository.ProductModelRedisRepository;
 import com.priyajit.ecommerce.product.catalog.service.repository.querydsl.ProductRepository;
 import com.priyajit.ecommerce.product.catalog.service.repository.querymethod.CurrencyRepositoryQueryMethod;
 import com.priyajit.ecommerce.product.catalog.service.repository.querymethod.ProductCategoryRepositoryQueryMethod;
@@ -33,6 +34,7 @@ import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -45,6 +47,7 @@ public class ProductServiceImplV1 implements ProductService {
     private ProductImageRepositoryQueryMethod productImageRepositoryQueryMethod;
     private CurrencyRepositoryQueryMethod currencyRepositoryQueryMethod;
     private ProductDocRepository productDocRepository;
+    private ProductModelRedisRepository productModelRedisRepository;
 
     public ProductServiceImplV1(
             ProductRepositoryQueryMethod productRepositoryQueryMethod,
@@ -52,7 +55,8 @@ public class ProductServiceImplV1 implements ProductService {
             ProductCategoryRepositoryQueryMethod productCategoryRepositoryQueryMethod,
             ProductImageRepositoryQueryMethod productImageRepositoryQueryMethod,
             CurrencyRepositoryQueryMethod currencyRepositoryQueryMethod,
-            ProductDocRepository productDocRepository
+            ProductDocRepository productDocRepository,
+            ProductModelRedisRepository productModelRedisRepository
     ) {
 
         this.productRepositoryQueryMethod = productRepositoryQueryMethod;
@@ -61,6 +65,7 @@ public class ProductServiceImplV1 implements ProductService {
         this.productImageRepositoryQueryMethod = productImageRepositoryQueryMethod;
         this.currencyRepositoryQueryMethod = currencyRepositoryQueryMethod;
         this.productDocRepository = productDocRepository;
+        this.productModelRedisRepository = productModelRedisRepository;
     }
 
     /**
@@ -370,11 +375,42 @@ public class ProductServiceImplV1 implements ProductService {
 
     @Override
     public ProductModel getProduct(String productId) {
+        // first search in Redis, if found then return
+        try {
+            var productModelOpt = productModelRedisRepository.findById(productId);
+            if (productModelOpt.isPresent()) {
+                return productModelOpt.get();
+            }
+        } catch (Exception e) {
+            log.error("Error fetching ProductModel object from Redis", e.getMessage());
+            e.printStackTrace();
+        }
 
+        // search in primary DB
         var product = productRepositoryQueryMethod.findById(productId)
                 .orElseThrow(ProductNotFoundException.supplier(productId));
 
-        return ProductModel.from(product);
+        // create response model & save to Redis
+        var productModel = ProductModel.from(product);
+        saveToRedisOptimistic(productModel);
+
+        return productModel;
+    }
+
+    private void saveToRedisOptimistic(ProductModel productModel) {
+        try {
+            CompletableFuture.supplyAsync(() -> productModelRedisRepository.save(productModel))
+                    .thenAccept(saved -> log.info("Saved ProductModel object to Redis"))
+                    .exceptionally(e -> {
+                        log.error("Error while saving ProductModel object in Redis", e.getMessage());
+                        e.printStackTrace();
+                        return null;
+                    });
+        } catch (Exception e) {
+            log.error("Error while saving ProductModel object in Redis", e.getMessage());
+            e.printStackTrace();
+        }
+
     }
 
     /**

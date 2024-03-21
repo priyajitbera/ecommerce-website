@@ -1,10 +1,12 @@
 package com.priyajit.ecommerce.product.catalog.service.model;
 
-import com.priyajit.ecommerce.product.catalog.service.entity.ProductPrice;
 import com.priyajit.ecommerce.product.catalog.service.entity.Product;
 import com.priyajit.ecommerce.product.catalog.service.entity.ProductCategory;
 import com.priyajit.ecommerce.product.catalog.service.entity.ProductImage;
+import com.priyajit.ecommerce.product.catalog.service.entity.ProductPrice;
 import lombok.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.redis.core.RedisHash;
 
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -12,6 +14,7 @@ import java.util.stream.Collectors;
 
 @Data
 @Builder
+@RedisHash(value = "productModel", timeToLive = 3600) // 1 hour
 public class ProductModel {
 
     @Data
@@ -73,6 +76,7 @@ public class ProductModel {
         }
     }
 
+    @Id // to store & search in Redis
     private String id;
     private ZonedDateTime createdOn;
     private ZonedDateTime lastModifiedOn;
