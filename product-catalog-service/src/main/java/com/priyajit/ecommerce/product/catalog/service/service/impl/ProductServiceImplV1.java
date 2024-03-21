@@ -130,13 +130,19 @@ public class ProductServiceImplV1 implements ProductService {
                 .stream().collect(Collectors.toCollection(() -> new TreeSet<>()));
         ProductPrice productPrice = buildProductPrice(dto.getPrice(), dto.getCurrencyId());
 
-        return Product.builder()
+        var product = Product.builder()
                 .title(dto.getTitle())
                 .price(productPrice)
                 .description(dto.getDescription())
                 .taggedCategories(taggedCategories)
                 .images(productImages)
                 .build();
+
+        productPrice.setProduct(product);
+        productImages.forEach(image -> image.setProduct(product));
+        taggedCategories.forEach(category -> category.getTaggedProducts().add(product));
+
+        return product;
     }
 
     /**
