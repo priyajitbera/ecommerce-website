@@ -5,7 +5,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -14,7 +13,18 @@ import java.util.List;
 @AllArgsConstructor
 public class CartModel {
 
-    private Long cartId;
-    private Long userId;
-    private List<CartProductModel> products = new ArrayList<>();
+    private String cartId;
+    private String userId;
+    private List<CartProductModel> products;
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class CartProductModel {
+
+        private String productId;
+        private String productTitle;
+        private Long quantity;
+    }
 }

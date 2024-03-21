@@ -100,6 +100,10 @@ public class DbEnvironmentConfiguration {
         public final static String ELASTIC_SEARCH_TRUST_STORE_PASSWORD = "es.trust-store-password";
         public final static String ELASTIC_SEARCH_TRUST_STORE_PATH = "es.trust-store-path";
         public final static String ELASTIC_SEARCH_TRUST_STORE_S3_KEY = "es.trust-store-s3-key"; // the key to refer the truststore file stored in S3 bucket
+
+        // Redis
+        public final static String REDIS_HOSTNAME = "redis.hostname";
+        public final static String REDIS_PORT = "redis.port";
     }
 
     public static class Values {

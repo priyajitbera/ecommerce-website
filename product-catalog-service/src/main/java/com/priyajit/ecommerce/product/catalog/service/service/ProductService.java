@@ -40,4 +40,6 @@ public interface ProductService {
     IndexProductsInElasticSearchModel indexProductsInElasticSearch(IndexProductsInElasticSearchDto indexProductsInElasticSearchDto);
 
     DeleteProductsInElasticSearchModel deleteProductsInElasticSearch(IndexProductsInElasticSearchDto dto);
+
+    ProductModel getProduct(String productId);
 }
