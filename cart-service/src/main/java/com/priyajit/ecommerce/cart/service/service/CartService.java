@@ -1,7 +1,7 @@
 package com.priyajit.ecommerce.cart.service.service;
 
-import com.priyajit.ecommerce.cart.service.dto.AddProductRequestDto;
 import com.priyajit.ecommerce.cart.service.dto.CreateCartDto;
+import com.priyajit.ecommerce.cart.service.dto.UpdateCartProductQuantityDto;
 import com.priyajit.ecommerce.cart.service.model.CartModel;
 
 import java.util.List;
@@ -12,5 +12,5 @@ public interface CartService {
 
     List<CartModel> createCarts(List<CreateCartDto> dtoList);
 
-    CartModel addProduct(AddProductRequestDto dto);
+    CartModel updateCartProductQuantity(UpdateCartProductQuantityDto dto);
 }

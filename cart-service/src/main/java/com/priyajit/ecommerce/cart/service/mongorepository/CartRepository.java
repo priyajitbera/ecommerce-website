@@ -1,4 +1,4 @@
-package com.priyajit.ecommerce.cart.service.repository;
+package com.priyajit.ecommerce.cart.service.mongorepository;
 
 import com.priyajit.ecommerce.cart.service.mogodoc.Cart;
 import org.springframework.data.mongodb.repository.MongoRepository;
