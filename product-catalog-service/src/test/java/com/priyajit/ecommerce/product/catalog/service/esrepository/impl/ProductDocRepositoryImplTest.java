@@ -17,6 +17,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -43,7 +44,7 @@ class ProductDocRepositoryImplTest {
                         ProductPriceDoc.builder()
                                 .id("PRODUCT-PRICE-1")
                                 .currency("INR")
-                                .price(7000000L)
+                                .price(BigDecimal.valueOf(7000000L))
                                 .build()
                 )
                 .build());

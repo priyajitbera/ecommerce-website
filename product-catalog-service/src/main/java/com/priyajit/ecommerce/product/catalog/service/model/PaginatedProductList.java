@@ -3,6 +3,7 @@ package com.priyajit.ecommerce.product.catalog.service.model;
 import com.priyajit.ecommerce.product.catalog.service.entity.Product;
 import com.priyajit.ecommerce.product.catalog.service.entity.ProductCategory;
 import com.priyajit.ecommerce.product.catalog.service.entity.ProductImage;
+import com.priyajit.ecommerce.product.catalog.service.entity.ProductPrice;
 import com.priyajit.ecommerce.product.catalog.service.esdoc.ProductDoc;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,6 +11,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.domain.Page;
 
+import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -87,11 +89,28 @@ public class PaginatedProductList {
             }
         }
 
+        @Data
+        @Builder
+        @NoArgsConstructor
+        @AllArgsConstructor
+        private static class ProductPriceModel {
+            private BigDecimal price;
+            private String currencyName;
+
+            public static ProductPriceModel from(ProductPrice productPrice) {
+                if (productPrice == null) return null;
+                return ProductPriceModel.builder()
+                        .price(productPrice.getPrice())
+                        .currencyName(productPrice.getCurrency() == null ? null : productPrice.getCurrency().getName())
+                        .build();
+            }
+        }
+
         private String id;
         private ZonedDateTime createdOn;
         private ZonedDateTime lastModifiedOn;
         private String title;
-        private Double price;
+        private ProductPriceModel price;
         private String description;
         private List<ProductImageModel> images;
         private List<ProductCategoryModel> taggedCategories;
@@ -117,6 +136,7 @@ public class PaginatedProductList {
                     .description(product.getDescription())
                     .images(productImages)
                     .taggedCategories(taggedCategories)
+                    .price(ProductPriceModel.from(product.getPrice()))
                     .build();
         }
     }
