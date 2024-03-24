@@ -26,6 +26,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageImpl;
 
+import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -69,7 +70,7 @@ class ProductServiceImplV1Test {
                         .title("Apple iPhone 15 Plus (256 GB) - Blue")
                         .description("DYNAMIC ISLAND COMES TO IPHONE 15")
                         .currencyId(currencyId1)
-                        .price(9299000L)
+                        .price(BigDecimal.valueOf(92990))
                         .productImageIds(List.of(productImageId1))
                         .taggedCategoryIds(List.of(productCategoryId1))
                         .build(),
@@ -78,7 +79,7 @@ class ProductServiceImplV1Test {
                         .title("Apple 2023 MacBook Air Laptop with M2 chip")
                         .description("38.91 cm (15.3 inch) Liquid Retina Display, 8GB RAM 512GB SSD Storage.")
                         .currencyId(currencyId2)
-                        .price(15490000L)
+                        .price(BigDecimal.valueOf(154900))
                         .productImageIds(List.of(productImageId2))
                         .taggedCategoryIds(List.of(productCategoryId2))
                         .build()
@@ -150,7 +151,7 @@ class ProductServiceImplV1Test {
                         .title("Apple iPhone 15 Plus (256 GB) - Blue")
                         .description("DYNAMIC ISLAND COMES TO IPHONE 15")
                         .currencyId(currencyId1)
-                        .price(9299000L)
+                        .price(BigDecimal.valueOf(92990))
                         .productImageIds(List.of(productImageId1))
                         .taggedCategoryIds(List.of(productCategoryId1))
                         .build()
@@ -179,7 +180,7 @@ class ProductServiceImplV1Test {
                         .title("Apple iPhone 15 Plus (256 GB) - Blue")
                         .description("DYNAMIC ISLAND COMES TO IPHONE 15")
                         .currencyId(currencyId1)
-                        .price(9299000L)
+                        .price(BigDecimal.valueOf(92990))
                         .productImageIds(List.of(productImageId1))
                         .taggedCategoryIds(List.of(productCategoryId1))
                         .build()
@@ -212,7 +213,7 @@ class ProductServiceImplV1Test {
                         .title("Apple iPhone 15 Plus (256 GB) - Blue")
                         .description("DYNAMIC ISLAND COMES TO IPHONE 15")
                         .currencyId(currencyId1)
-                        .price(9299000L)
+                        .price(BigDecimal.valueOf(92990))
                         .productImageIds(List.of(productImageId1))
                         .taggedCategoryIds(List.of(productCategoryId1))
                         .build()
@@ -324,7 +325,7 @@ class ProductServiceImplV1Test {
                         .title("Apple iPhone 15 Plus (256 GB) - Blue (Updated)")
                         .description("DYNAMIC ISLAND COMES TO IPHONE 15  (Updated)")
                         .currencyId(currencyId1)
-                        .price(9299000L)
+                        .price(BigDecimal.valueOf(92990))
                         .productImageIds(List.of(productImageId1))
                         .taggedCategoryIds(List.of(productCategoryId1))
                         .build(),
@@ -334,7 +335,7 @@ class ProductServiceImplV1Test {
                         .title("Apple 2023 MacBook Air Laptop with M2 chip  (Updated)")
                         .description("38.91 cm (15.3 inch) Liquid Retina Display, 8GB RAM 512GB SSD Storage. (Updated)")
                         .currencyId(currencyId2)
-                        .price(15490000L)
+                        .price(BigDecimal.valueOf(154900))
                         .productImageIds(List.of(productImageId2))
                         .taggedCategoryIds(List.of(productCategoryId2))
                         .build()
@@ -399,7 +400,7 @@ class ProductServiceImplV1Test {
                         .title("Apple iPhone 15 Plus (256 GB) - Blue (Updated)")
                         .description("DYNAMIC ISLAND COMES TO IPHONE 15  (Updated)")
                         .currencyId(currencyId1)
-                        .price(9299000L)
+                        .price(BigDecimal.valueOf(92990))
                         .productImageIds(List.of(productImageId1))
                         .taggedCategoryIds(List.of(productCategoryId1))
                         .build()
@@ -428,7 +429,7 @@ class ProductServiceImplV1Test {
                         .title("Apple iPhone 15 Plus (256 GB) - Blue (Updated)")
                         .description("DYNAMIC ISLAND COMES TO IPHONE 15  (Updated)")
                         .currencyId(currencyId1)
-                        .price(9299000L)
+                        .price(BigDecimal.valueOf(92990))
                         .productImageIds(List.of(productImageId1))
                         .taggedCategoryIds(List.of(productCategoryId1))
                         .build()
@@ -463,7 +464,7 @@ class ProductServiceImplV1Test {
                         .title("Apple iPhone 15 Plus (256 GB) - Blue (Updated)")
                         .description("DYNAMIC ISLAND COMES TO IPHONE 15  (Updated)")
                         .currencyId(currencyId1)
-                        .price(9299000L)
+                        .price(BigDecimal.valueOf(92990))
                         .productImageIds(List.of(productImageId1))
                         .taggedCategoryIds(List.of(productCategoryId1))
                         .build()
@@ -497,7 +498,7 @@ class ProductServiceImplV1Test {
                         .title("Apple iPhone 15 Plus (256 GB) - Blue (Updated)")
                         .description("DYNAMIC ISLAND COMES TO IPHONE 15  (Updated)")
                         .currencyId(currencyId1)
-                        .price(9299000L)
+                        .price(BigDecimal.valueOf(92990))
                         .productImageIds(List.of(productImageId1))
                         .taggedCategoryIds(List.of(productCategoryId1))
                         .build()

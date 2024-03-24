@@ -5,6 +5,7 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 
 @Entity
@@ -32,5 +33,5 @@ public class ProductPrice {
     @ManyToOne
     private Currency currency;
 
-    private long price; // stores as (real-price*100), e.g. 10.12 saved as 1012, support till two decimal place
+    private BigDecimal price;
 }

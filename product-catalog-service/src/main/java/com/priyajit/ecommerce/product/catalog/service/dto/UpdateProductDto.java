@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Data
@@ -15,7 +16,7 @@ public class UpdateProductDto {
 
     private String productId;
     private String title;
-    private Long price;
+    private BigDecimal price;
     private String currencyId;
     private String description;
     private List<String> taggedCategoryIds;

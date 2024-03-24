@@ -4,6 +4,7 @@ import com.priyajit.ecommerce.product.catalog.service.entity.ProductPrice;
 import lombok.*;
 import org.springframework.util.comparator.Comparators;
 
+import java.math.BigDecimal;
 import java.util.Objects;
 
 @Getter
@@ -14,7 +15,7 @@ import java.util.Objects;
 public class ProductPriceDoc implements Comparable<ProductPriceDoc> {
 
     private String id;
-    private Long price;
+    private BigDecimal price;
     private String currency;
 
     @Override

@@ -8,6 +8,7 @@ import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 
+import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,7 +22,7 @@ public class ProductModel {
     @Builder
     public static class ProductPriceModel {
 
-        private Long price;
+        private BigDecimal price;
         private String currencyName;
 
         public static ProductPriceModel from(ProductPrice productPrice) {

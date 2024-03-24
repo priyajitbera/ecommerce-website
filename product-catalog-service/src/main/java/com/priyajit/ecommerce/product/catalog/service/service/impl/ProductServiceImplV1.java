@@ -30,6 +30,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.SortedSet;
@@ -157,7 +158,7 @@ public class ProductServiceImplV1 implements ProductService {
      * @param currencyId
      * @return
      */
-    private ProductPrice buildProductPrice(long price, String currencyId) {
+    private ProductPrice buildProductPrice(BigDecimal price, String currencyId) {
 
         Currency currency = currencyRepositoryQueryMethod.findById(currencyId)
                 .orElseThrow(CurrencyNotFoundException.supplier(currencyId));
