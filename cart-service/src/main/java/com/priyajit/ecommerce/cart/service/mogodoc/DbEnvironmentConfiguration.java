@@ -67,6 +67,14 @@ public class DbEnvironmentConfiguration {
 
         // product-catalog-service
         public final static String PRODUCT_CATALOG_SERVICE_BASE_URL = "product-catalog-service.base-url";
+
+        // Redis
+        public final static String REDIS_HOSTNAME = "redis.hostname";
+        public final static String REDIS_PORT = "redis.port";
+
+        // freecurrencyapi.com service
+        public final static String FREECURRENCY_SERVICE_BASE_URL = "freecurrency-service.base-url";
+        public final static String FREECURRENCY_SERVICE_API_KEY = "freecurrency-service.api-key";
     }
 
     public static class Values {
