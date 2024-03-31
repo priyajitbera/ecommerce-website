@@ -10,6 +10,8 @@ import com.priyajit.ecommerce.user.management.entity.UserSecret;
 import com.priyajit.ecommerce.user.management.entity.enums.EmailClientStatus;
 import com.priyajit.ecommerce.user.management.entity.enums.EmailVerificationStatus;
 import com.priyajit.ecommerce.user.management.entity.enums.RequestEmailVerifcationSecretStatus;
+import com.priyajit.ecommerce.user.management.exception.NullArgumentException;
+import com.priyajit.ecommerce.user.management.exception.UserNotFoundException;
 import com.priyajit.ecommerce.user.management.model.CreateUserModel;
 import com.priyajit.ecommerce.user.management.model.FindUserModel;
 import com.priyajit.ecommerce.user.management.model.RequestEmailVerificationSecretModel;
@@ -52,6 +54,16 @@ public class UserServiceImplV1 implements UserService {
         this.emailSender = emailSender;
     }
 
+
+    @Override
+    public FindUserModel findUser(BigInteger userId) {
+        if (userId == null) throw new NullArgumentException("userId", BigInteger.class);
+
+        var user = userRepository.findById(userId)
+                .orElseThrow(UserNotFoundException.supplier(userId));
+
+        return FindUserModel.buildFrom(user);
+    }
 
     /**
      * Method to find user using ids

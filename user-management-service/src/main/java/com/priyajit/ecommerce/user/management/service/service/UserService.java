@@ -12,6 +12,8 @@ import java.math.BigInteger;
 import java.util.List;
 
 public interface UserService {
+    FindUserModel findUser(BigInteger userId);
+
     List<FindUserModel> findUsers(List<BigInteger> userIds);
 
     List<CreateUserModel> createUsers(List<CreateUserDto> dtoList);

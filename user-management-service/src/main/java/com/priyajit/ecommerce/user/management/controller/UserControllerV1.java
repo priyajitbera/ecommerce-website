@@ -23,6 +23,12 @@ public class UserControllerV1 {
         this.userService = userService;
     }
 
+    @GetMapping("/find-one")
+    FindUserModel findUser(
+            @RequestParam BigInteger userId) {
+        return userService.findUser(userId);
+    }
+
     @GetMapping
     List<FindUserModel> findUsers(
             @RequestParam(name = "userIds") List<BigInteger> userIds
