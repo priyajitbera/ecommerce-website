@@ -65,6 +65,9 @@ public class DbEnvironmentConfiguration {
         // user-management-service
         public final static String USER_MANAGEMENT_SERVICE_BASE_URL = "user-management-service.base-url";
 
+        // payment-service
+        public final static String PAYMENT_SERVICE_BASE_URL = "payment-service.base-url";
+
         // Redis
         public final static String REDIS_HOSTNAME = "redis.hostname";
         public final static String REDIS_PORT = "redis.port";
@@ -72,6 +75,14 @@ public class DbEnvironmentConfiguration {
         // freecurrencyapi.com service
         public final static String FREECURRENCY_SERVICE_BASE_URL = "freecurrency-service.base-url";
         public final static String FREECURRENCY_SERVICE_API_KEY = "freecurrency-service.api-key";
+
+        // Kafka
+        public final static String KAFKA_CONSUMER_CONFIG_ENABLE = "kafka.producer.config.enable";
+        public final static String KAFKA_BOOTSTRAP_ADDRESS = "kafka.bootstrap-address";
+        public final static String KAFKA_TOPIC_PAYMENT_STATUS_CONFIRMATION = "kafka.topic.payment-status-confirmation";
+        public final static String KAFKA_MAX_REQUEST_SIZE = "kafka.max-request-size";
+        public final static String KAFKA_GROUP_ID_CONFIG = "kafka.group-id-config";
+
     }
 
     public static class Values {

@@ -49,6 +49,7 @@ public class CreateOrderDto {
     @NoArgsConstructor
     public static class PaymentInfo {
         private PaymentMode paymentMode;
+        private String currency;
         private CardInfo cardInfo;
         private UpiInfo upiInfo;
     }

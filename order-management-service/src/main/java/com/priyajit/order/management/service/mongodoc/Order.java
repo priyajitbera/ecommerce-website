@@ -1,5 +1,6 @@
 package com.priyajit.order.management.service.mongodoc;
 
+import com.priyajit.order.management.service.domain.OrderStatus;
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -23,9 +24,7 @@ public class Order {
     private String userId;
     private List<OrderItem> orderItems;
     private BigDecimal orderTotal;
-
     private DeliveryAddress deliveryAddress;
-
-
     private PaymentInfo paymentInfo;
+    private OrderStatus orderStatus;
 }
