@@ -5,18 +5,14 @@ import com.priyajit.order.management.service.client.ProductCatalogServiceClient;
 import com.priyajit.order.management.service.client.UserManagementServiceClient;
 import com.priyajit.order.management.service.client.dto.CreatePaymentDto;
 import com.priyajit.order.management.service.client.model.PaymentModel;
-import com.priyajit.order.management.service.domain.CardType;
-import com.priyajit.order.management.service.domain.OrderStatus;
-import com.priyajit.order.management.service.domain.PaymentMode;
-import com.priyajit.order.management.service.domain.PaymentStatus;
+import com.priyajit.order.management.service.domain.*;
 import com.priyajit.order.management.service.dto.CreateOrderDto;
+import com.priyajit.order.management.service.dto.PostDeliveryUpdateDto;
+import com.priyajit.order.management.service.dto.UpdateDeliveryStatusDto;
 import com.priyajit.order.management.service.event.dto.PaymentStatusConfirmationEventDto;
 import com.priyajit.order.management.service.exception.*;
 import com.priyajit.order.management.service.model.OrderModel;
-import com.priyajit.order.management.service.mongodoc.DeliveryAddress;
-import com.priyajit.order.management.service.mongodoc.Order;
-import com.priyajit.order.management.service.mongodoc.OrderItem;
-import com.priyajit.order.management.service.mongodoc.PaymentInfo;
+import com.priyajit.order.management.service.mongodoc.*;
 import com.priyajit.order.management.service.mongorepository.OrderRepository;
 import com.priyajit.order.management.service.service.OrderService;
 import org.springframework.data.domain.Page;
@@ -29,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -64,6 +61,9 @@ public class OrderServiceImplV1 implements OrderService {
         } else if (PaymentMode.CARD == dto.getPaymentInfo().getPaymentMode() || PaymentMode.UPI == dto.getPaymentInfo().getPaymentMode()) {
             order.setOrderStatus(OrderStatus.NEW);
         }
+
+        // set DeliveryStatus as NEW
+        order.getDeliveryInfo().setDeliveryStatus(DeliveryStatus.NEW);
 
         // save order
         orderRepository.save(order);
@@ -219,6 +219,54 @@ public class OrderServiceImplV1 implements OrderService {
         return OrderModel.buildFrom(order);
     }
 
+    @Override
+    @Transactional
+    public OrderModel updateDeliveryStatus(UpdateDeliveryStatusDto dto) {
+        if (dto == null)
+            throw new NullArgumentException("dto", UpdateDeliveryStatusDto.class);
+
+        if (dto.getOrderId() == null)
+            throw new NullArgumentException("dto.orderId", String.class);
+
+        var order = orderRepository.findById(dto.getOrderId())
+                .orElseThrow(OrderNotFoundException.supplier(dto.getOrderId()));
+
+        // update the DeliveryStatus
+        order.getDeliveryInfo().setDeliveryStatus(dto.getDeliveryStatus());
+
+        // save updates
+        orderRepository.save(order);
+
+        return OrderModel.buildFrom(order);
+    }
+
+    @Override
+    public OrderModel postDeliveryUpdate(PostDeliveryUpdateDto dto) {
+        if (dto == null)
+            throw new NullArgumentException("dto", PostDeliveryUpdateDto.class);
+
+        if (dto.getOrderId() == null)
+            throw new NullArgumentException("dto.orderId", String.class);
+
+        var order = orderRepository.findById(dto.getOrderId())
+                .orElseThrow(OrderNotFoundException.supplier(dto.getOrderId()));
+
+        if (order.getDeliveryInfo().getDeliveryUpdates() == null)
+            order.getDeliveryInfo().setDeliveryUpdates(new ArrayList<>());
+
+        var deliveryUpdate = DeliveryUpdate.builder()
+                .timeStamp(ZonedDateTime.now(ZoneId.of("UTC")).toLocalDateTime())
+                .message(dto.getMessage())
+                .build();
+
+        order.getDeliveryInfo().getDeliveryUpdates().add(deliveryUpdate);
+
+        // save updates
+        orderRepository.save(order);
+
+        return OrderModel.buildFrom(order);
+    }
+
     private Order createOrderObjectFromDto(CreateOrderDto dto) {
 
         // validate userId
@@ -226,13 +274,13 @@ public class OrderServiceImplV1 implements OrderService {
                 .orElseThrow(UserNotFoundException.supplier(dto.getUserId()));
 
         var orderItems = createOrderItems(dto.getOrderItems());
-        var deliveryAddress = createDeliverAddressFromDto(dto.getDeliveryAddress());
+        var deliveryInfo = createDeliveryInfoFromDto(dto);
 
         return Order.builder()
                 .userId(dto.getUserId())
                 .orderItems(orderItems)
                 .orderTotal(dto.getOrderTotal())
-                .deliveryAddress(deliveryAddress)
+                .deliveryInfo(deliveryInfo)
                 .build();
     }
 
@@ -254,6 +302,17 @@ public class OrderServiceImplV1 implements OrderService {
                 .productTitle(product.getTitle())
                 .orderItemValue(dto.getOrderItemValue())
                 .productUnitPrice(dto.getProductUnitPrice())
+                .build();
+    }
+
+    private DeliveryInfo createDeliveryInfoFromDto(CreateOrderDto dto) {
+        if (dto == null) throw new NullArgumentException("dto", CreateOrderDto.class);
+
+        var deliverAddress = dto.getDeliveryAddress() == null ? null :
+                createDeliverAddressFromDto(dto.getDeliveryAddress());
+
+        return DeliveryInfo.builder()
+                .deliveryAddress(deliverAddress)
                 .build();
     }
 

@@ -24,7 +24,7 @@ public class Order {
     private String userId;
     private List<OrderItem> orderItems;
     private BigDecimal orderTotal;
-    private DeliveryAddress deliveryAddress;
     private PaymentInfo paymentInfo;
     private OrderStatus orderStatus;
+    private DeliveryInfo deliveryInfo;
 }

@@ -1,6 +1,8 @@
 package com.priyajit.order.management.service.controller;
 
 import com.priyajit.order.management.service.dto.CreateOrderDto;
+import com.priyajit.order.management.service.dto.PostDeliveryUpdateDto;
+import com.priyajit.order.management.service.dto.UpdateDeliveryStatusDto;
 import com.priyajit.order.management.service.model.OrderModel;
 import com.priyajit.order.management.service.model.Response;
 import com.priyajit.order.management.service.service.OrderService;
@@ -55,5 +57,19 @@ public class OrderControllerV1 {
             @RequestParam(defaultValue = "5") Integer pageSize
     ) {
         return orderService.findUserOrders(userId, page, pageSize);
+    }
+
+    @PatchMapping("/update-delivery-status")
+    public OrderModel updateDeliveryStatus(
+            @RequestBody UpdateDeliveryStatusDto updateDeliveryStatusDto
+    ) {
+        return orderService.updateDeliveryStatus(updateDeliveryStatusDto);
+    }
+
+    @PostMapping("/post-delivery-update")
+    public OrderModel postDelivateUpdate(
+            @RequestBody PostDeliveryUpdateDto dto
+    ) {
+        return orderService.postDeliveryUpdate(dto);
     }
 }
