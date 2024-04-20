@@ -1,13 +1,7 @@
 package com.priyajit.order.management.service.model;
 
-import com.priyajit.order.management.service.domain.CardType;
-import com.priyajit.order.management.service.domain.OrderStatus;
-import com.priyajit.order.management.service.domain.PaymentMode;
-import com.priyajit.order.management.service.domain.PaymentStatus;
-import com.priyajit.order.management.service.mongodoc.DeliveryAddress;
-import com.priyajit.order.management.service.mongodoc.Order;
-import com.priyajit.order.management.service.mongodoc.OrderItem;
-import com.priyajit.order.management.service.mongodoc.PaymentInfo;
+import com.priyajit.order.management.service.domain.*;
+import com.priyajit.order.management.service.mongodoc.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,6 +9,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.lang.Nullable;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Collection;
@@ -32,7 +27,7 @@ public class OrderModel {
     private String userId;
     private List<OrderItemModel> orderItems;
     private BigDecimal orderTotal;
-    private DeliveryAddressModel deliveryAddress;
+    private DeliveryInfoModel deliveryInfo;
     private PaymentInfoModel paymentInfo;
     private OrderStatus orderStatus;
 
@@ -51,7 +46,7 @@ public class OrderModel {
                 .userId(order.getUserId())
                 .orderItems(OrderItemModel.buildFrom(order.getOrderItems()))
                 .orderTotal(order.getOrderTotal())
-                .deliveryAddress(DeliveryAddressModel.buildFrom(order.getDeliveryAddress()))
+                .deliveryInfo(DeliveryInfoModel.buildFrom(order.getDeliveryInfo()))
                 .paymentInfo(PaymentInfoModel.buildFrom(order.getPaymentInfo()))
                 .orderStatus(order.getOrderStatus())
                 .build();
@@ -83,6 +78,53 @@ public class OrderModel {
                     .quantity(orderItem.getQuantity())
                     .productUnitPrice(orderItem.getProductUnitPrice())
                     .orderItemValue(orderItem.getOrderItemValue())
+                    .build();
+        }
+    }
+
+    @Data
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class DeliveryInfoModel {
+
+        private DeliveryStatus deliveryStatus;
+        private List<DeliveryUpdateModel> deliveryUpdates;
+        private DeliveryAddressModel deliveryAddress;
+
+        public static DeliveryInfoModel buildFrom(DeliveryInfo deliveryInfo) {
+            if (deliveryInfo == null) return null;
+
+            return DeliveryInfoModel.builder()
+                    .deliveryStatus(deliveryInfo.getDeliveryStatus())
+                    .deliveryUpdates(DeliveryUpdateModel.buildFrom(deliveryInfo.getDeliveryUpdates()))
+                    .deliveryAddress(DeliveryAddressModel.buildFrom(deliveryInfo.getDeliveryAddress()))
+                    .build();
+        }
+    }
+
+    @Data
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class DeliveryUpdateModel {
+        private LocalDateTime timeStamp;
+        private String message;
+
+        public static List<DeliveryUpdateModel> buildFrom(List<DeliveryUpdate> deliveryUpdates) {
+            if (deliveryUpdates == null) return null;
+
+            return deliveryUpdates.stream()
+                    .map(DeliveryUpdateModel::buildFrom)
+                    .collect(Collectors.toList());
+        }
+
+        public static DeliveryUpdateModel buildFrom(DeliveryUpdate deliveryUpdate) {
+            if (deliveryUpdate == null) return null;
+
+            return DeliveryUpdateModel.builder()
+                    .timeStamp(deliveryUpdate.getTimeStamp())
+                    .message(deliveryUpdate.getMessage())
                     .build();
         }
     }
