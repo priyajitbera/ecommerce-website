@@ -11,6 +11,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @NoArgsConstructor
 @Builder
 public class CardInfo {
+
     private CardType cardType;
     private String cardNumber;
     private String bankName;

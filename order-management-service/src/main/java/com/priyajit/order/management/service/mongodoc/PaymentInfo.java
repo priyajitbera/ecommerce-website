@@ -5,6 +5,8 @@ import com.priyajit.order.management.service.domain.PaymentStatus;
 import lombok.*;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.time.LocalDateTime;
+
 @Document
 @Getter
 @Setter
@@ -15,6 +17,6 @@ public class PaymentInfo {
 
     private PaymentMode paymentMode;
     private PaymentStatus paymentStatus;
-    private CardInfo cardInfo;
-    private UpiInfo upiInfo;
+    private LocalDateTime paymentStatusLastUpdatedOn;
+    private String paymentId;
 }

@@ -5,5 +5,5 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface DbEnvironmentConfigurationRepository extends MongoRepository<DbEnvironmentConfiguration, Long> {
+public interface DbEnvironmentConfigurationRepository extends MongoRepository<DbEnvironmentConfiguration, String> {
 }
