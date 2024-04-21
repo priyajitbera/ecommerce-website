@@ -38,7 +38,7 @@ public class ProductPriceDoc implements Comparable<ProductPriceDoc> {
         return ProductPriceDoc.builder()
                 .id(productPrice.getId())
                 .price(productPrice.getPrice())
-                .currency(productPrice.getCurrency() == null ? null : productPrice.getCurrency().getName())
+                .currency(productPrice.getCurrency() == null ? null : productPrice.getCurrency().getId())
                 .build();
     }
 
