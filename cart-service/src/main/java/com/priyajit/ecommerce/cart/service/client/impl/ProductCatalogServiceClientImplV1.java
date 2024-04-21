@@ -2,8 +2,10 @@ package com.priyajit.ecommerce.cart.service.client.impl;
 
 import com.priyajit.ecommerce.cart.service.client.ProductCatalogServiceClient;
 import com.priyajit.ecommerce.cart.service.client.model.ProductModel;
+import com.priyajit.ecommerce.cart.service.client.model.Response;
 import com.priyajit.ecommerce.cart.service.mogodoc.DbEnvironmentConfiguration;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -32,7 +34,7 @@ public class ProductCatalogServiceClientImplV1 implements ProductCatalogServiceC
                 .baseUrl(BASE_URL)
                 .build();
 
-        ResponseEntity<ProductModel> response;
+        ResponseEntity<Response<ProductModel>> response;
         try {
             log.info("Before calling product-catalog-service API");
             response = restClient.get().uri(uri -> uri
@@ -40,7 +42,8 @@ public class ProductCatalogServiceClientImplV1 implements ProductCatalogServiceC
                             .queryParam("productId", productId)
                             .build())
                     .retrieve()
-                    .toEntity(ProductModel.class);
+                    .toEntity(new ParameterizedTypeReference<Response<ProductModel>>() {
+                    });
             log.info("After calling product-catalog-service API, status:{}", response.getStatusCode());
         }
         // error
@@ -53,15 +56,24 @@ public class ProductCatalogServiceClientImplV1 implements ProductCatalogServiceC
         } catch (Exception e) {
             throw new RuntimeException("Error occurred while calling product-catalog-service API ", e);
         }
-        if (HttpStatus.OK == response.getStatusCode()) {
-            var productModel = response.getBody();
-            // validate response body content
-            if (productModel == null) {
-                return Optional.empty();
-            }
+
+        // log the error present in response body (if provided)
+        if (response.getBody() != null && response.getBody().getError() != null) {
+            log.error("Provided error in response body: {}", response.getBody().getError());
+        }
+        if (HttpStatus.OK == response.getStatusCode() && response.getBody() != null && response.getBody().getData() != null) {
+            var productModel = response.getBody().getData();
             return Optional.of(productModel);
+
         } else if (HttpStatus.NOT_FOUND == response.getStatusCode()) {
             return Optional.empty();
-        } else throw new RuntimeException("Error occurred while calling product-catalog-service API");
+        } else if (HttpStatus.OK != response.getStatusCode()) {
+            throw new RuntimeException(String.format("Error occurred while calling product-catalog-service API, expected status code: %s but got: %s",
+                    HttpStatus.OK, response.getStatusCode()));
+        } else if (response.getBody() == null) {
+            throw new RuntimeException("Error occurred while calling product-catalog-service API, expected non null value in response body");
+        } else {
+            throw new RuntimeException("Error occurred while calling product-catalog-service API, expected non null value in response body.data");
+        }
     }
 }
