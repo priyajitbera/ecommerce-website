@@ -3,7 +3,6 @@ package com.priyajit.ecommerce.cart.service.service.impl;
 import com.priyajit.ecommerce.cart.service.client.FreecurrencyApiClient;
 import com.priyajit.ecommerce.cart.service.client.ProductCatalogServiceClient;
 import com.priyajit.ecommerce.cart.service.domain.CartProductOperation;
-import com.priyajit.ecommerce.cart.service.domain.Currencies;
 import com.priyajit.ecommerce.cart.service.dto.CreateCartDto;
 import com.priyajit.ecommerce.cart.service.dto.UpdateCartProductQuantityDto;
 import com.priyajit.ecommerce.cart.service.exception.*;
@@ -56,9 +55,16 @@ public class CartServiceImplV1 implements CartService {
     @Override
     public CartModelV2 findCartV2(String userId, String currency) {
         // validate the currency
-        if (!Currencies.getCurrencies().contains(currency)) {
-            throw new InvalidCurrencyNameException(currency);
+        // get all currencies
+        var allCurrencies = productCatalogServiceClient.findCurrencies(null, null)
+                .stream()
+                .map(currencyModel -> currencyModel.getId())
+                .collect(Collectors.toSet());
+
+        if (!allCurrencies.contains(currency)) {
+            throw new InvalidCurrencyNameException(currency, allCurrencies);
         }
+
         // search in primary DB
         var cart = cartRepository.findByUserId(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
