@@ -4,14 +4,14 @@ import com.priyajit.ecommerce.product.catalog.service.dto.CreateProductDto;
 import com.priyajit.ecommerce.product.catalog.service.dto.DeleteProductDto;
 import com.priyajit.ecommerce.product.catalog.service.dto.IndexProductsInElasticSearchDto;
 import com.priyajit.ecommerce.product.catalog.service.dto.UpdateProductDto;
-import com.priyajit.ecommerce.product.catalog.service.model.DeleteProductsInElasticSearchModel;
-import com.priyajit.ecommerce.product.catalog.service.model.IndexProductsInElasticSearchModel;
-import com.priyajit.ecommerce.product.catalog.service.model.PaginatedProductList;
-import com.priyajit.ecommerce.product.catalog.service.model.ProductModel;
+import com.priyajit.ecommerce.product.catalog.service.model.*;
 import com.priyajit.ecommerce.product.catalog.service.service.ProductService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -28,7 +28,7 @@ public class ProductController {
     }
 
     @GetMapping
-    PaginatedProductList findProducts(
+    public ResponseEntity<Response<PaginatedProductList>> findProducts(
             @RequestParam(required = false) List<String> productIds,
             @RequestParam(required = false) String productNamePart,
             @RequestParam(required = false) List<String> produdctCategoryIds,
@@ -36,14 +36,30 @@ public class ProductController {
             @RequestParam(name = "pageIndex", required = false, defaultValue = "0") Integer pageIndex,
             @RequestParam(name = "pageSize", required = false, defaultValue = "10") Integer pageSize
     ) {
-        return productService.findProducts(
-                productIds, productNamePart, produdctCategoryIds, productCategoryNames,
-                pageIndex, pageSize
-        );
+        try {
+            var model = productService.findProducts(
+                    productIds, productNamePart, produdctCategoryIds, productCategoryNames,
+                    pageIndex, pageSize
+            );
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(Response.<PaginatedProductList>builder()
+                            .data(model)
+                            .build());
+        } catch (ResponseStatusException e) {
+            return ResponseEntity.status(e.getStatusCode())
+                    .body(Response.<PaginatedProductList>builder()
+                            .error(e.getMessage())
+                            .build());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Response.<PaginatedProductList>builder()
+                            .error(e.getMessage())
+                            .build());
+        }
     }
 
     @GetMapping("/search")
-    PaginatedProductList search(
+    public ResponseEntity<Response<PaginatedProductList>> search(
             @RequestParam(required = false) List<String> productIds,
             @RequestParam(required = false) String productNamePart,
             @RequestParam(required = false) String productDescriptionPart,
@@ -52,49 +68,163 @@ public class ProductController {
             @RequestParam(name = "pageIndex", required = false, defaultValue = "0") Integer pageIndex,
             @RequestParam(name = "pageSize", required = false, defaultValue = "10") Integer pageSize
     ) {
-        return productService.search(
-                productIds, productNamePart, productDescriptionPart, produdctCategoryIds, productCategoryNames,
-                pageIndex, pageSize
-        );
+        try {
+            var model = productService.search(
+                    productIds, productNamePart, productDescriptionPart, produdctCategoryIds, productCategoryNames,
+                    pageIndex, pageSize
+            );
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(Response.<PaginatedProductList>builder()
+                            .data(model)
+                            .build());
+        } catch (ResponseStatusException e) {
+            return ResponseEntity.status(e.getStatusCode())
+                    .body(Response.<PaginatedProductList>builder()
+                            .error(e.getMessage())
+                            .build());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Response.<PaginatedProductList>builder()
+                            .error(e.getMessage())
+                            .build());
+        }
     }
 
     @PostMapping
-    List<ProductModel> createProducts(
+    public ResponseEntity<Response<List<ProductModel>>> createProducts(
             @RequestBody List<CreateProductDto> dtos
     ) {
-        return productService.createProducts(dtos);
+        try {
+            var models = productService.createProducts(dtos);
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(Response.<List<ProductModel>>builder()
+                            .data(models)
+                            .build());
+        } catch (ResponseStatusException e) {
+            return ResponseEntity.status(e.getStatusCode())
+                    .body(Response.<List<ProductModel>>builder()
+                            .error(e.getMessage())
+                            .build());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Response.<List<ProductModel>>builder()
+                            .error(e.getMessage())
+                            .build());
+        }
     }
 
     @PatchMapping
-    List<ProductModel> updateProducts(
+    public ResponseEntity<Response<List<ProductModel>>> updateProducts(
             @RequestBody List<UpdateProductDto> dtos
     ) {
-        return productService.updateProducts(dtos);
+        try {
+            var models = productService.updateProducts(dtos);
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(Response.<List<ProductModel>>builder()
+                            .data(models)
+                            .build());
+        } catch (ResponseStatusException e) {
+            return ResponseEntity.status(e.getStatusCode())
+                    .body(Response.<List<ProductModel>>builder()
+                            .error(e.getMessage())
+                            .build());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Response.<List<ProductModel>>builder()
+                            .error(e.getMessage())
+                            .build());
+        }
     }
 
     @DeleteMapping
-    List<ProductModel> deleteProduct(
+    public ResponseEntity<Response<List<ProductModel>>> deleteProduct(
             @RequestBody List<DeleteProductDto> dtos
     ) {
-        return productService.deleteProducts(dtos);
+        try {
+            var models = productService.deleteProducts(dtos);
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(Response.<List<ProductModel>>builder()
+                            .data(models)
+                            .build());
+        } catch (ResponseStatusException e) {
+            return ResponseEntity.status(e.getStatusCode())
+                    .body(Response.<List<ProductModel>>builder()
+                            .error(e.getMessage())
+                            .build());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Response.<List<ProductModel>>builder()
+                            .error(e.getMessage())
+                            .build());
+        }
     }
 
     @PostMapping("/elastic-search/index")
-    IndexProductsInElasticSearchModel indexProductsInElasticSearch(
+    public ResponseEntity<Response<IndexProductsInElasticSearchModel>> indexProductsInElasticSearch(
             @RequestBody IndexProductsInElasticSearchDto indexProductsInElasticSearchDto
     ) {
-        return productService.indexProductsInElasticSearch(indexProductsInElasticSearchDto);
+        try {
+            var model = productService.indexProductsInElasticSearch(indexProductsInElasticSearchDto);
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(Response.<IndexProductsInElasticSearchModel>builder()
+                            .data(model)
+                            .build());
+        } catch (ResponseStatusException e) {
+            return ResponseEntity.status(e.getStatusCode())
+                    .body(Response.<IndexProductsInElasticSearchModel>builder()
+                            .error(e.getMessage())
+                            .build());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Response.<IndexProductsInElasticSearchModel>builder()
+                            .error(e.getMessage())
+                            .build());
+        }
     }
 
     @DeleteMapping("/elastic-search/delete")
-    DeleteProductsInElasticSearchModel deleteProductsInElasticSearch(
+    public ResponseEntity<Response<DeleteProductsInElasticSearchModel>> deleteProductsInElasticSearch(
             @RequestBody IndexProductsInElasticSearchDto dto
     ) {
-        return productService.deleteProductsInElasticSearch(dto);
+        try {
+            var model = productService.deleteProductsInElasticSearch(dto);
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(Response.<DeleteProductsInElasticSearchModel>builder()
+                            .data(model)
+                            .build());
+        } catch (ResponseStatusException e) {
+            return ResponseEntity.status(e.getStatusCode())
+                    .body(Response.<DeleteProductsInElasticSearchModel>builder()
+                            .error(e.getMessage())
+                            .build());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Response.<DeleteProductsInElasticSearchModel>builder()
+                            .error(e.getMessage())
+                            .build());
+        }
     }
 
     @GetMapping("/get")
-    ProductModel getProduct(@RequestParam("productId") String productId) {
-        return productService.getProduct(productId);
+    public ResponseEntity<Response<ProductModel>> getProduct(
+            @RequestParam("productId") String productId
+    ) {
+        try {
+            var model = productService.getProduct(productId);
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(Response.<ProductModel>builder()
+                            .data(model)
+                            .build());
+        } catch (ResponseStatusException e) {
+            return ResponseEntity.status(e.getStatusCode())
+                    .body(Response.<ProductModel>builder()
+                            .error(e.getMessage())
+                            .build());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Response.<ProductModel>builder()
+                            .error(e.getMessage())
+                            .build());
+        }
     }
 }

@@ -1,10 +1,14 @@
 package com.priyajit.ecommerce.product.catalog.service.controller;
 
-import com.priyajit.ecommerce.product.catalog.service.service.ProductCategoryService;
 import com.priyajit.ecommerce.product.catalog.service.dto.CreateProductCategoryDto;
 import com.priyajit.ecommerce.product.catalog.service.model.ProductCategoryModel;
+import com.priyajit.ecommerce.product.catalog.service.model.Response;
+import com.priyajit.ecommerce.product.catalog.service.service.ProductCategoryService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -20,17 +24,49 @@ public class ProductCategoryController {
     }
 
     @PostMapping
-    public List<ProductCategoryModel> createProductCategories(
+    public ResponseEntity<Response<List<ProductCategoryModel>>> createProductCategories(
             @RequestBody List<CreateProductCategoryDto> dtos) {
 
-        return productCategoryService.createProductCategories(dtos);
+        try {
+            var models = productCategoryService.createProductCategories(dtos);
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(Response.<List<ProductCategoryModel>>builder()
+                            .data(models)
+                            .build());
+        } catch (ResponseStatusException e) {
+            return ResponseEntity.status(e.getStatusCode())
+                    .body(Response.<List<ProductCategoryModel>>builder()
+                            .error(e.getMessage())
+                            .build());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Response.<List<ProductCategoryModel>>builder()
+                            .error(e.getMessage())
+                            .build());
+        }
     }
 
     @GetMapping
-    public List<ProductCategoryModel> findProductCategories(
+    public ResponseEntity<Response<List<ProductCategoryModel>>> findProductCategories(
             @RequestParam(name = "id", required = false) List<String> ids,
             @RequestParam(name = "name", required = false) List<String> names
     ) {
-        return productCategoryService.findProductCategories(ids, names);
+        try {
+            var models = productCategoryService.findProductCategories(ids, names);
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(Response.<List<ProductCategoryModel>>builder()
+                            .data(models)
+                            .build());
+        } catch (ResponseStatusException e) {
+            return ResponseEntity.status(e.getStatusCode())
+                    .body(Response.<List<ProductCategoryModel>>builder()
+                            .error(e.getMessage())
+                            .build());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Response.<List<ProductCategoryModel>>builder()
+                            .error(e.getMessage())
+                            .build());
+        }
     }
 }
