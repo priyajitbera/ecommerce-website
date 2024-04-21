@@ -23,10 +23,10 @@ public class User {
     private BigInteger id;
 
     @CreationTimestamp
-    private ZonedDateTime createOn;
+    private ZonedDateTime createdOn;
 
     @UpdateTimestamp
-    private ZonedDateTime lastModified;
+    private ZonedDateTime lastModifiedOn;
 
     @Column(unique = true)
     private String emailId;
