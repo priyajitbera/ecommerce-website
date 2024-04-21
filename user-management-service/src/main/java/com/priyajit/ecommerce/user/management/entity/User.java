@@ -46,8 +46,8 @@ public class User {
     @ManyToMany
     @JoinTable(
             name = "USER_ROLE_MAP",
-            foreignKey = @ForeignKey(name = "FK__USER_ROLE_MAP_USER_ID"),
-            inverseForeignKey = @ForeignKey(name = "FK__USER_ROLE_MAP_ROLE_ID"),
+            foreignKey = @ForeignKey(name = "FK__USER_ROLE__MAP_USER_ID"),
+            inverseForeignKey = @ForeignKey(name = "FK__USER_ROLE_MAP__ROLE_ID"),
             joinColumns = @JoinColumn(name = "USER_ID"),
             inverseJoinColumns = @JoinColumn(name = "ROLE_ID")
     )
