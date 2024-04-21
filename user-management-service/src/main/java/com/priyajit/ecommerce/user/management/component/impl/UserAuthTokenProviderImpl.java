@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Date;
+import java.util.List;
 
 import static com.priyajit.ecommerce.user.management.entity.DbEnvironmentConfiguration.Keys;
 
@@ -23,13 +24,15 @@ public class UserAuthTokenProviderImpl implements UserAuthTokenProvider {
     }
 
     @Override
-    public String generateToken(String sub) {
+    public String generateToken(String sub, List<String> roles) {
 
         long validity = Long.parseLong(dbEnvironmentConfiguration.getProperty(Keys.JWT_VALIDITY_MILLIS));
         Date issueAt = new Date();
         Date expiration = new Date(issueAt.getTime() + validity);
 
-        Claims claims = Jwts.claims().setSubject(sub);
+        Claims claims = Jwts.claims()
+                .setSubject(sub);
+        claims.put("roles", roles);
 
         byte[] secretKey = Base64.getEncoder().encode(dbEnvironmentConfiguration.getProperty(Keys.JWT_SECRET_KEY).getBytes(StandardCharsets.UTF_8));
 

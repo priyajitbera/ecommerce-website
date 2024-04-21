@@ -8,6 +8,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigInteger;
 import java.time.ZonedDateTime;
+import java.util.List;
 
 @Entity
 @Getter
@@ -41,4 +42,14 @@ public class User {
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.PERSIST)
     private UserSecret userSecret;
+
+    @ManyToMany
+    @JoinTable(
+            name = "USER_ROLE_MAP",
+            foreignKey = @ForeignKey(name = "FK__USER_ROLE_MAP_USER_ID"),
+            inverseForeignKey = @ForeignKey(name = "FK__USER_ROLE_MAP_ROLE_ID"),
+            joinColumns = @JoinColumn(name = "USER_ID"),
+            inverseJoinColumns = @JoinColumn(name = "ROLE_ID")
+    )
+    private List<Role> roles;
 }

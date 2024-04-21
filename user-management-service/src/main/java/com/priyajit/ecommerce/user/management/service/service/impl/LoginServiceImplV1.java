@@ -2,6 +2,7 @@ package com.priyajit.ecommerce.user.management.service.service.impl;
 
 import com.priyajit.ecommerce.user.management.component.UserAuthTokenProvider;
 import com.priyajit.ecommerce.user.management.dto.LoginDto;
+import com.priyajit.ecommerce.user.management.entity.Role;
 import com.priyajit.ecommerce.user.management.entity.User;
 import com.priyajit.ecommerce.user.management.entity.enums.EmailVerificationStatus;
 import com.priyajit.ecommerce.user.management.entity.enums.LoginAttemptStatus;
@@ -10,6 +11,9 @@ import com.priyajit.ecommerce.user.management.repository.UserRepository;
 import com.priyajit.ecommerce.user.management.service.service.LoginService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class LoginServiceImplV1 implements LoginService {
@@ -61,10 +65,20 @@ public class LoginServiceImplV1 implements LoginService {
 
         // match password
         if (passwordEncoder.matches(dto.getPassword(), user.getUserSecret().getPassword())) {
-            String token = userAuthTokenProvider.generateToken(user.getId().toString());
+            // fetch user's roles
+            var roles = user.getRoles() == null ? List.<String>of() :
+                    user.getRoles().stream()
+                            .map(Role::getName)
+                            .collect(Collectors.toList());
+
+            // generate toke with userId and roles
+            String token = userAuthTokenProvider.generateToken(user.getId().toString(), roles);
+
+            // build the response model and return
             return LoginModel.builder()
                     .status(LoginAttemptStatus.SUCCESS)
                     .userId(user.getId())
+                    .roles(roles)
                     .token(token)
                     .build();
         } else {
