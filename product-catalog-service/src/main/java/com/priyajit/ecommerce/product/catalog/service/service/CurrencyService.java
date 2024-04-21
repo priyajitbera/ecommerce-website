@@ -9,4 +9,6 @@ public interface CurrencyService {
     List<CurrencyModel> createCurrencies(List<CreateCurrencyDto> dtos);
 
     List<CurrencyModel> findCurrencies(List<String> ids, List<String> names);
+
+    CurrencyModel findById(String id);
 }

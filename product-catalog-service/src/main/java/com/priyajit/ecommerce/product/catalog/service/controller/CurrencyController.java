@@ -33,4 +33,11 @@ public class CurrencyController {
     ) {
         return currencyService.findCurrencies(ids, names);
     }
+
+    @GetMapping("find-one")
+    public CurrencyModel findOneById(
+            @RequestParam(name = "id") String id
+    ) {
+        return currencyService.findById(id);
+    }
 }

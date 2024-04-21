@@ -29,7 +29,7 @@ public class ProductModel {
             if (productPrice == null) return null;
 
             String currencyName = productPrice.getCurrency() == null ? null :
-                    productPrice.getCurrency().getName();
+                    productPrice.getCurrency().getId();
 
             return ProductPriceModel.builder()
                     .price(productPrice.getPrice())
