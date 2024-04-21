@@ -1,6 +1,7 @@
 package com.priyajit.ecommerce.cart.service.client.impl;
 
 import com.priyajit.ecommerce.cart.service.client.ProductCatalogServiceClient;
+import com.priyajit.ecommerce.cart.service.client.model.CurrencyModel;
 import com.priyajit.ecommerce.cart.service.client.model.ProductModel;
 import com.priyajit.ecommerce.cart.service.client.model.Response;
 import com.priyajit.ecommerce.cart.service.mogodoc.DbEnvironmentConfiguration;
@@ -8,10 +9,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
 
+import java.util.List;
 import java.util.Optional;
 
 import static com.priyajit.ecommerce.cart.service.mogodoc.DbEnvironmentConfiguration.Keys;
@@ -72,6 +75,55 @@ public class ProductCatalogServiceClientImplV1 implements ProductCatalogServiceC
                     HttpStatus.OK, response.getStatusCode()));
         } else if (response.getBody() == null) {
             throw new RuntimeException("Error occurred while calling product-catalog-service API, expected non null value in response body");
+        } else {
+            throw new RuntimeException("Error occurred while calling product-catalog-service API, expected non null value in response body.data");
+        }
+    }
+
+    @Override
+    public List<CurrencyModel> findCurrencies(@Nullable List<String> ids, @Nullable List<String> names) {
+        var BASE_URL = configuration.getProperty(Keys.PRODUCT_CATALOG_SERVICE_BASE_URL);
+        RestClient restClient = RestClient.builder()
+                .baseUrl(BASE_URL)
+                .build();
+
+        ResponseEntity<Response<List<CurrencyModel>>> response;
+        try {
+            log.info("Before calling product-catalog-service API");
+            response = restClient.get().uri(uri -> {
+                        uri.path("/currency/v1");
+                        if (ids != null) uri.queryParam("id", ids);
+                        if (names != null) uri.queryParam("name", names);
+                        return uri.build();
+                    })
+                    .retrieve()
+                    .toEntity(new ParameterizedTypeReference<Response<List<CurrencyModel>>>() {
+                    });
+            log.info("After calling product-catalog-service API, status:{}", response.getStatusCode());
+        }
+
+        // error
+        catch (HttpClientErrorException e) {
+            throw new RuntimeException("Error occurred while calling product-catalog-service API ", e);
+        } catch (Exception e) {
+            throw new RuntimeException("Error occurred while calling product-catalog-service API ", e);
+        }
+
+        // log the error provided in response body (if provided)
+        if (response.getBody() != null && response.getBody().getError() != null) {
+            log.error("Provided error in response body: {}", response.getBody().getError());
+        }
+
+        if (HttpStatus.OK == response.getStatusCode() && response.getBody() != null && response.getBody().getData() != null) {
+            return response.getBody().getData();
+
+        } else if (HttpStatus.OK != response.getStatusCode()) {
+            throw new RuntimeException(String.format("Error occurred while calling product-catalog-service API, expected status code: %s but got: %s",
+                    HttpStatus.OK, response.getStatusCode()));
+
+        } else if (response.getBody() == null) {
+            throw new RuntimeException("Error occurred while calling product-catalog-service API, expected non null value in response body");
+
         } else {
             throw new RuntimeException("Error occurred while calling product-catalog-service API, expected non null value in response body.data");
         }
