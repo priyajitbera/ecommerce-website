@@ -78,6 +78,8 @@ public class LoginServiceImplV1 implements LoginService {
             return LoginModel.builder()
                     .status(LoginAttemptStatus.SUCCESS)
                     .userId(user.getId())
+                    .name(user.getName())
+                    .emailId(user.getEmailId())
                     .roles(roles)
                     .token(token)
                     .build();

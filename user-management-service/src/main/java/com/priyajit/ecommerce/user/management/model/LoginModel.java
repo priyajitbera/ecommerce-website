@@ -18,6 +18,8 @@ public class LoginModel {
     private LoginAttemptStatus status;
     private String message;
     private BigInteger userId;
+    private String name;
+    private String emailId;
     private List<String> roles;
     private String token;
 }
