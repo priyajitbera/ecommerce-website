@@ -28,7 +28,6 @@ public class User {
     @UpdateTimestamp
     private ZonedDateTime lastModifiedOn;
 
-    @Column(unique = true)
     private String emailId;
 
     private String name;
