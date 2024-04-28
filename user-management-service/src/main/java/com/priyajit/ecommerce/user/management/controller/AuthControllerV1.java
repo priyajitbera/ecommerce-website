@@ -77,4 +77,21 @@ public class AuthControllerV1 {
                     .body(Response.<VerifyEmailModel>builder().build());
         }
     }
+
+    @GetMapping("/check-email-id-available")
+    public ResponseEntity<Response<CheckEmailIdAvailableModel>> checkEmailIdAvailable(
+            @RequestParam(name = "emailId") String emailId
+    ) {
+        try {
+            var model = authService.checkEmailIdAvailable(emailId);
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(Response.<CheckEmailIdAvailableModel>builder().data(model).build());
+        } catch (ResponseStatusException e) {
+            return ResponseEntity.status(e.getStatusCode())
+                    .body(Response.<CheckEmailIdAvailableModel>builder().error(e.getReason()).build());
+        } catch (Throwable e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Response.<CheckEmailIdAvailableModel>builder().build());
+        }
+    }
 }
