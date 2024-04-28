@@ -16,10 +16,7 @@ import com.priyajit.ecommerce.user.management.entity.enums.LoginAttemptStatus;
 import com.priyajit.ecommerce.user.management.entity.enums.RequestEmailVerifcationSecretStatus;
 import com.priyajit.ecommerce.user.management.exception.NullArgumentException;
 import com.priyajit.ecommerce.user.management.exception.UserAlreadyExistsException;
-import com.priyajit.ecommerce.user.management.model.LoginModel;
-import com.priyajit.ecommerce.user.management.model.RequestEmailVerificationSecretModel;
-import com.priyajit.ecommerce.user.management.model.SignupModel;
-import com.priyajit.ecommerce.user.management.model.VerifyEmailModel;
+import com.priyajit.ecommerce.user.management.model.*;
 import com.priyajit.ecommerce.user.management.repository.RoleRepository;
 import com.priyajit.ecommerce.user.management.repository.UserRepository;
 import com.priyajit.ecommerce.user.management.service.service.AuthService;
@@ -129,7 +126,9 @@ public class AuthServiceImplV1 implements AuthService {
         if (dto.getEmailId() == null) throw new NullArgumentException("emailId", String.class);
 
         // validate if user exists with User
-        var existingUserWithEmailId = userRepository.findByEmailId(dto.getEmailId());
+        var existingUserWithEmailId = userRepository.findByEmailIdAndEmailVerificationStatus(
+                dto.getEmailId(), EmailVerificationStatus.VERIFIED
+        );
         if (existingUserWithEmailId.isPresent()) {
             throw new UserAlreadyExistsException(dto.getEmailId(), 0);
         }
@@ -257,6 +256,21 @@ public class AuthServiceImplV1 implements AuthService {
                 .emailId(user.getEmailId())
                 .verificationStatus(user.getEmailVerificationStatus())
                 .verifiedOn(user.getEmailVerifiedOn())
+                .build();
+    }
+
+    @Override
+    public CheckEmailIdAvailableModel checkEmailIdAvailable(String emailId) {
+
+        // fetch the verified user with this email if present, there must be exactly one such user
+        var userOpt = userRepository.findByEmailIdAndEmailVerificationStatus(
+                emailId,
+                EmailVerificationStatus.VERIFIED
+        );
+
+        return CheckEmailIdAvailableModel.builder()
+                .emailId(emailId)
+                .available(userOpt.isEmpty())
                 .build();
     }
 
