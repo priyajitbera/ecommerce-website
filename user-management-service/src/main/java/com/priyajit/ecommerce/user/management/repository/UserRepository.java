@@ -1,6 +1,7 @@
 package com.priyajit.ecommerce.user.management.repository;
 
 import com.priyajit.ecommerce.user.management.entity.User;
+import com.priyajit.ecommerce.user.management.entity.enums.EmailVerificationStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -11,6 +12,6 @@ import java.util.Optional;
 @Repository
 public interface UserRepository extends JpaRepository<User, BigInteger> {
 
-    List<User> findAllByEmailIdIn(List<String> emailIdList);
+    List<User> findAllByEmailIdInAndEmailVerificationStatus(List<String> emailIdList, EmailVerificationStatus emailVerificationStatus);
     Optional<User> findByEmailId(String emailId);
 }
