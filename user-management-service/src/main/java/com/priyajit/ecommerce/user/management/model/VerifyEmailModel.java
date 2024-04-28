@@ -16,6 +16,7 @@ import java.time.ZonedDateTime;
 public class VerifyEmailModel {
 
     private BigInteger userId;
+    private String emailId;
     private EmailVerificationStatus verificationStatus;
     private ZonedDateTime verifiedOn;
 }
