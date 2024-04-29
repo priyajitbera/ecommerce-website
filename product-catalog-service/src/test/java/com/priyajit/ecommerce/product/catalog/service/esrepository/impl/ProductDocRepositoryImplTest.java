@@ -7,7 +7,6 @@ import co.elastic.clients.elasticsearch.core.bulk.BulkResponseItem;
 import co.elastic.clients.elasticsearch.core.bulk.OperationType;
 import com.priyajit.ecommerce.product.catalog.service.entity.DbEnvironmentConfiguration;
 import com.priyajit.ecommerce.product.catalog.service.esdoc.ProductDoc;
-import com.priyajit.ecommerce.product.catalog.service.esdoc.ProductPriceDoc;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -41,7 +40,7 @@ class ProductDocRepositoryImplTest {
                 .title("Iphone 15")
                 .description("Latest Iphone from Apple")
                 .price(
-                        ProductPriceDoc.builder()
+                        ProductDoc.ProductPriceDoc.builder()
                                 .id("PRODUCT-PRICE-1")
                                 .currency("INR")
                                 .price(BigDecimal.valueOf(7000000L))
