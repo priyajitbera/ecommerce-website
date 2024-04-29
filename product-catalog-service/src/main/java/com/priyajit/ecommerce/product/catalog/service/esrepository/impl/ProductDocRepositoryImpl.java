@@ -166,7 +166,8 @@ public class ProductDocRepositoryImpl implements ProductDocRepository {
             }).join();
 
         } catch (Exception e) {
-            throw new RuntimeException("Error while searching", e);
+            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 

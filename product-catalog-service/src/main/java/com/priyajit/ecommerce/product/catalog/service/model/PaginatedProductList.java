@@ -1,9 +1,6 @@
 package com.priyajit.ecommerce.product.catalog.service.model;
 
-import com.priyajit.ecommerce.product.catalog.service.entity.Product;
-import com.priyajit.ecommerce.product.catalog.service.entity.ProductCategory;
-import com.priyajit.ecommerce.product.catalog.service.entity.ProductImage;
-import com.priyajit.ecommerce.product.catalog.service.entity.ProductPrice;
+import com.priyajit.ecommerce.product.catalog.service.entity.*;
 import com.priyajit.ecommerce.product.catalog.service.esdoc.ProductDoc;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,6 +19,12 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class PaginatedProductList {
 
+    private List<ProductModel> products;
+    private Integer totalPages;
+    private Long totalElements;
+    private Integer size;
+    private Integer number;
+
     public static PaginatedProductList buildFrom(Page<ProductDoc> page) {
         return PaginatedProductList.builder()
                 .totalPages(page.getTotalPages())
@@ -38,16 +41,40 @@ public class PaginatedProductList {
     @AllArgsConstructor
     public static class ProductModel {
 
+        private String id;
+        private ZonedDateTime createdOn;
+        private ZonedDateTime lastModifiedOn;
+        private String title;
+        private ProductPriceModel price;
+        private String description;
+        private List<ProductImageModel> images;
+        private List<ProductCategoryModel> taggedCategories;
+
         public static List<ProductModel> buildFrom(List<ProductDoc> productDocs) {
             if (productDocs == null) return null;
             return productDocs.stream().map(ProductModel::buildFrom).collect(Collectors.toList());
         }
 
         public static ProductModel buildFrom(ProductDoc productDoc) {
+
+            var productImages = productDoc.getImages() == null ? null
+                    : productDoc.getImages().stream().map(ProductImageModel::from)
+                    .collect(Collectors.toList());
+
+            var taggedCategories = productDoc.getTaggedCategories() == null ? null
+                    : productDoc.getTaggedCategories().stream()
+                    .map(ProductCategoryModel::from)
+                    .collect(Collectors.toList());
+
             return ProductModel.builder()
                     .id(productDoc.getId())
+                    .createdOn(productDoc.getCreatedOn())
+                    .lastModifiedOn(productDoc.getLastModifiedOn())
                     .title(productDoc.getTitle())
                     .description(productDoc.getDescription())
+                    .price(ProductPriceModel.from(productDoc.getPrice()))
+                    .images(productImages)
+                    .taggedCategories(taggedCategories)
                     .build();
         }
 
@@ -57,6 +84,7 @@ public class PaginatedProductList {
         @NoArgsConstructor
         @AllArgsConstructor
         private static class ProductImageModel {
+
             private String id;
             private String url;
 
@@ -68,6 +96,14 @@ public class PaginatedProductList {
                         .url(productImage.getUrl())
                         .build();
             }
+
+            public static ProductImageModel from(ProductDoc.ProductImageDoc productImage) {
+                if (productImage == null) return null;
+
+                return ProductImageModel.builder()
+                        .url(productImage.getUrl())
+                        .build();
+            }
         }
 
         @Data
@@ -75,6 +111,7 @@ public class PaginatedProductList {
         @NoArgsConstructor
         @AllArgsConstructor
         private static class ProductCategoryModel {
+
             private String id;
             private String name;
 
@@ -83,7 +120,17 @@ public class PaginatedProductList {
 
                 return ProductCategoryModel
                         .builder()
-                        .id(productCategory.getId().toString())
+                        .id(productCategory.getId())
+                        .name(productCategory.getName())
+                        .build();
+            }
+
+            public static ProductCategoryModel from(ProductDoc.ProductCategoryDoc productCategory) {
+                if (productCategory == null) return null;
+
+                return ProductCategoryModel
+                        .builder()
+                        .id(productCategory.getId())
                         .name(productCategory.getName())
                         .build();
             }
@@ -94,26 +141,60 @@ public class PaginatedProductList {
         @NoArgsConstructor
         @AllArgsConstructor
         private static class ProductPriceModel {
+
             private BigDecimal price;
-            private String currencyName;
+            private CurrencyModel currency;
 
             public static ProductPriceModel from(ProductPrice productPrice) {
                 if (productPrice == null) return null;
                 return ProductPriceModel.builder()
                         .price(productPrice.getPrice())
-                        .currencyName(productPrice.getCurrency() == null ? null : productPrice.getCurrency().getName())
+                        .currency(CurrencyModel.buildFrom(productPrice.getCurrency()))
+                        .build();
+            }
+
+            public static ProductPriceModel from(ProductDoc.ProductPriceDoc price) {
+                if (price == null) return null;
+                return ProductPriceModel.builder()
+                        .price(price.getPrice())
+                        .currency(CurrencyModel.buildFrom(price.getCurrency()))
                         .build();
             }
         }
 
-        private String id;
-        private ZonedDateTime createdOn;
-        private ZonedDateTime lastModifiedOn;
-        private String title;
-        private ProductPriceModel price;
-        private String description;
-        private List<ProductImageModel> images;
-        private List<ProductCategoryModel> taggedCategories;
+        @Data
+        @Builder
+        @NoArgsConstructor
+        @AllArgsConstructor
+        public static class CurrencyModel {
+
+            private String id;
+            private String name;
+            private String symbol;
+            private String shortSymbol;
+
+            public static CurrencyModel buildFrom(Currency currency) {
+                if (currency == null) return null;
+
+                return CurrencyModel.builder()
+                        .id(currency.getId())
+                        .name(currency.getName())
+                        .symbol(currency.getSymbol())
+                        .shortSymbol(currency.getShortSymbol())
+                        .build();
+            }
+
+            public static CurrencyModel buildFrom(ProductDoc.CurrencyDoc currency) {
+                if (currency == null) return null;
+                return CurrencyModel.builder()
+                        .id(currency.getId())
+                        .name(currency.getName())
+                        .symbol(currency.getSymbol())
+                        .shortSymbol(currency.getShortSymbol())
+                        .build();
+            }
+        }
+
 
         public static ProductModel from(Product product) {
             if (product == null) return null;
@@ -141,11 +222,6 @@ public class PaginatedProductList {
         }
     }
 
-    private List<ProductModel> products;
-    private Integer totalPages;
-    private Long totalElements;
-    private Integer size;
-    private Integer number;
 
     public static PaginatedProductList from(Page<Product> productPage) {
 
