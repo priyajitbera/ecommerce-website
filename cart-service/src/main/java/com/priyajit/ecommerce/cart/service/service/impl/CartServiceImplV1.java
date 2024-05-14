@@ -283,7 +283,9 @@ public class CartServiceImplV1 implements CartService {
                     .orElseThrow(ProductNotFoundException.supplier(cartProduct.getProductId()));
 
             BigDecimal EXCHANGE_RATE = getExchangeRate(product.getPrice().getCurrencyName(), currency);
-            BigDecimal priceInBaseCurrency = EXCHANGE_RATE.multiply(product.getPrice().getPrice());
+            BigDecimal priceInBaseCurrency = EXCHANGE_RATE
+                    .multiply(product.getPrice().getPrice())
+                    .multiply(BigDecimal.valueOf(cartProduct.getQuantity()));
             priceInBaseCurrency = priceInBaseCurrency.setScale(2, RoundingMode.HALF_EVEN);
             cartValue = cartValue.add(priceInBaseCurrency);
 
