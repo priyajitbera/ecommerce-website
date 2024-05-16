@@ -68,8 +68,6 @@ public class PaginatedProductList {
 
             return ProductModel.builder()
                     .id(productDoc.getId())
-                    .createdOn(productDoc.getCreatedOn())
-                    .lastModifiedOn(productDoc.getLastModifiedOn())
                     .title(productDoc.getTitle())
                     .description(productDoc.getDescription())
                     .price(ProductPriceModel.from(productDoc.getPrice()))
