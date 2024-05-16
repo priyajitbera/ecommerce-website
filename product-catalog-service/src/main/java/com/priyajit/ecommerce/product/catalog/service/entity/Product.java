@@ -46,6 +46,9 @@ public class Product implements Comparable<Product> {
     private Boolean isIndexedOnElasticSearch;
     private ZonedDateTime elasticSearchIndexedOn;
 
+    private String createdByUserId;
+    private String lastModifiedByUserId;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
