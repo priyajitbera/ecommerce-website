@@ -41,8 +41,7 @@ class ProductDocRepositoryImplTest {
                 .description("Latest Iphone from Apple")
                 .price(
                         ProductDoc.ProductPriceDoc.builder()
-                                .id("PRODUCT-PRICE-1")
-                                .currency("INR")
+                                .currency(ProductDoc.CurrencyDoc.builder().id("INR").build())
                                 .price(BigDecimal.valueOf(7000000L))
                                 .build()
                 )
