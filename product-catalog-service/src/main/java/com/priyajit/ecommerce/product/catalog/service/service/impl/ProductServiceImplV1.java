@@ -281,21 +281,12 @@ public class ProductServiceImplV1 implements ProductService {
     }
 
     @Override
-    public PaginatedProductList search(
-            @Nullable List<String> productIds,
-            @Nullable String productNamePart,
-            @Nullable String productDescriptionPart,
-            @Nullable List<String> produdctCategoryIds,
-            @Nullable List<String> productCategoryNames,
-            int pageIndex, int pageSize
-    ) {
+    public PaginatedProductList search(String searchKeyword, int pageIndex, int pageSize) {
+        if (searchKeyword == null)
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "searchKeyword must not be null");
 
         Page<ProductDoc> productDocPage = productDocRepository.search(
-                productIds,
-                productNamePart,
-                productDescriptionPart,
-                produdctCategoryIds,
-                productCategoryNames,
+                searchKeyword,
                 pageIndex, pageSize
         );
 
