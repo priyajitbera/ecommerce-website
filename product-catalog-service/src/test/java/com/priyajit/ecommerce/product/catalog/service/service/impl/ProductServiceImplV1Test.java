@@ -1,7 +1,6 @@
 package com.priyajit.ecommerce.product.catalog.service.service.impl;
 
 import com.priyajit.ecommerce.product.catalog.service.dto.CreateProductDto;
-import com.priyajit.ecommerce.product.catalog.service.dto.DeleteProductDto;
 import com.priyajit.ecommerce.product.catalog.service.dto.UpdateProductDto;
 import com.priyajit.ecommerce.product.catalog.service.entity.Currency;
 import com.priyajit.ecommerce.product.catalog.service.entity.Product;
@@ -12,7 +11,6 @@ import com.priyajit.ecommerce.product.catalog.service.exception.ProductCategoryN
 import com.priyajit.ecommerce.product.catalog.service.exception.ProductImageNotFoundException;
 import com.priyajit.ecommerce.product.catalog.service.exception.ProductNotFoundException;
 import com.priyajit.ecommerce.product.catalog.service.model.PaginatedProductList;
-import com.priyajit.ecommerce.product.catalog.service.model.ProductModel;
 import com.priyajit.ecommerce.product.catalog.service.repository.querydsl.ProductRepository;
 import com.priyajit.ecommerce.product.catalog.service.repository.querymethod.CurrencyRepositoryQueryMethod;
 import com.priyajit.ecommerce.product.catalog.service.repository.querymethod.ProductCategoryRepositoryQueryMethod;
@@ -455,50 +453,6 @@ class ProductServiceImplV1Test {
 
         // act & assert
         assertThrows(CurrencyNotFoundException.class, () -> productService.updateProduct(dto, userId));
-    }
-
-    @Test
-    void deleteProducts_success() {
-
-        // arrange
-        String productId1 = "PR-1";
-        String productId2 = "PR-2";
-        List<DeleteProductDto> dtos = List.of(
-                DeleteProductDto.builder().productId(productId1).build(),
-                DeleteProductDto.builder().productId(productId2).build()
-        );
-        Product product1 = Product.builder().id(productId1).build();
-        Product product2 = Product.builder().id(productId2).build();
-
-        // mock method calls
-        when(productRepositoryQueryMethod.findById(productId1))
-                .thenReturn(Optional.of(product1));
-        when(productRepositoryQueryMethod.findById(productId2))
-                .thenReturn(Optional.of(product2));
-
-        // act
-        List<ProductModel> productModels = productService.deleteProducts(dtos);
-
-        // assert
-        assertNotNull(productModels);
-        assertEquals(dtos.size(), productModels.size());
-    }
-
-    @Test
-    void deleteProducts_withInvalidProductId_fail() {
-
-        // arrange
-        String productId1 = "PR-NOT-PRESENT";
-        List<DeleteProductDto> dtos = List.of(
-                DeleteProductDto.builder().productId(productId1).build()
-        );
-
-        // mock method calls
-        when(productRepositoryQueryMethod.findById(productId1))
-                .thenReturn(Optional.empty());
-
-        // act & assert
-        assertThrows(ProductNotFoundException.class, () -> productService.deleteProducts(dtos));
     }
 
     /**

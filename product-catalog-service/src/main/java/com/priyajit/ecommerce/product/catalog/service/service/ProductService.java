@@ -1,7 +1,6 @@
 package com.priyajit.ecommerce.product.catalog.service.service;
 
 import com.priyajit.ecommerce.product.catalog.service.dto.CreateProductDto;
-import com.priyajit.ecommerce.product.catalog.service.dto.DeleteProductDto;
 import com.priyajit.ecommerce.product.catalog.service.dto.IndexProductsInElasticSearchDto;
 import com.priyajit.ecommerce.product.catalog.service.dto.UpdateProductDto;
 import com.priyajit.ecommerce.product.catalog.service.model.DeleteProductsInElasticSearchModel;
@@ -25,8 +24,6 @@ public interface ProductService {
     ProductModel createProduct(CreateProductDto dto, String userId);
 
     ProductModel updateProduct(UpdateProductDto dto, String userId);
-
-    List<ProductModel> deleteProducts(List<DeleteProductDto> dtos);
 
     PaginatedProductList search(
             @Nullable List<String> productIds,
