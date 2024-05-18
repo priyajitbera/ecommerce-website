@@ -21,14 +21,14 @@ import java.util.List;
 
 @Slf4j
 @RestController
-@RequestMapping("/product/v1")
+@RequestMapping("/v1/product")
 @CrossOrigin("*")
-public class ProductController implements MethodArgumentNotValidExceptionHandler {
+public class ProductControllerV1 implements MethodArgumentNotValidExceptionHandler {
 
     private ProductService productService;
 
     @Autowired
-    public ProductController(ProductService productService) {
+    public ProductControllerV1(ProductService productService) {
         this.productService = productService;
     }
 
