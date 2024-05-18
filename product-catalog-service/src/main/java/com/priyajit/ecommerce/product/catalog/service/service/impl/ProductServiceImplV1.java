@@ -22,13 +22,16 @@ import com.priyajit.ecommerce.product.catalog.service.repository.querymethod.Pro
 import com.priyajit.ecommerce.product.catalog.service.repository.querymethod.ProductImageRepositoryQueryMethod;
 import com.priyajit.ecommerce.product.catalog.service.repository.querymethod.ProductRepositoryQueryMethod;
 import com.priyajit.ecommerce.product.catalog.service.service.ProductService;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
@@ -106,20 +109,17 @@ public class ProductServiceImplV1 implements ProductService {
     /**
      * Method to create Products
      *
-     * @param dtoList
      * @return
      */
     @Override
     @Transactional(isolation = Isolation.REPEATABLE_READ)
-    public List<ProductModel> createProducts(List<CreateProductDto> dtoList) {
-
-        List<Product> productList = dtoList.stream()
-                .map(this::buildProductFromDto)
-                .collect(Collectors.toList());
-
-        List<Product> products = productRepositoryQueryMethod.saveAllAndFlush(productList);
-
-        return fromProducts(products);
+    public ProductModel createProduct(@Valid CreateProductDto dto, String userId) {
+        if (userId == null)
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "userId can not be null");
+        var product = buildProductFromDto(dto);
+        product.setCreatedByUserId(userId);
+        productRepositoryQueryMethod.saveAndFlush(product);
+        return ProductModel.from(product);
     }
 
     /**

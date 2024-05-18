@@ -4,8 +4,10 @@ import com.priyajit.ecommerce.product.catalog.service.dto.CreateProductDto;
 import com.priyajit.ecommerce.product.catalog.service.dto.DeleteProductDto;
 import com.priyajit.ecommerce.product.catalog.service.dto.IndexProductsInElasticSearchDto;
 import com.priyajit.ecommerce.product.catalog.service.dto.UpdateProductDto;
+import com.priyajit.ecommerce.product.catalog.service.exceptionhandler.MethodArgumentNotValidExceptionHandler;
 import com.priyajit.ecommerce.product.catalog.service.model.*;
 import com.priyajit.ecommerce.product.catalog.service.service.ProductService;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,7 +21,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/product/v1")
 @CrossOrigin("*")
-public class ProductController {
+public class ProductController implements MethodArgumentNotValidExceptionHandler {
 
     private ProductService productService;
 
@@ -92,25 +94,26 @@ public class ProductController {
     }
 
     @PostMapping
-    public ResponseEntity<Response<List<ProductModel>>> createProducts(
-            @RequestBody List<CreateProductDto> dtos
+    public ResponseEntity<Response<ProductModel>> createProduct(
+            @Valid @RequestBody CreateProductDto dto,
+            @RequestHeader(value = "userId") String userId
     ) {
         try {
-            var models = productService.createProducts(dtos);
+            var models = productService.createProduct(dto, userId);
             return ResponseEntity.status(HttpStatus.OK)
-                    .body(Response.<List<ProductModel>>builder()
+                    .body(Response.<ProductModel>builder()
                             .data(models)
                             .build());
         } catch (ResponseStatusException e) {
+            log.error(e.getMessage());
             return ResponseEntity.status(e.getStatusCode())
-                    .body(Response.<List<ProductModel>>builder()
-                            .error(e.getMessage())
+                    .body(Response.<ProductModel>builder()
+                            .error(e.getReason())
                             .build());
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Response.<List<ProductModel>>builder()
-                            .error(e.getMessage())
-                            .build());
+                    .body(Response.<ProductModel>builder().build());
         }
     }
 
@@ -228,4 +231,6 @@ public class ProductController {
                             .build());
         }
     }
+
+
 }
