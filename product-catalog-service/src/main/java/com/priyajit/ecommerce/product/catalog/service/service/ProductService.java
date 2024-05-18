@@ -25,14 +25,7 @@ public interface ProductService {
 
     ProductModel updateProduct(UpdateProductDto dto, String userId);
 
-    PaginatedProductList search(
-            @Nullable List<String> productIds,
-            @Nullable String productNamePart,
-            @Nullable String productDescriptionPart,
-            @Nullable List<String> productCategoryIds,
-            @Nullable List<String> productCategoryNames,
-            int pageIndex, int pageSize
-    );
+    PaginatedProductList search(String searchKeyWord, int pageIndex, int pageSize);
 
     IndexProductsInElasticSearchModel indexProductsInElasticSearch(IndexProductsInElasticSearchDto indexProductsInElasticSearchDto);
 

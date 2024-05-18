@@ -65,19 +65,12 @@ public class ProductControllerV1 implements MethodArgumentNotValidExceptionHandl
 
     @GetMapping("/search")
     public ResponseEntity<Response<PaginatedProductList>> search(
-            @RequestParam(required = false) List<String> productIds,
-            @RequestParam(required = false) String productNamePart,
-            @RequestParam(required = false) String productDescriptionPart,
-            @RequestParam(required = false) List<String> productCategoryIds,
-            @RequestParam(required = false) List<String> productCategoryNames,
+            @RequestParam(required = true) String searchKeyword,
             @RequestParam(name = "pageIndex", required = false, defaultValue = "0") Integer pageIndex,
             @RequestParam(name = "pageSize", required = false, defaultValue = "10") Integer pageSize
     ) {
         try {
-            var model = productService.search(
-                    productIds, productNamePart, productDescriptionPart, productCategoryIds, productCategoryNames,
-                    pageIndex, pageSize
-            );
+            var model = productService.search(searchKeyword, pageIndex, pageSize);
             return ResponseEntity.status(HttpStatus.OK)
                     .body(Response.<PaginatedProductList>builder()
                             .data(model)
