@@ -68,14 +68,14 @@ public class ProductControllerV1 implements MethodArgumentNotValidExceptionHandl
             @RequestParam(required = false) List<String> productIds,
             @RequestParam(required = false) String productNamePart,
             @RequestParam(required = false) String productDescriptionPart,
-            @RequestParam(required = false) List<String> produdctCategoryIds,
+            @RequestParam(required = false) List<String> productCategoryIds,
             @RequestParam(required = false) List<String> productCategoryNames,
             @RequestParam(name = "pageIndex", required = false, defaultValue = "0") Integer pageIndex,
             @RequestParam(name = "pageSize", required = false, defaultValue = "10") Integer pageSize
     ) {
         try {
             var model = productService.search(
-                    productIds, productNamePart, productDescriptionPart, produdctCategoryIds, productCategoryNames,
+                    productIds, productNamePart, productDescriptionPart, productCategoryIds, productCategoryNames,
                     pageIndex, pageSize
             );
             return ResponseEntity.status(HttpStatus.OK)
