@@ -14,12 +14,13 @@ import java.util.List;
 
 @Slf4j
 @RestController
-@RequestMapping("/currency/v1")
-public class CurrencyController {
+@RequestMapping("/v1/currency")
+@CrossOrigin("*")
+public class CurrencyControllerV1 {
 
     private CurrencyService currencyService;
 
-    public CurrencyController(CurrencyService currencyService) {
+    public CurrencyControllerV1(CurrencyService currencyService) {
         this.currencyService = currencyService;
     }
 

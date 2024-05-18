@@ -14,12 +14,13 @@ import java.util.List;
 
 @Slf4j
 @RestController
-@RequestMapping("/product-category/v1")
-public class ProductCategoryController {
+@RequestMapping("/v1/product-category")
+@CrossOrigin("*")
+public class ProductCategoryControllerV1 {
 
     private ProductCategoryService productCategoryService;
 
-    public ProductCategoryController(ProductCategoryService productCategoryService) {
+    public ProductCategoryControllerV1(ProductCategoryService productCategoryService) {
         this.productCategoryService = productCategoryService;
     }
 
