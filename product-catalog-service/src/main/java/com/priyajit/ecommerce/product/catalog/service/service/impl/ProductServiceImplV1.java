@@ -1,7 +1,6 @@
 package com.priyajit.ecommerce.product.catalog.service.service.impl;
 
 import com.priyajit.ecommerce.product.catalog.service.dto.CreateProductDto;
-import com.priyajit.ecommerce.product.catalog.service.dto.DeleteProductDto;
 import com.priyajit.ecommerce.product.catalog.service.dto.IndexProductsInElasticSearchDto;
 import com.priyajit.ecommerce.product.catalog.service.dto.UpdateProductDto;
 import com.priyajit.ecommerce.product.catalog.service.entity.*;
@@ -279,25 +278,6 @@ public class ProductServiceImplV1 implements ProductService {
             productCategories.clear();
             productCategories.addAll(fetchProductCategories(dto.getTaggedCategoryIds()));
         }
-    }
-
-    /**
-     * Method to delete Products
-     *
-     * @param dtos
-     * @return
-     */
-    @Override
-    @Transactional
-    public List<ProductModel> deleteProducts(List<DeleteProductDto> dtos) {
-
-        List<Product> toDelete = dtos.stream().map(dto -> productRepositoryQueryMethod.findById(dto.getProductId())
-                        .orElseThrow(ProductNotFoundException.supplier(dto.getProductId())))
-                .collect(Collectors.toList());
-
-        productRepositoryQueryMethod.deleteAll(toDelete);
-
-        return fromProducts(toDelete);
     }
 
     @Override

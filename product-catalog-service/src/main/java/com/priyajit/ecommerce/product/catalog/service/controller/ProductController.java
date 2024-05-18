@@ -1,11 +1,13 @@
 package com.priyajit.ecommerce.product.catalog.service.controller;
 
 import com.priyajit.ecommerce.product.catalog.service.dto.CreateProductDto;
-import com.priyajit.ecommerce.product.catalog.service.dto.DeleteProductDto;
 import com.priyajit.ecommerce.product.catalog.service.dto.IndexProductsInElasticSearchDto;
 import com.priyajit.ecommerce.product.catalog.service.dto.UpdateProductDto;
 import com.priyajit.ecommerce.product.catalog.service.exceptionhandler.MethodArgumentNotValidExceptionHandler;
-import com.priyajit.ecommerce.product.catalog.service.model.*;
+import com.priyajit.ecommerce.product.catalog.service.model.IndexProductsInElasticSearchModel;
+import com.priyajit.ecommerce.product.catalog.service.model.PaginatedProductList;
+import com.priyajit.ecommerce.product.catalog.service.model.ProductModel;
+import com.priyajit.ecommerce.product.catalog.service.model.Response;
 import com.priyajit.ecommerce.product.catalog.service.service.ProductService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -144,29 +146,6 @@ public class ProductController implements MethodArgumentNotValidExceptionHandler
         }
     }
 
-    @DeleteMapping
-    public ResponseEntity<Response<List<ProductModel>>> deleteProduct(
-            @RequestBody List<DeleteProductDto> dtos
-    ) {
-        try {
-            var models = productService.deleteProducts(dtos);
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body(Response.<List<ProductModel>>builder()
-                            .data(models)
-                            .build());
-        } catch (ResponseStatusException e) {
-            return ResponseEntity.status(e.getStatusCode())
-                    .body(Response.<List<ProductModel>>builder()
-                            .error(e.getMessage())
-                            .build());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Response.<List<ProductModel>>builder()
-                            .error(e.getMessage())
-                            .build());
-        }
-    }
-
     @PostMapping("/elastic-search/index")
     public ResponseEntity<Response<IndexProductsInElasticSearchModel>> indexProductsInElasticSearch(
             @RequestBody IndexProductsInElasticSearchDto indexProductsInElasticSearchDto
@@ -185,29 +164,6 @@ public class ProductController implements MethodArgumentNotValidExceptionHandler
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Response.<IndexProductsInElasticSearchModel>builder()
-                            .error(e.getMessage())
-                            .build());
-        }
-    }
-
-    @DeleteMapping("/elastic-search/delete")
-    public ResponseEntity<Response<DeleteProductsInElasticSearchModel>> deleteProductsInElasticSearch(
-            @RequestBody IndexProductsInElasticSearchDto dto
-    ) {
-        try {
-            var model = productService.deleteProductsInElasticSearch(dto);
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body(Response.<DeleteProductsInElasticSearchModel>builder()
-                            .data(model)
-                            .build());
-        } catch (ResponseStatusException e) {
-            return ResponseEntity.status(e.getStatusCode())
-                    .body(Response.<DeleteProductsInElasticSearchModel>builder()
-                            .error(e.getMessage())
-                            .build());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Response.<DeleteProductsInElasticSearchModel>builder()
                             .error(e.getMessage())
                             .build());
         }
