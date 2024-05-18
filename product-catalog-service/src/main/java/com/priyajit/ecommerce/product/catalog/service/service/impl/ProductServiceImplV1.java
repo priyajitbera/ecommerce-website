@@ -344,7 +344,7 @@ public class ProductServiceImplV1 implements ProductService {
     }
 
     @Override
-    public ProductModel getProduct(String productId) {
+    public ProductModel findOneById(String productId) {
         // first search in Redis, if found then return
         try {
             var productModelOpt = productModelRedisRepository.findById(productId);
