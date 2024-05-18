@@ -22,7 +22,7 @@ public interface ProductService {
             int pageSize
     );
 
-    List<ProductModel> createProducts(List<CreateProductDto> dtoList);
+    ProductModel createProduct(CreateProductDto dto, String userId);
 
     List<ProductModel> updateProducts(List<UpdateProductDto> dtos);
 
