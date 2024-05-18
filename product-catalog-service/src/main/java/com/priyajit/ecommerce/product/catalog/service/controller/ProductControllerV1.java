@@ -162,12 +162,12 @@ public class ProductControllerV1 implements MethodArgumentNotValidExceptionHandl
         }
     }
 
-    @GetMapping("/get")
-    public ResponseEntity<Response<ProductModel>> getProduct(
+    @GetMapping("/find-one")
+    public ResponseEntity<Response<ProductModel>> findOneById(
             @RequestParam("productId") String productId
     ) {
         try {
-            var model = productService.getProduct(productId);
+            var model = productService.findOneById(productId);
             return ResponseEntity.status(HttpStatus.OK)
                     .body(Response.<ProductModel>builder()
                             .data(model)

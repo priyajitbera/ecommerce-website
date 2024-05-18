@@ -31,5 +31,5 @@ public interface ProductService {
 
     DeleteProductsInElasticSearchModel deleteProductsInElasticSearch(IndexProductsInElasticSearchDto dto);
 
-    ProductModel getProduct(String productId);
+    ProductModel findOneById(String productId);
 }
