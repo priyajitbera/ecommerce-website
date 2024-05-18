@@ -118,23 +118,27 @@ public class ProductController implements MethodArgumentNotValidExceptionHandler
     }
 
     @PatchMapping
-    public ResponseEntity<Response<List<ProductModel>>> updateProducts(
-            @RequestBody List<UpdateProductDto> dtos
+    public ResponseEntity<Response<ProductModel>> updateProduct(
+            @RequestBody UpdateProductDto dto,
+            @RequestHeader("userId") String userId
     ) {
         try {
-            var models = productService.updateProducts(dtos);
+            var model = productService.updateProduct(dto, userId);
             return ResponseEntity.status(HttpStatus.OK)
-                    .body(Response.<List<ProductModel>>builder()
-                            .data(models)
+                    .body(Response.<ProductModel>builder()
+                            .data(model)
                             .build());
         } catch (ResponseStatusException e) {
+            log.error(e.getMessage());
             return ResponseEntity.status(e.getStatusCode())
-                    .body(Response.<List<ProductModel>>builder()
-                            .error(e.getMessage())
+                    .body(Response.<ProductModel>builder()
+                            .error(e.getReason())
                             .build());
         } catch (Exception e) {
+            log.error(e.getMessage());
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Response.<List<ProductModel>>builder()
+                    .body(Response.<ProductModel>builder()
                             .error(e.getMessage())
                             .build());
         }

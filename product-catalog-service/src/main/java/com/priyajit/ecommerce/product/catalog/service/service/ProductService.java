@@ -24,7 +24,7 @@ public interface ProductService {
 
     ProductModel createProduct(CreateProductDto dto, String userId);
 
-    List<ProductModel> updateProducts(List<UpdateProductDto> dtos);
+    ProductModel updateProduct(UpdateProductDto dto, String userId);
 
     List<ProductModel> deleteProducts(List<DeleteProductDto> dtos);
 

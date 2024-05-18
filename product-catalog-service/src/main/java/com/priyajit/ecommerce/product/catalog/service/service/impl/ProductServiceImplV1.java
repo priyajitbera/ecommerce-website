@@ -203,27 +203,25 @@ public class ProductServiceImplV1 implements ProductService {
     /**
      * Method to update Products
      *
-     * @param dtos
+     * @param dto
      * @return
      */
     @Override
     @Transactional(isolation = Isolation.REPEATABLE_READ)
-    public List<ProductModel> updateProducts(List<UpdateProductDto> dtos) {
+    public ProductModel updateProduct(@Valid UpdateProductDto dto, String userId) {
+        if (userId == null)
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "userId must not be null");
 
-        List<Product> updatedProducts = dtos.stream().map(dto -> {
-            Product product = productRepositoryQueryMethod.findById(dto.getProductId())
-                    .orElseThrow(ProductNotFoundException.supplier(dto.getProductId()));
+        var product = productRepositoryQueryMethod.findById(dto.getProductId())
+                .orElseThrow(ProductNotFoundException.supplier(dto.getProductId()));
 
-            updateProductFromDto(product, dto);
-            return product;
-        }).collect(Collectors.toList());
+        updateProductFromDto(product, dto);
+        product.setLastModifiedByUserId(userId);
 
-        List<Product> savedProducts = productRepositoryQueryMethod.saveAllAndFlush(updatedProducts);
+        productRepositoryQueryMethod.saveAndFlush(product);
 
         // create response model and return
-        return savedProducts.stream()
-                .map(ProductModel::from)
-                .collect(Collectors.toList());
+        return ProductModel.from(product);
     }
 
     /**
