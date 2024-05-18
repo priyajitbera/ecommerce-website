@@ -18,13 +18,13 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
-public class ProductImageServiceImpl implements ProductImageService {
+public class ProductImageServiceImplV1 implements ProductImageService {
 
     private ProductImageRepositoryQueryMethod productImageRepositoryQueryMethod;
     private ProductRepositoryQueryMethod productRepositoryQueryMethod;
     private ProductImageStore productImageStore;
 
-    public ProductImageServiceImpl(ProductImageRepositoryQueryMethod productImageRepositoryQueryMethod, ProductRepositoryQueryMethod productRepositoryQueryMethod, ProductImageStore productImageStore) {
+    public ProductImageServiceImplV1(ProductImageRepositoryQueryMethod productImageRepositoryQueryMethod, ProductRepositoryQueryMethod productRepositoryQueryMethod, ProductImageStore productImageStore) {
         this.productImageRepositoryQueryMethod = productImageRepositoryQueryMethod;
         this.productRepositoryQueryMethod = productRepositoryQueryMethod;
         this.productImageStore = productImageStore;
