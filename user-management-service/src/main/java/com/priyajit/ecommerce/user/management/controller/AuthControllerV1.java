@@ -8,11 +8,11 @@ import com.priyajit.ecommerce.user.management.exceptionhandler.MethodArgumentNot
 import com.priyajit.ecommerce.user.management.model.*;
 import com.priyajit.ecommerce.user.management.service.service.AuthService;
 import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
+@Slf4j
 @RestController
 @RequestMapping("/v1/auth")
 @CrossOrigin(originPatterns = "*")
@@ -26,17 +26,7 @@ public class AuthControllerV1 implements MethodArgumentNotValidExceptionHandler 
 
     @PostMapping("/login")
     public ResponseEntity<Response<LoginModel>> login(@Valid @RequestBody LoginDto dto) {
-        try {
-            var model = authService.login(dto);
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body(Response.<LoginModel>builder().data(model).build());
-        } catch (ResponseStatusException e) {
-            return ResponseEntity.status(e.getStatusCode())
-                    .body(Response.<LoginModel>builder().error(e.getReason()).build());
-        } catch (Throwable e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Response.<LoginModel>builder().build());
-        }
+        return ControllerHelper.supplyResponse(() -> authService.login(dto), log);
     }
 
 
@@ -44,67 +34,27 @@ public class AuthControllerV1 implements MethodArgumentNotValidExceptionHandler 
     public ResponseEntity<Response<SignupModel>> signup(
             @Valid @RequestBody SignupDto dto
     ) {
-        try {
-            var model = authService.signup(dto);
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body(Response.<SignupModel>builder().data(model).build());
-        } catch (ResponseStatusException e) {
-            return ResponseEntity.status(e.getStatusCode())
-                    .body(Response.<SignupModel>builder().error(e.getReason()).build());
-        } catch (Throwable e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Response.<SignupModel>builder().build());
-        }
+        return ControllerHelper.supplyResponse(() -> authService.signup(dto), log);
     }
 
     @PostMapping("/request-email-verification-secret")
     ResponseEntity<Response<RequestEmailVerificationSecretModel>> requestEmailVerificationSecret(
             @RequestBody RequestEmailVerificationSecretDto dto
     ) {
-        try {
-            var model = authService.requestEmailVerificationSecret(dto);
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body(Response.<RequestEmailVerificationSecretModel>builder().data(model).build());
-        } catch (ResponseStatusException e) {
-            return ResponseEntity.status(e.getStatusCode())
-                    .body(Response.<RequestEmailVerificationSecretModel>builder().error(e.getReason()).build());
-        } catch (Throwable e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Response.<RequestEmailVerificationSecretModel>builder().build());
-        }
+        return ControllerHelper.supplyResponse(() -> authService.requestEmailVerificationSecret(dto), log);
     }
 
     @PostMapping("/verify-email")
     ResponseEntity<Response<VerifyEmailModel>> verifyEamil(
             @RequestBody VerifyEmailDto dto
     ) {
-        try {
-            var model = authService.verifyUserEmail(dto);
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body(Response.<VerifyEmailModel>builder().data(model).build());
-        } catch (ResponseStatusException e) {
-            return ResponseEntity.status(e.getStatusCode())
-                    .body(Response.<VerifyEmailModel>builder().error(e.getReason()).build());
-        } catch (Throwable e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Response.<VerifyEmailModel>builder().build());
-        }
+        return ControllerHelper.supplyResponse(() -> authService.verifyUserEmail(dto), log);
     }
 
     @GetMapping("/check-email-id-available")
     public ResponseEntity<Response<CheckEmailIdAvailableModel>> checkEmailIdAvailable(
             @RequestParam(name = "emailId") String emailId
     ) {
-        try {
-            var model = authService.checkEmailIdAvailable(emailId);
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body(Response.<CheckEmailIdAvailableModel>builder().data(model).build());
-        } catch (ResponseStatusException e) {
-            return ResponseEntity.status(e.getStatusCode())
-                    .body(Response.<CheckEmailIdAvailableModel>builder().error(e.getReason()).build());
-        } catch (Throwable e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Response.<CheckEmailIdAvailableModel>builder().build());
-        }
+        return ControllerHelper.supplyResponse(() -> authService.checkEmailIdAvailable(emailId), log);
     }
 }
