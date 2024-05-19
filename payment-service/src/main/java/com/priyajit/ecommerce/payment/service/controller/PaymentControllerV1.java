@@ -5,11 +5,13 @@ import com.priyajit.ecommerce.payment.service.dto.CreatePaymentDto;
 import com.priyajit.ecommerce.payment.service.model.PaymentModel;
 import com.priyajit.ecommerce.payment.service.model.Response;
 import com.priyajit.ecommerce.payment.service.service.PaymentService;
-import org.springframework.http.HttpStatus;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
+import static com.priyajit.ecommerce.payment.service.controller.ControllerHelper.supplyResponse;
+
+@Slf4j
 @RestController
 @RequestMapping("/v1/payment")
 public class PaymentControllerV1 {
@@ -24,68 +26,20 @@ public class PaymentControllerV1 {
     public ResponseEntity<Response<PaymentModel>> createPayment(
             @RequestBody CreatePaymentDto dto
     ) {
-        try {
-            var paymentModel = paymentService.createPayment(dto);
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body(Response.<PaymentModel>builder()
-                            .data(paymentModel)
-                            .build());
-        } catch (ResponseStatusException e) {
-            return ResponseEntity.status(e.getStatusCode())
-                    .body(Response.<PaymentModel>builder()
-                            .error(e.getMessage())
-                            .build());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Response.<PaymentModel>builder()
-                            .error(e.getMessage())
-                            .build());
-        }
+        return supplyResponse(() -> paymentService.createPayment(dto), log);
     }
 
     @GetMapping
     public ResponseEntity<Response<PaymentModel>> findPayment(
             @RequestParam(name = "paymentId") String paymentId
     ) {
-        try {
-            var paymentModel = paymentService.findPayment(paymentId);
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body(Response.<PaymentModel>builder()
-                            .data(paymentModel)
-                            .build());
-        } catch (ResponseStatusException e) {
-            return ResponseEntity.status(e.getStatusCode())
-                    .body(Response.<PaymentModel>builder()
-                            .error(e.getMessage())
-                            .build());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Response.<PaymentModel>builder()
-                            .error(e.getMessage())
-                            .build());
-        }
+        return supplyResponse(() -> paymentService.findPayment(paymentId), log);
     }
 
     @PostMapping("/confirm-payment-status")
     public ResponseEntity<Response<PaymentModel>> confirmPaymentStatus(
             @RequestBody ConfirmPaymentStatusDto dto
     ) {
-        try {
-            var paymentModel = paymentService.confirmPaymentStatus(dto);
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body(Response.<PaymentModel>builder()
-                            .data(paymentModel)
-                            .build());
-        } catch (ResponseStatusException e) {
-            return ResponseEntity.status(e.getStatusCode())
-                    .body(Response.<PaymentModel>builder()
-                            .error(e.getMessage())
-                            .build());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Response.<PaymentModel>builder()
-                            .error(e.getMessage())
-                            .build());
-        }
+        return supplyResponse(() -> paymentService.confirmPaymentStatus(dto), log);
     }
 }
