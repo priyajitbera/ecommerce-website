@@ -4,8 +4,10 @@ import com.priyajit.ecommerce.user.management.dto.LoginDto;
 import com.priyajit.ecommerce.user.management.dto.RequestEmailVerificationSecretDto;
 import com.priyajit.ecommerce.user.management.dto.SignupDto;
 import com.priyajit.ecommerce.user.management.dto.VerifyEmailDto;
+import com.priyajit.ecommerce.user.management.exceptionhandler.MethodArgumentNotValidExceptionHandler;
 import com.priyajit.ecommerce.user.management.model.*;
 import com.priyajit.ecommerce.user.management.service.service.AuthService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,7 +16,7 @@ import org.springframework.web.server.ResponseStatusException;
 @RestController
 @RequestMapping("/v1/auth")
 @CrossOrigin(originPatterns = "*")
-public class AuthControllerV1 {
+public class AuthControllerV1 implements MethodArgumentNotValidExceptionHandler {
 
     private AuthService authService;
 
@@ -29,7 +31,7 @@ public class AuthControllerV1 {
 
     @PostMapping("/signup")
     public ResponseEntity<Response<SignupModel>> signup(
-            @RequestBody SignupDto dto
+            @Valid @RequestBody SignupDto dto
     ) {
         try {
             var model = authService.signup(dto);
