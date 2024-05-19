@@ -13,6 +13,7 @@ import com.priyajit.ecommerce.cart.service.mongorepository.CartRepository;
 import com.priyajit.ecommerce.cart.service.redisdoc.FreecurrencyApiExchangeRates;
 import com.priyajit.ecommerce.cart.service.redisrepository.ExchangeRatesRedisRepository;
 import com.priyajit.ecommerce.cart.service.service.CartService;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -75,26 +76,24 @@ public class CartServiceImplV1 implements CartService {
 
     @Override
     @Transactional
-    public List<CartModel> createCarts(List<CreateCartDto> dtoList) {
+    public CartModel createCart(@Valid CreateCartDto dto) {
+        if (dto == null)
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Unexpected null value for argument dto:CreateCartDto");
 
         // find Carts which already exists for a userId, do not create duplicate Cart of those userIds
-        var userIds = dtoList.stream().map(CreateCartDto::getUserId).collect(Collectors.toList());
-        var existingCarts = cartRepository.findAllByUserIdIn(userIds);
-        var userIdsWithExistingCarts = existingCarts.stream().map(Cart::getUserId).collect(Collectors.toSet());
+        var cartOpt = cartRepository.findByUserId(dto.getUserId());
+        if (cartOpt.isPresent()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cart already exists for user with userId:" + dto.getUserId());
+        }
 
-        List<Cart> cartList = dtoList.stream()
-                .filter(dto -> !userIdsWithExistingCarts.contains(dto.getUserId())) // filter out userIds having existing cart
-                .map(this::createCartFromDto)
-                .collect(Collectors.toList());
+        // create Cart object from dto
+        var cart = createCartFromDto(dto);
 
         // save to primary DB
-        var savedCarts = cartRepository.saveAll(cartList);
+        var savedCart = cartRepository.save(cart);
 
         // create response models & return
-        var responseModels = new ArrayList<CartModel>();
-        responseModels.addAll(existingCarts.stream().map(this::createCartModel).collect(Collectors.toList()));
-        responseModels.addAll(savedCarts.stream().map(this::createCartModel).collect(Collectors.toList()));
-        return responseModels;
+        return createCartModel(savedCart);
     }
 
     @Override

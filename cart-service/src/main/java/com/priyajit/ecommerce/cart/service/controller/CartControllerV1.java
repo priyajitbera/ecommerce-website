@@ -2,15 +2,15 @@ package com.priyajit.ecommerce.cart.service.controller;
 
 import com.priyajit.ecommerce.cart.service.dto.CreateCartDto;
 import com.priyajit.ecommerce.cart.service.dto.UpdateCartProductQuantityDto;
+import com.priyajit.ecommerce.cart.service.exceptionhandler.MethodArgumentNotValidExceptionHandler;
 import com.priyajit.ecommerce.cart.service.model.CartModel;
 import com.priyajit.ecommerce.cart.service.model.CartModelV2;
 import com.priyajit.ecommerce.cart.service.model.Response;
 import com.priyajit.ecommerce.cart.service.service.CartService;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 import static com.priyajit.ecommerce.cart.service.controller.ControllerHelper.supplyResponse;
 
@@ -18,7 +18,7 @@ import static com.priyajit.ecommerce.cart.service.controller.ControllerHelper.su
 @RestController
 @RequestMapping("/v1/cart")
 @CrossOrigin("*")
-public class CartControllerV1 {
+public class CartControllerV1 implements MethodArgumentNotValidExceptionHandler {
 
     private CartService cartService;
 
@@ -42,10 +42,10 @@ public class CartControllerV1 {
     }
 
     @PostMapping
-    public ResponseEntity<Response<List<CartModel>>> createCarts(
-            @RequestBody List<CreateCartDto> dtoList
+    public ResponseEntity<Response<CartModel>> createCart(
+            @Valid @RequestBody CreateCartDto dtoList
     ) {
-        return supplyResponse(() -> cartService.createCarts(dtoList), log);
+        return supplyResponse(() -> cartService.createCart(dtoList), log);
     }
 
     @PostMapping("/update-cart-product-quantity")
