@@ -1,7 +1,5 @@
 package com.priyajit.ecommerce.user.management.controller;
 
-import com.priyajit.ecommerce.user.management.dto.CreateUserDto;
-import com.priyajit.ecommerce.user.management.model.CreateUserModel;
 import com.priyajit.ecommerce.user.management.model.FindUserModel;
 import com.priyajit.ecommerce.user.management.model.Response;
 import com.priyajit.ecommerce.user.management.service.service.UserService;
@@ -43,12 +41,5 @@ public class UserControllerV1 {
             @RequestParam(name = "emailIds") List<String> emailIdList
     ) {
         return ControllerHelper.supplyResponse(() -> userService.findUsersByEmailIds(emailIdList), log);
-    }
-
-    @PostMapping
-    public ResponseEntity<Response<List<CreateUserModel>>> createUser(
-            @RequestBody List<CreateUserDto> dtoList
-    ) {
-        return ControllerHelper.supplyResponse(() -> userService.createUsers(dtoList), log);
     }
 }
