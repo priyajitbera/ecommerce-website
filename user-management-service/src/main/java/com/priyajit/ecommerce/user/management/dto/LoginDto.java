@@ -1,16 +1,18 @@
 package com.priyajit.ecommerce.user.management.dto;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.math.BigInteger;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class LoginDto {
 
-    private BigInteger userId;
+    @NotBlank
+    private String userIdentifer;
+
+    @NotBlank
     private String password;
 }

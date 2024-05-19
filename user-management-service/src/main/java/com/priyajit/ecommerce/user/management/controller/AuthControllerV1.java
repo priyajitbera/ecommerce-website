@@ -25,9 +25,20 @@ public class AuthControllerV1 implements MethodArgumentNotValidExceptionHandler 
     }
 
     @PostMapping("/login")
-    public LoginModel login(@RequestBody LoginDto dto) {
-        return authService.login(dto);
+    public ResponseEntity<Response<LoginModel>> login(@Valid @RequestBody LoginDto dto) {
+        try {
+            var model = authService.login(dto);
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(Response.<LoginModel>builder().data(model).build());
+        } catch (ResponseStatusException e) {
+            return ResponseEntity.status(e.getStatusCode())
+                    .body(Response.<LoginModel>builder().error(e.getReason()).build());
+        } catch (Throwable e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Response.<LoginModel>builder().build());
+        }
     }
+
 
     @PostMapping("/signup")
     public ResponseEntity<Response<SignupModel>> signup(
