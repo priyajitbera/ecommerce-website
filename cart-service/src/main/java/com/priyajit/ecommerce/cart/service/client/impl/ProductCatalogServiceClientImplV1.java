@@ -41,7 +41,7 @@ public class ProductCatalogServiceClientImplV1 implements ProductCatalogServiceC
         try {
             log.info("Before calling product-catalog-service API");
             response = restClient.get().uri(uri -> uri
-                            .path("/product/v1/get")
+                            .path("v1/product/find-one")
                             .queryParam("productId", productId)
                             .build())
                     .retrieve()
@@ -91,7 +91,7 @@ public class ProductCatalogServiceClientImplV1 implements ProductCatalogServiceC
         try {
             log.info("Before calling product-catalog-service API");
             response = restClient.get().uri(uri -> {
-                        uri.path("/currency/v1");
+                        uri.path("v1/currency");
                         if (ids != null) uri.queryParam("id", ids);
                         if (names != null) uri.queryParam("name", names);
                         return uri.build();
