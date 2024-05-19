@@ -53,21 +53,33 @@ public class AuthServiceImplV1 implements AuthService {
     }
 
     @Override
-    public LoginModel login(LoginDto dto) {
+    public LoginModel login(@Valid LoginDto dto) {
         // null validations
         if (dto == null) throw new IllegalArgumentException("Unexpected null value found for argument dto:LoginDto");
-        if (dto.getUserId() == null || dto.getPassword() == null)
-            throw new IllegalArgumentException("Unexpected null value found for argument userId:Long, password:String");
 
         // find user
-        User user = userRepository.findById(dto.getUserId())
-                .orElse(null);
+        User user = null;
+        // try give userIdentifier as userId:BigInteger
+        try {
+            BigInteger userId = new BigInteger(dto.getUserIdentifer());
+            user = userRepository.findById(userId)
+                    .orElse(null);
+        } catch (Exception e) {
+            // do nothing
+        }
 
-        // if not user found with id
+        // try giver userIdentifier as emailId:String
+        if (user == null) {
+            // multiple user entries may exists for one emailId, there must be exactly one entry with EmailVerificationStatus.VERIFIED
+            user = userRepository.findByEmailIdAndEmailVerificationStatus(dto.getUserIdentifer(), EmailVerificationStatus.VERIFIED)
+                    .orElse(null);
+        }
+
+        // if no user found with given userIdentifier
         if (user == null) {
             return LoginModel.builder()
                     .status(LoginAttemptStatus.FAILED)
-                    .message("user-id or password is incorrect")
+                    .message("Given User-Id or Email or Password is incorrect")
                     .build();
         }
 
@@ -75,7 +87,7 @@ public class AuthServiceImplV1 implements AuthService {
         if (EmailVerificationStatus.NOT_VERIFIED.equals(user.getEmailVerificationStatus())) {
             return LoginModel.builder()
                     .status(LoginAttemptStatus.FAILED)
-                    .message("Email verification is not complete")
+                    .message("Email verification is not complete, please complete email verification before attempting login")
                     .build();
         }
 
