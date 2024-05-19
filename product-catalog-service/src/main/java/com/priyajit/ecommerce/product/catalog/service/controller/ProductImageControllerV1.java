@@ -4,13 +4,15 @@ import com.priyajit.ecommerce.product.catalog.service.dto.UploadProductImagesDto
 import com.priyajit.ecommerce.product.catalog.service.model.Response;
 import com.priyajit.ecommerce.product.catalog.service.model.UploadProductImagesModel;
 import com.priyajit.ecommerce.product.catalog.service.service.ProductImageService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
+import static com.priyajit.ecommerce.product.catalog.service.controller.ControllerHelper.supplyResponse;
+
+@Slf4j
 @RestController
 @RequestMapping("/v1/product-image")
 @CrossOrigin("*")
@@ -23,22 +25,6 @@ public class ProductImageControllerV1 {
     public ResponseEntity<Response<UploadProductImagesModel>> uploadProductImages(
             @ModelAttribute UploadProductImagesDto dto
     ) {
-        try {
-            var model = productImageService.uploadProductImages(dto);
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body(Response.<UploadProductImagesModel>builder()
-                            .data(model)
-                            .build());
-        } catch (ResponseStatusException e) {
-            return ResponseEntity.status(e.getStatusCode())
-                    .body(Response.<UploadProductImagesModel>builder()
-                            .error(e.getMessage())
-                            .build());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Response.<UploadProductImagesModel>builder()
-                            .error(e.getMessage())
-                            .build());
-        }
+        return supplyResponse(() -> productImageService.uploadProductImages(dto), log);
     }
 }

@@ -12,12 +12,12 @@ import com.priyajit.ecommerce.product.catalog.service.service.ProductService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+
+import static com.priyajit.ecommerce.product.catalog.service.controller.ControllerHelper.supplyResponse;
 
 @Slf4j
 @RestController
@@ -41,26 +41,11 @@ public class ProductControllerV1 implements MethodArgumentNotValidExceptionHandl
             @RequestParam(name = "pageIndex", required = false, defaultValue = "0") Integer pageIndex,
             @RequestParam(name = "pageSize", required = false, defaultValue = "10") Integer pageSize
     ) {
-        try {
-            var model = productService.findProducts(
-                    productIds, productNamePart, produdctCategoryIds, productCategoryNames,
-                    pageIndex, pageSize
-            );
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body(Response.<PaginatedProductList>builder()
-                            .data(model)
-                            .build());
-        } catch (ResponseStatusException e) {
-            return ResponseEntity.status(e.getStatusCode())
-                    .body(Response.<PaginatedProductList>builder()
-                            .error(e.getMessage())
-                            .build());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Response.<PaginatedProductList>builder()
-                            .error(e.getMessage())
-                            .build());
-        }
+        return supplyResponse(
+                () -> productService.findProducts(
+                        productIds, productNamePart, produdctCategoryIds, productCategoryNames,
+                        pageIndex, pageSize
+                ), log);
     }
 
     @GetMapping("/search")
@@ -69,23 +54,8 @@ public class ProductControllerV1 implements MethodArgumentNotValidExceptionHandl
             @RequestParam(name = "pageIndex", required = false, defaultValue = "0") Integer pageIndex,
             @RequestParam(name = "pageSize", required = false, defaultValue = "10") Integer pageSize
     ) {
-        try {
-            var model = productService.search(searchKeyword, pageIndex, pageSize);
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body(Response.<PaginatedProductList>builder()
-                            .data(model)
-                            .build());
-        } catch (ResponseStatusException e) {
-            return ResponseEntity.status(e.getStatusCode())
-                    .body(Response.<PaginatedProductList>builder()
-                            .error(e.getMessage())
-                            .build());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Response.<PaginatedProductList>builder()
-                            .error(e.getMessage())
-                            .build());
-        }
+        return supplyResponse(
+                () -> productService.search(searchKeyword, pageIndex, pageSize), log);
     }
 
     @PostMapping
@@ -93,23 +63,7 @@ public class ProductControllerV1 implements MethodArgumentNotValidExceptionHandl
             @Valid @RequestBody CreateProductDto dto,
             @RequestHeader(value = "userId") String userId
     ) {
-        try {
-            var models = productService.createProduct(dto, userId);
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body(Response.<ProductModel>builder()
-                            .data(models)
-                            .build());
-        } catch (ResponseStatusException e) {
-            log.error(e.getMessage());
-            return ResponseEntity.status(e.getStatusCode())
-                    .body(Response.<ProductModel>builder()
-                            .error(e.getReason())
-                            .build());
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Response.<ProductModel>builder().build());
-        }
+        return supplyResponse(() -> productService.createProduct(dto, userId), log);
     }
 
     @PatchMapping
@@ -117,73 +71,22 @@ public class ProductControllerV1 implements MethodArgumentNotValidExceptionHandl
             @RequestBody UpdateProductDto dto,
             @RequestHeader("userId") String userId
     ) {
-        try {
-            var model = productService.updateProduct(dto, userId);
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body(Response.<ProductModel>builder()
-                            .data(model)
-                            .build());
-        } catch (ResponseStatusException e) {
-            log.error(e.getMessage());
-            return ResponseEntity.status(e.getStatusCode())
-                    .body(Response.<ProductModel>builder()
-                            .error(e.getReason())
-                            .build());
-        } catch (Exception e) {
-            log.error(e.getMessage());
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Response.<ProductModel>builder()
-                            .error(e.getMessage())
-                            .build());
-        }
+        return supplyResponse(() -> productService.updateProduct(dto, userId), log);
     }
 
     @PostMapping("/elastic-search/index")
     public ResponseEntity<Response<IndexProductsInElasticSearchModel>> indexProductsInElasticSearch(
             @RequestBody IndexProductsInElasticSearchDto indexProductsInElasticSearchDto
     ) {
-        try {
-            var model = productService.indexProductsInElasticSearch(indexProductsInElasticSearchDto);
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body(Response.<IndexProductsInElasticSearchModel>builder()
-                            .data(model)
-                            .build());
-        } catch (ResponseStatusException e) {
-            return ResponseEntity.status(e.getStatusCode())
-                    .body(Response.<IndexProductsInElasticSearchModel>builder()
-                            .error(e.getMessage())
-                            .build());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Response.<IndexProductsInElasticSearchModel>builder()
-                            .error(e.getMessage())
-                            .build());
-        }
+        return supplyResponse(
+                () -> productService.indexProductsInElasticSearch(indexProductsInElasticSearchDto),
+                log);
     }
 
     @GetMapping("/find-one")
     public ResponseEntity<Response<ProductModel>> findOneById(
             @RequestParam("productId") String productId
     ) {
-        try {
-            var model = productService.findOneById(productId);
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body(Response.<ProductModel>builder()
-                            .data(model)
-                            .build());
-        } catch (ResponseStatusException e) {
-            return ResponseEntity.status(e.getStatusCode())
-                    .body(Response.<ProductModel>builder()
-                            .error(e.getMessage())
-                            .build());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Response.<ProductModel>builder()
-                            .error(e.getMessage())
-                            .build());
-        }
+        return supplyResponse(() -> productService.findOneById(productId), log);
     }
-
-
 }
