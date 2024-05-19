@@ -2,6 +2,7 @@ package com.priyajit.ecommerce.user.management.service.service.impl;
 
 import com.priyajit.ecommerce.user.management.component.EmailSender;
 import com.priyajit.ecommerce.user.management.component.UserAuthTokenProvider;
+import com.priyajit.ecommerce.user.management.domain.RoleName;
 import com.priyajit.ecommerce.user.management.dto.LoginDto;
 import com.priyajit.ecommerce.user.management.dto.RequestEmailVerificationSecretDto;
 import com.priyajit.ecommerce.user.management.dto.SignupDto;
@@ -20,6 +21,7 @@ import com.priyajit.ecommerce.user.management.model.*;
 import com.priyajit.ecommerce.user.management.repository.RoleRepository;
 import com.priyajit.ecommerce.user.management.repository.UserRepository;
 import com.priyajit.ecommerce.user.management.service.service.AuthService;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -29,10 +31,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigInteger;
 import java.time.ZonedDateTime;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -94,6 +93,7 @@ public class AuthServiceImplV1 implements AuthService {
             var roles = user.getRoles() == null ? List.<String>of() :
                     user.getRoles().stream()
                             .map(Role::getName)
+                            .map(RoleName::name)
                             .collect(Collectors.toList());
 
             // generate toke with userId and roles
@@ -118,37 +118,35 @@ public class AuthServiceImplV1 implements AuthService {
 
     @Override
     @Transactional
-    public SignupModel signup(SignupDto dto) {
+    public SignupModel signup(@Valid SignupDto dto) {
         if (dto == null) throw new NullArgumentException("dto", SignupDto.class);
 
         var userBuilder = User.builder();
 
-        if (dto.getEmailId() == null) throw new NullArgumentException("emailId", String.class);
-
-        // validate if user exists with User
+        // validate if user exists with the emailId, whose emailId is verified
         var existingUserWithEmailId = userRepository.findByEmailIdAndEmailVerificationStatus(
                 dto.getEmailId(), EmailVerificationStatus.VERIFIED
         );
         if (existingUserWithEmailId.isPresent()) {
             throw new UserAlreadyExistsException(dto.getEmailId(), 0);
         }
-        userBuilder.emailId(dto.getEmailId());
 
-        // validation
-        if (dto.getName() == null)
-            throw new NullArgumentException("name", String.class);
+        userBuilder.emailId(dto.getEmailId());
         userBuilder.name(dto.getName());
 
-        // validation
-        if (dto.getRoles() == null || dto.getRoles().size() == 0)
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Atleast one role selection is required");
+        // add BUYER role as default,
+        List<Role> roles = new ArrayList<>();
 
-        var roles = roleRepository.findAllByNameIn(dto.getRoles());
+        var buyerRole = roleRepository.findByName(RoleName.BUYER).get();
+        roles.add(buyerRole);
+        // add SELLER role if opted to to signup as a seller
+        if (dto.getSignUpAsSeller()) {
+            var sellerRole = roleRepository.findByName(RoleName.SELLER).get();
+            roles.add(sellerRole);
+        }
         userBuilder.roles(roles);
 
-        // validation
-        if (dto.getPassword() == null)
-            throw new NullArgumentException("password", String.class);
+        // encode password and create secret
         var userSecret = UserSecret.builder()
                 .password(passwordEncoder.encode(dto.getPassword()))
                 .passwordSetOn(ZonedDateTime.now())
