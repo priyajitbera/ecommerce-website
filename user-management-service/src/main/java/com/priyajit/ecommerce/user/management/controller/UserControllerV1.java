@@ -3,12 +3,16 @@ package com.priyajit.ecommerce.user.management.controller;
 import com.priyajit.ecommerce.user.management.dto.CreateUserDto;
 import com.priyajit.ecommerce.user.management.model.CreateUserModel;
 import com.priyajit.ecommerce.user.management.model.FindUserModel;
+import com.priyajit.ecommerce.user.management.model.Response;
 import com.priyajit.ecommerce.user.management.service.service.UserService;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigInteger;
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequestMapping("/v1/user")
 @CrossOrigin("*")
@@ -21,29 +25,30 @@ public class UserControllerV1 {
     }
 
     @GetMapping("/find-one")
-    FindUserModel findUser(
+    public ResponseEntity<Response<FindUserModel>> findUser(
             @RequestParam BigInteger userId) {
-        return userService.findUser(userId);
+
+        return ControllerHelper.supplyResponse(() -> userService.findUser(userId), log);
     }
 
     @GetMapping
-    List<FindUserModel> findUsers(
+    public ResponseEntity<Response<List<FindUserModel>>> findUsers(
             @RequestParam(name = "userIds") List<BigInteger> userIds
     ) {
-        return userService.findUsers(userIds);
+        return ControllerHelper.supplyResponse(() -> userService.findUsers(userIds), log);
     }
 
     @GetMapping("/by-email")
-    List<FindUserModel> findUsersByEmailIds(
+    public ResponseEntity<Response<List<FindUserModel>>> findUsersByEmailIds(
             @RequestParam(name = "emailIds") List<String> emailIdList
     ) {
-        return userService.findUsersByEmailIds(emailIdList);
+        return ControllerHelper.supplyResponse(() -> userService.findUsersByEmailIds(emailIdList), log);
     }
 
     @PostMapping
-    List<CreateUserModel> createUser(
+    public ResponseEntity<Response<List<CreateUserModel>>> createUser(
             @RequestBody List<CreateUserDto> dtoList
     ) {
-        return userService.createUsers(dtoList);
+        return ControllerHelper.supplyResponse(() -> userService.createUsers(dtoList), log);
     }
 }
