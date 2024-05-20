@@ -50,7 +50,7 @@ public class CartControllerV1 implements MethodArgumentNotValidExceptionHandler 
 
     @PostMapping("/update-cart-product-quantity")
     public ResponseEntity<Response<CartModel>> addProduct(
-            @RequestBody UpdateCartProductQuantityDto dto
+            @Valid @RequestBody UpdateCartProductQuantityDto dto
     ) {
         return supplyResponse(() -> cartService.updateCartProductQuantity(dto), log);
     }

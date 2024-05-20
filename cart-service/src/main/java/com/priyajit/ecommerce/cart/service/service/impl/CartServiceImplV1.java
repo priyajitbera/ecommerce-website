@@ -97,7 +97,7 @@ public class CartServiceImplV1 implements CartService {
     }
 
     @Override
-    public CartModel updateCartProductQuantity(UpdateCartProductQuantityDto dto) {
+    public CartModel updateCartProductQuantity(@Valid UpdateCartProductQuantityDto dto) {
         // validation
         if (dto == null)
             throw new NullArgument("Unexpected null value for arg dto:AddProductRequestDto");
@@ -116,13 +116,6 @@ public class CartServiceImplV1 implements CartService {
     }
 
     private void doCartOperation(Cart cart, String productId, Long quantity, CartProductOperation operation) {
-        // validation
-        if (productId == null)
-            throw new NullArgument("Unexpected null value for arg productId:String");
-
-        // validation
-        if (operation == null)
-            throw new NullArgument("Unexpected null value for arg operation:CartProductOperation");
 
         // initialize empty list if not already
         if (cart.getProducts() == null) {
