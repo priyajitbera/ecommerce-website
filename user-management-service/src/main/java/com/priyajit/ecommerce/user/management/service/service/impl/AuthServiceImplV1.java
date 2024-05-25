@@ -2,11 +2,9 @@ package com.priyajit.ecommerce.user.management.service.service.impl;
 
 import com.priyajit.ecommerce.user.management.component.EmailSender;
 import com.priyajit.ecommerce.user.management.component.UserAuthTokenProvider;
+import com.priyajit.ecommerce.user.management.component.UserDetailsParser;
 import com.priyajit.ecommerce.user.management.domain.RoleName;
-import com.priyajit.ecommerce.user.management.dto.LoginDto;
-import com.priyajit.ecommerce.user.management.dto.RequestEmailVerificationSecretDto;
-import com.priyajit.ecommerce.user.management.dto.SignupDto;
-import com.priyajit.ecommerce.user.management.dto.VerifyEmailDto;
+import com.priyajit.ecommerce.user.management.dto.*;
 import com.priyajit.ecommerce.user.management.dto.external.SendEmailDto;
 import com.priyajit.ecommerce.user.management.entity.Role;
 import com.priyajit.ecommerce.user.management.entity.User;
@@ -43,13 +41,22 @@ public class AuthServiceImplV1 implements AuthService {
     private PasswordEncoder passwordEncoder;
     private UserAuthTokenProvider userAuthTokenProvider;
     private EmailSender emailSender;
+    private UserDetailsParser userDetailsParser;
 
-    public AuthServiceImplV1(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder, UserAuthTokenProvider userAuthTokenProvider, EmailSender emailSender) {
+    public AuthServiceImplV1(
+            UserRepository userRepository,
+            RoleRepository roleRepository,
+            PasswordEncoder passwordEncoder,
+            UserAuthTokenProvider userAuthTokenProvider,
+            EmailSender emailSender,
+            UserDetailsParser userDetailsParser
+    ) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
         this.userAuthTokenProvider = userAuthTokenProvider;
         this.emailSender = emailSender;
+        this.userDetailsParser = userDetailsParser;
     }
 
     @Override
@@ -282,6 +289,11 @@ public class AuthServiceImplV1 implements AuthService {
                 .emailId(emailId)
                 .available(userOpt.isEmpty())
                 .build();
+    }
+
+    @Override
+    public UserDetailsModel getUserDetailsFromUserToken(@Valid GetUserDetailsRequestDto dto) {
+        return userDetailsParser.getFromToken(dto.getToken());
     }
 
     /**
