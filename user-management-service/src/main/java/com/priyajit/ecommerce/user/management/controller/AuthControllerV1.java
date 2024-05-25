@@ -1,9 +1,6 @@
 package com.priyajit.ecommerce.user.management.controller;
 
-import com.priyajit.ecommerce.user.management.dto.LoginDto;
-import com.priyajit.ecommerce.user.management.dto.RequestEmailVerificationSecretDto;
-import com.priyajit.ecommerce.user.management.dto.SignupDto;
-import com.priyajit.ecommerce.user.management.dto.VerifyEmailDto;
+import com.priyajit.ecommerce.user.management.dto.*;
 import com.priyajit.ecommerce.user.management.exceptionhandler.MethodArgumentNotValidExceptionHandler;
 import com.priyajit.ecommerce.user.management.model.*;
 import com.priyajit.ecommerce.user.management.service.service.AuthService;
@@ -56,5 +53,12 @@ public class AuthControllerV1 implements MethodArgumentNotValidExceptionHandler 
             @RequestParam(name = "emailId") String emailId
     ) {
         return ControllerHelper.supplyResponse(() -> authService.checkEmailIdAvailable(emailId), log);
+    }
+
+    @PostMapping("/get-user-details-from-token")
+    public ResponseEntity<Response<UserDetailsModel>> getUserDetailsFromUserToken(
+            @Valid @RequestBody GetUserDetailsRequestDto dto
+    ) {
+        return ControllerHelper.supplyResponse(() -> authService.getUserDetailsFromUserToken(dto), log);
     }
 }

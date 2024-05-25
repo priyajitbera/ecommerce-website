@@ -1,9 +1,6 @@
 package com.priyajit.ecommerce.user.management.service.service;
 
-import com.priyajit.ecommerce.user.management.dto.LoginDto;
-import com.priyajit.ecommerce.user.management.dto.RequestEmailVerificationSecretDto;
-import com.priyajit.ecommerce.user.management.dto.SignupDto;
-import com.priyajit.ecommerce.user.management.dto.VerifyEmailDto;
+import com.priyajit.ecommerce.user.management.dto.*;
 import com.priyajit.ecommerce.user.management.model.*;
 
 public interface AuthService {
@@ -17,4 +14,6 @@ public interface AuthService {
     VerifyEmailModel verifyUserEmail(VerifyEmailDto dto);
 
     CheckEmailIdAvailableModel checkEmailIdAvailable(String emailId);
+
+    UserDetailsModel getUserDetailsFromUserToken(GetUserDetailsRequestDto dto);
 }
