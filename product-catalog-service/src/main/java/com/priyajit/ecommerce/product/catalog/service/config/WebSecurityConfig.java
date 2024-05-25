@@ -26,6 +26,10 @@ import java.util.stream.Collectors;
 @Configuration
 public class WebSecurityConfig {
 
+    private final static String[] UNAUTHENTICATED_ENDPOINTS = {
+            "/swagger-ui/*", "/v3/api-docs", "/v3/api-docs/swagger-config"
+    };
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity, DbEnvironmentConfiguration configuration) throws Exception {
         // cors
@@ -35,7 +39,8 @@ public class WebSecurityConfig {
 
         // authenticate endpoints
         httpSecurity.authorizeHttpRequests(authorize -> authorize
-                .requestMatchers("/swagger-ui/index.html#/*").permitAll()
+                .requestMatchers(UNAUTHENTICATED_ENDPOINTS)
+                .permitAll()
                 .anyRequest().authenticated()
         );
 
