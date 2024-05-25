@@ -71,11 +71,12 @@ public class ProductControllerV1 implements MethodArgumentNotValidExceptionHandl
     }
 
     @PatchMapping
+    @PreAuthorize("hasRole('SELLER')")
     public ResponseEntity<Response<ProductModel>> updateProduct(
-            @RequestBody UpdateProductDto dto,
-            @RequestHeader("userId") String userId
+            Authentication auth,
+            @RequestBody UpdateProductDto dto
     ) {
-        return supplyResponse(() -> productService.updateProduct(dto, userId), log);
+        return supplyResponse(() -> productService.updateProduct(dto, getUserId(auth)), log);
     }
 
     @PostMapping("/elastic-search/index")
