@@ -13,10 +13,13 @@ import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import static com.priyajit.ecommerce.product.catalog.service.controller.ControllerHelper.getUserId;
 import static com.priyajit.ecommerce.product.catalog.service.controller.ControllerHelper.supplyResponse;
 
 @Slf4j
@@ -59,11 +62,12 @@ public class ProductControllerV1 implements MethodArgumentNotValidExceptionHandl
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('SELLER')")
     public ResponseEntity<Response<ProductModel>> createProduct(
-            @Valid @RequestBody CreateProductDto dto,
-            @RequestHeader(value = "userId") String userId
+            Authentication auth,
+            @Valid @RequestBody CreateProductDto dto
     ) {
-        return supplyResponse(() -> productService.createProduct(dto, userId), log);
+        return supplyResponse(() -> productService.createProduct(dto, getUserId(auth)), log);
     }
 
     @PatchMapping

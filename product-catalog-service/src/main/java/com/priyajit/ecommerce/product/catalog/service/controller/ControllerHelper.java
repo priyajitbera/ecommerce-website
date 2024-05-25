@@ -4,6 +4,8 @@ import com.priyajit.ecommerce.product.catalog.service.model.Response;
 import org.slf4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.function.Supplier;
@@ -35,6 +37,14 @@ public class ControllerHelper {
             // for Unknown error do not provide the error reason in response
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Response.<T>builder().build());
+        }
+    }
+
+    public static String getUserId(Authentication auth) {
+        if (auth.getPrincipal().getClass().equals(Jwt.class)) {
+            return (String) ((Jwt) auth.getPrincipal()).getClaims().get("sub");
+        } else {
+            throw new RuntimeException("Unknown authentication principle");
         }
     }
 }
