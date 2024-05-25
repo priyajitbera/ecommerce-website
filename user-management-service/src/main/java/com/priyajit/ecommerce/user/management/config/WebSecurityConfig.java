@@ -8,6 +8,7 @@ import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
@@ -19,10 +20,15 @@ import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @EnableWebSecurity
 @Configuration
 public class WebSecurityConfig {
+
+    private final static String[] UNAUTHENTICATED_ENDPOINTS = {
+            "/v1/auth/login", "/swagger-ui/*", "/v3/api-docs", "/v3/api-docs/swagger-config"
+    };
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity, DbEnvironmentConfiguration configuration) throws Exception {
@@ -33,7 +39,7 @@ public class WebSecurityConfig {
 
         // authenticate endpoints
         httpSecurity.authorizeHttpRequests(authorize -> authorize
-                .requestMatchers("/v1/auth/login", "/swagger-ui/index.html#/*").permitAll()
+                .requestMatchers(UNAUTHENTICATED_ENDPOINTS).permitAll()
                 .anyRequest().authenticated()
         );
 
@@ -52,7 +58,9 @@ public class WebSecurityConfig {
         return (jwt) -> {
             var claims = jwt.getClaims();
             String subject = (String) claims.get("sub");
-            var authToken = new JwtAuthenticationToken(jwt, List.of(() -> "DEFAULT_GRANTED_AUTHORITY"), subject);
+            List<String> roles = (List<String>) claims.get("roles");
+            List<GrantedAuthority> grantedAuthorities = roles.stream().map(this::roleToGrantedAuthority).collect(Collectors.toList());
+            var authToken = new JwtAuthenticationToken(jwt, grantedAuthorities, subject);
             return authToken;
         };
     }
@@ -60,5 +68,15 @@ public class WebSecurityConfig {
     private JwtDecoder jwtDecoder(byte[] key) {
         SecretKey secretKey = new SecretKeySpec(key, "HmacSHA256");
         return NimbusJwtDecoder.withSecretKey(secretKey).build();
+    }
+
+    /**
+     * Helper method creates map a role to GrantedAuthority
+     *
+     * @param role
+     * @return
+     */
+    private GrantedAuthority roleToGrantedAuthority(String role) {
+        return () -> role;
     }
 }
