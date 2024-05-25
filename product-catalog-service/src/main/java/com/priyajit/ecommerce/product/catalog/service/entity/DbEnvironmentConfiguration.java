@@ -104,6 +104,9 @@ public class DbEnvironmentConfiguration {
         // Redis
         public final static String REDIS_HOSTNAME = "redis.hostname";
         public final static String REDIS_PORT = "redis.port";
+
+        // JWT
+        public final static String JWT_SECRET_KEY = "jwt.secret-key";
     }
 
     public static class Values {
