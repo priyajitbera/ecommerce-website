@@ -39,7 +39,7 @@ class ProductImageServiceV1ImplTest {
     private ProductImageStore productImageStore;
 
     @InjectMocks
-    private ProductImageServiceImpl productImageService;
+    private ProductImageServiceImplV1 productImageService;
 
     @Test
     void uploadProductImages_success() {

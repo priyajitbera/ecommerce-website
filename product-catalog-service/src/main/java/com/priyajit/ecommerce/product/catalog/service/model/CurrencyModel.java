@@ -18,6 +18,8 @@ public class CurrencyModel {
     private ZonedDateTime createdOn;
     private ZonedDateTime lastModifiedOn;
     private String name;
+    private String symbol;
+    private String shortSymbol;
 
     public static CurrencyModel from(Currency currency) {
         if (currency == null) return null;
@@ -27,6 +29,8 @@ public class CurrencyModel {
                 .createdOn(currency.getCreatedOn())
                 .lastModifiedOn(currency.getLastModifiedOn())
                 .name(currency.getName())
+                .symbol(currency.getSymbol())
+                .shortSymbol(currency.getShortSymbol())
                 .build();
     }
 }

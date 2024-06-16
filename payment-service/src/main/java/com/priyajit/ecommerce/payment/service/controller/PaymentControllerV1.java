@@ -3,13 +3,14 @@ package com.priyajit.ecommerce.payment.service.controller;
 import com.priyajit.ecommerce.payment.service.dto.ConfirmPaymentStatusDto;
 import com.priyajit.ecommerce.payment.service.dto.CreatePaymentDto;
 import com.priyajit.ecommerce.payment.service.model.PaymentModel;
-import com.priyajit.ecommerce.payment.service.model.Response;
 import com.priyajit.ecommerce.payment.service.service.PaymentService;
-import org.springframework.http.HttpStatus;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
+import static org.springframework.http.ResponseEntity.ok;
+
+@Slf4j
 @RestController
 @RequestMapping("/v1/payment")
 public class PaymentControllerV1 {
@@ -21,71 +22,23 @@ public class PaymentControllerV1 {
     }
 
     @PostMapping
-    public ResponseEntity<Response<PaymentModel>> createPayment(
+    public ResponseEntity<PaymentModel> createPayment(
             @RequestBody CreatePaymentDto dto
     ) {
-        try {
-            var paymentModel = paymentService.createPayment(dto);
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body(Response.<PaymentModel>builder()
-                            .data(paymentModel)
-                            .build());
-        } catch (ResponseStatusException e) {
-            return ResponseEntity.status(e.getStatusCode())
-                    .body(Response.<PaymentModel>builder()
-                            .error(e.getMessage())
-                            .build());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Response.<PaymentModel>builder()
-                            .error(e.getMessage())
-                            .build());
-        }
+        return ok(paymentService.createPayment(dto));
     }
 
     @GetMapping
-    public ResponseEntity<Response<PaymentModel>> findPayment(
+    public ResponseEntity<PaymentModel> findPayment(
             @RequestParam(name = "paymentId") String paymentId
     ) {
-        try {
-            var paymentModel = paymentService.findPayment(paymentId);
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body(Response.<PaymentModel>builder()
-                            .data(paymentModel)
-                            .build());
-        } catch (ResponseStatusException e) {
-            return ResponseEntity.status(e.getStatusCode())
-                    .body(Response.<PaymentModel>builder()
-                            .error(e.getMessage())
-                            .build());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Response.<PaymentModel>builder()
-                            .error(e.getMessage())
-                            .build());
-        }
+        return ok(paymentService.findPayment(paymentId));
     }
 
     @PostMapping("/confirm-payment-status")
-    public ResponseEntity<Response<PaymentModel>> confirmPaymentStatus(
+    public ResponseEntity<PaymentModel> confirmPaymentStatus(
             @RequestBody ConfirmPaymentStatusDto dto
     ) {
-        try {
-            var paymentModel = paymentService.confirmPaymentStatus(dto);
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body(Response.<PaymentModel>builder()
-                            .data(paymentModel)
-                            .build());
-        } catch (ResponseStatusException e) {
-            return ResponseEntity.status(e.getStatusCode())
-                    .body(Response.<PaymentModel>builder()
-                            .error(e.getMessage())
-                            .build());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Response.<PaymentModel>builder()
-                            .error(e.getMessage())
-                            .build());
-        }
+        return ok(paymentService.confirmPaymentStatus(dto));
     }
 }

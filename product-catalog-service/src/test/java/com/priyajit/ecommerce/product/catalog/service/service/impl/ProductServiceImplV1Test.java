@@ -1,7 +1,6 @@
 package com.priyajit.ecommerce.product.catalog.service.service.impl;
 
 import com.priyajit.ecommerce.product.catalog.service.dto.CreateProductDto;
-import com.priyajit.ecommerce.product.catalog.service.dto.DeleteProductDto;
 import com.priyajit.ecommerce.product.catalog.service.dto.UpdateProductDto;
 import com.priyajit.ecommerce.product.catalog.service.entity.Currency;
 import com.priyajit.ecommerce.product.catalog.service.entity.Product;
@@ -12,7 +11,6 @@ import com.priyajit.ecommerce.product.catalog.service.exception.ProductCategoryN
 import com.priyajit.ecommerce.product.catalog.service.exception.ProductImageNotFoundException;
 import com.priyajit.ecommerce.product.catalog.service.exception.ProductNotFoundException;
 import com.priyajit.ecommerce.product.catalog.service.model.PaginatedProductList;
-import com.priyajit.ecommerce.product.catalog.service.model.ProductModel;
 import com.priyajit.ecommerce.product.catalog.service.repository.querydsl.ProductRepository;
 import com.priyajit.ecommerce.product.catalog.service.repository.querymethod.CurrencyRepositoryQueryMethod;
 import com.priyajit.ecommerce.product.catalog.service.repository.querymethod.ProductCategoryRepositoryQueryMethod;
@@ -58,145 +56,103 @@ class ProductServiceImplV1Test {
     void createProducts_success() {
 
         // arrange
-        String productCategoryId1 = "PC-1";
-        String productCategoryId2 = "PC-2";
-        String productImageId1 = "PI-1";
-        String productImageId2 = "PI-1";
-        String currencyId1 = "CUR-1";
-        String currencyId2 = "CUR-2";
+        var productCategoryId = "PC-1";
+        var productImageId = "PI-1";
+        var currencyId = "INR";
+        var price = BigDecimal.valueOf(92990);
+        var userId = "U-1";
 
-        List<CreateProductDto> dtos = List.of(
-                CreateProductDto.builder()
-                        .title("Apple iPhone 15 Plus (256 GB) - Blue")
-                        .description("DYNAMIC ISLAND COMES TO IPHONE 15")
-                        .currencyId(currencyId1)
-                        .price(BigDecimal.valueOf(92990))
-                        .productImageIds(List.of(productImageId1))
-                        .taggedCategoryIds(List.of(productCategoryId1))
-                        .build(),
+        var dto = CreateProductDto.builder()
+                .title("Apple iPhone 15 Plus (256 GB) - Blue")
+                .description("DYNAMIC ISLAND COMES TO IPHONE 15")
+                .currencyId(currencyId)
+                .price(price)
+                .productImageIds(List.of(productImageId))
+                .taggedCategoryIds(List.of(productCategoryId))
+                .build();
 
-                CreateProductDto.builder()
-                        .title("Apple 2023 MacBook Air Laptop with M2 chip")
-                        .description("38.91 cm (15.3 inch) Liquid Retina Display, 8GB RAM 512GB SSD Storage.")
-                        .currencyId(currencyId2)
-                        .price(BigDecimal.valueOf(154900))
-                        .productImageIds(List.of(productImageId2))
-                        .taggedCategoryIds(List.of(productCategoryId2))
-                        .build()
-        );
-        ProductCategory productCategory1 = ProductCategory.builder().id(productCategoryId1).build();
-        ProductCategory productCategory2 = ProductCategory.builder().id(productCategoryId2).build();
-        ProductImage productImage1 = ProductImage.builder().id(productImageId1).build();
-        ProductImage productImage2 = ProductImage.builder().id(productImageId2).build();
-        Currency currency1 = Currency.builder().id(currencyId1).build();
-        Currency currency2 = Currency.builder().id(currencyId2).build();
+        var productCategory = ProductCategory.builder().id(productCategoryId).build();
+        var productImage = ProductImage.builder().id(productImageId).build();
+        var currency = Currency.builder().id(currencyId).build();
 
         // mock method calls
-        when(productRepositoryQueryMethod.saveAllAndFlush(
-                Mockito.anyList())).then(i -> mockSave(i.getArgument(0, List.class)));
-        when(productCategoryRepositoryQueryMethod.findById(productCategoryId1))
-                .thenReturn(Optional.of(productCategory1));
-        when(productCategoryRepositoryQueryMethod.findById(productCategoryId2))
-                .thenReturn(Optional.of(productCategory2));
-        when(productImageRepositoryQueryMethod.findById(productImageId1))
-                .thenReturn(Optional.of(productImage1));
-        when(productImageRepositoryQueryMethod.findById(productImageId2))
-                .thenReturn(Optional.of(productImage2));
-        when(currencyRepositoryQueryMethod.findById(currencyId1))
-                .thenReturn(Optional.of(currency1));
-        when(currencyRepositoryQueryMethod.findById(currencyId2))
-                .thenReturn(Optional.of(currency2));
-
+        when(productRepositoryQueryMethod.saveAndFlush(
+                Mockito.any(Product.class))).then(i -> mockSave(i.getArgument(0, Product.class)));
+        when(productCategoryRepositoryQueryMethod.findById(productCategoryId))
+                .thenReturn(Optional.of(productCategory));
+        when(productImageRepositoryQueryMethod.findById(productImageId))
+                .thenReturn(Optional.of(productImage));
+        when(currencyRepositoryQueryMethod.findById(currencyId))
+                .thenReturn(Optional.of(currency));
 
         // act
-        List<ProductModel> productModels = productService.createProducts(dtos);
+        var productModel = productService.createProduct(dto, userId);
 
         // assert
-        assertNotNull(productModels);
-
-        assertEquals(dtos.size(), productModels.size());
-
-        assertNotNull(productModels.get(0).getId());
-        assertNotNull(productModels.get(1).getId());
-
-        assertNotNull(productModels.get(0).getCreatedOn());
-        assertNotNull(productModels.get(1).getCreatedOn());
-
-        assertNotNull(productModels.get(0).getLastModifiedOn());
-        assertNotNull(productModels.get(1).getLastModifiedOn());
-
-        assertEquals(dtos.get(0).getTitle(), productModels.get(0).getTitle());
-        assertEquals(dtos.get(1).getTitle(), productModels.get(1).getTitle());
-
-        assertEquals(dtos.get(0).getDescription(), productModels.get(0).getDescription());
-        assertEquals(dtos.get(1).getDescription(), productModels.get(1).getDescription());
-
-        assertEquals(dtos.get(0).getPrice(), productModels.get(0).getPrice().getPrice());
-        assertEquals(dtos.get(1).getPrice(), productModels.get(1).getPrice().getPrice());
-
-        assertEquals(dtos.get(0).getTaggedCategoryIds().get(0), productModels.get(0).getTaggedCategories().get(0).getId());
-        assertEquals(dtos.get(1).getTaggedCategoryIds().get(0), productModels.get(1).getTaggedCategories().get(0).getId());
+        assertNotNull(productModel);
+        assertNotNull(productModel.getId());
+        assertNotNull(productModel.getCreatedOn());
+        assertNotNull(productModel.getLastModifiedOn());
+        assertEquals(dto.getTitle(), productModel.getTitle());
+        assertEquals(dto.getDescription(), productModel.getDescription());
+        assertEquals(dto.getPrice(), productModel.getPrice().getPrice());
+        assertEquals(dto.getTaggedCategoryIds().get(0), productModel.getTaggedCategories().get(0).getId());
     }
 
     @Test
     void createProducts_invalidProductCategoryId_fail() {
 
         // arrange
-        String productCategoryId1 = "PC-NOT-PRESENT";
-        String productImageId1 = "PI-1";
-        String currencyId1 = "CUR-1";
+        var productCategoryId = "PC-NOT-PRESENT";
+        var productImageId = "PI-1";
+        var currencyId = "CUR-1";
+        var userId = "U-1";
 
-        List<CreateProductDto> dtos = List.of(
-                CreateProductDto.builder()
-                        .title("Apple iPhone 15 Plus (256 GB) - Blue")
-                        .description("DYNAMIC ISLAND COMES TO IPHONE 15")
-                        .currencyId(currencyId1)
-                        .price(BigDecimal.valueOf(92990))
-                        .productImageIds(List.of(productImageId1))
-                        .taggedCategoryIds(List.of(productCategoryId1))
-                        .build()
-        );
-        ProductImage productImage1 = ProductImage.builder().id(productImageId1).build();
-        Currency currency1 = Currency.builder().id(currencyId1).build();
+        var dto = CreateProductDto.builder()
+                .title("Apple iPhone 15 Plus (256 GB) - Blue")
+                .description("DYNAMIC ISLAND COMES TO IPHONE 15")
+                .currencyId(currencyId)
+                .price(BigDecimal.valueOf(92990))
+                .productImageIds(List.of(productImageId))
+                .taggedCategoryIds(List.of(productCategoryId))
+                .build();
 
         // mock method calls
-        when(productCategoryRepositoryQueryMethod.findById(productCategoryId1))
+        when(productCategoryRepositoryQueryMethod.findById(productCategoryId))
                 .thenReturn(Optional.empty());
 
         // act & assert
-        assertThrows(ProductCategoryNotFoundException.class, () -> productService.createProducts(dtos));
+        assertThrows(ProductCategoryNotFoundException.class, () -> productService.createProduct(dto, userId));
     }
 
     @Test
     void createProducts_invalidProductImageId_fail() {
 
         // arrange
-        String productCategoryId1 = "PC-NOT-PRESENT";
-        String productImageId1 = "PI-NOT-PRESENT";
-        String currencyId1 = "CUR-1";
+        var productCategoryId = "PC-NOT-PRESENT";
+        var productImageId = "PI-NOT-PRESENT";
+        var currencyId = "CUR-1";
+        var userId = "U-1";
 
-        List<CreateProductDto> dtos = List.of(
-                CreateProductDto.builder()
-                        .title("Apple iPhone 15 Plus (256 GB) - Blue")
-                        .description("DYNAMIC ISLAND COMES TO IPHONE 15")
-                        .currencyId(currencyId1)
-                        .price(BigDecimal.valueOf(92990))
-                        .productImageIds(List.of(productImageId1))
-                        .taggedCategoryIds(List.of(productCategoryId1))
-                        .build()
-        );
+        var dto = CreateProductDto.builder()
+                .title("Apple iPhone 15 Plus (256 GB) - Blue")
+                .description("DYNAMIC ISLAND COMES TO IPHONE 15")
+                .currencyId(currencyId)
+                .price(BigDecimal.valueOf(92990))
+                .productImageIds(List.of(productImageId))
+                .taggedCategoryIds(List.of(productCategoryId))
+                .build();
 
-        ProductCategory productCategory1 = ProductCategory.builder().id(productCategoryId1).build();
-        Currency currency1 = Currency.builder().id(currencyId1).build();
+        var productCategory = ProductCategory.builder().id(productCategoryId).build();
 
         // mock method calls
-        when(productCategoryRepositoryQueryMethod.findById(productCategoryId1))
-                .thenReturn(Optional.of(productCategory1));
-        when(productImageRepositoryQueryMethod.findById(productImageId1))
+        when(productCategoryRepositoryQueryMethod.findById(productCategoryId))
+                .thenReturn(Optional.of(productCategory));
+        when(productImageRepositoryQueryMethod.findById(productImageId))
                 .thenReturn(Optional.empty());
 
         // act & assert
-        assertThrows(ProductImageNotFoundException.class, () -> productService.createProducts(dtos));
+        assertThrows(ProductImageNotFoundException.class, () -> productService.createProduct(dto, userId));
     }
 
 
@@ -204,34 +160,33 @@ class ProductServiceImplV1Test {
     void createProducts_invalidCurrencyId_fail() {
 
         // arrange
-        String productCategoryId1 = "PC-NOT-PRESENT";
-        String productImageId1 = "PI-NOT-PRESENT";
-        String currencyId1 = "CUR-NOT-PRESENT";
+        var productCategoryId = "PC-NOT-PRESENT";
+        var productImageId = "PI-NOT-PRESENT";
+        var currencyId = "CUR-NOT-PRESENT";
+        var userId = "U-1";
 
-        List<CreateProductDto> dtos = List.of(
-                CreateProductDto.builder()
-                        .title("Apple iPhone 15 Plus (256 GB) - Blue")
-                        .description("DYNAMIC ISLAND COMES TO IPHONE 15")
-                        .currencyId(currencyId1)
-                        .price(BigDecimal.valueOf(92990))
-                        .productImageIds(List.of(productImageId1))
-                        .taggedCategoryIds(List.of(productCategoryId1))
-                        .build()
-        );
+        var dto = CreateProductDto.builder()
+                .title("Apple iPhone 15 Plus (256 GB) - Blue")
+                .description("DYNAMIC ISLAND COMES TO IPHONE 15")
+                .currencyId(currencyId)
+                .price(BigDecimal.valueOf(92990))
+                .productImageIds(List.of(productImageId))
+                .taggedCategoryIds(List.of(productCategoryId))
+                .build();
 
-        ProductCategory productCategory1 = ProductCategory.builder().id(productCategoryId1).build();
-        ProductImage productImage1 = ProductImage.builder().id(productImageId1).build();
+        var productCategory = ProductCategory.builder().id(productCategoryId).build();
+        var productImage = ProductImage.builder().id(productImageId).build();
 
         // mock method calls
-        when(productCategoryRepositoryQueryMethod.findById(productCategoryId1))
-                .thenReturn(Optional.of(productCategory1));
-        when(productImageRepositoryQueryMethod.findById(productImageId1))
-                .thenReturn(Optional.of(productImage1));
-        when(currencyRepositoryQueryMethod.findById(currencyId1))
+        when(productCategoryRepositoryQueryMethod.findById(productCategoryId))
+                .thenReturn(Optional.of(productCategory));
+        when(productImageRepositoryQueryMethod.findById(productImageId))
+                .thenReturn(Optional.of(productImage));
+        when(currencyRepositoryQueryMethod.findById(currencyId))
                 .thenReturn(Optional.empty());
 
         // act & assert
-        assertThrows(CurrencyNotFoundException.class, () -> productService.createProducts(dtos));
+        assertThrows(CurrencyNotFoundException.class, () -> productService.createProduct(dto, userId));
     }
 
 
@@ -308,255 +263,196 @@ class ProductServiceImplV1Test {
     }
 
     @Test
-    void updateProducts_success() {
+    void updateProduct_success() {
         // arrange
-        String productId1 = "PR-1";
-        String productId2 = "PR-2";
-        String productCategoryId1 = "PC-1";
-        String productCategoryId2 = "PC-2";
-        String productImageId1 = "PI-1";
-        String productImageId2 = "PI-1";
-        String currencyId1 = "CUR-1";
-        String currencyId2 = "CUR-2";
+        var productId = "PR-1";
+        var productCategoryId = "PC-1";
+        var productImageId = "PI-1";
+        var currencyId = "CUR-1";
+        var userId = "U-1";
 
-        List<UpdateProductDto> dtos = List.of(
-                UpdateProductDto.builder()
-                        .productId(productId1)
-                        .title("Apple iPhone 15 Plus (256 GB) - Blue (Updated)")
-                        .description("DYNAMIC ISLAND COMES TO IPHONE 15  (Updated)")
-                        .currencyId(currencyId1)
-                        .price(BigDecimal.valueOf(92990))
-                        .productImageIds(List.of(productImageId1))
-                        .taggedCategoryIds(List.of(productCategoryId1))
-                        .build(),
+        var dto = UpdateProductDto.builder()
+                .productId(productId)
+                .title("Apple iPhone 15 Plus (256 GB) - Blue (Updated)")
+                .description("DYNAMIC ISLAND COMES TO IPHONE 15  (Updated)")
+                .currencyId(currencyId)
+                .price(BigDecimal.valueOf(92990))
+                .productImageIds(List.of(productImageId))
+                .taggedCategoryIds(List.of(productCategoryId))
+                .build();
 
-                UpdateProductDto.builder()
-                        .productId(productId2)
-                        .title("Apple 2023 MacBook Air Laptop with M2 chip  (Updated)")
-                        .description("38.91 cm (15.3 inch) Liquid Retina Display, 8GB RAM 512GB SSD Storage. (Updated)")
-                        .currencyId(currencyId2)
-                        .price(BigDecimal.valueOf(154900))
-                        .productImageIds(List.of(productImageId2))
-                        .taggedCategoryIds(List.of(productCategoryId2))
-                        .build()
-        );
-        Product product1 = Product.builder().id(productId1).createdOn(ZonedDateTime.now()).lastModifiedOn(ZonedDateTime.now()).build();
-        Product product2 = Product.builder().id(productId2).createdOn(ZonedDateTime.now()).lastModifiedOn(ZonedDateTime.now()).build();
-        ProductCategory productCategory1 = ProductCategory.builder().id(productCategoryId1).build();
-        ProductCategory productCategory2 = ProductCategory.builder().id(productCategoryId1).build();
-        ProductImage productImage1 = ProductImage.builder().id(productImageId1).build();
-        ProductImage productImage2 = ProductImage.builder().id(productImageId2).build();
-        Currency currency1 = Currency.builder().id(currencyId1).build();
-        Currency currency2 = Currency.builder().id(currencyId2).build();
+        Product product = Product.builder()
+                .id(productId)
+                .createdOn(ZonedDateTime.now())
+                .lastModifiedOn(ZonedDateTime.now())
+                .build();
+        var productCategory = ProductCategory.builder().id(productCategoryId).build();
+        var productImage = ProductImage.builder().id(productImageId).build();
+        var currency = Currency.builder().id(currencyId).build();
 
         // mock method calls
-        when(productRepositoryQueryMethod.findById(productId1)).thenReturn(Optional.of(product1));
-        when(productRepositoryQueryMethod.findById(productId2)).thenReturn(Optional.of(product2));
-        when(productRepositoryQueryMethod.saveAllAndFlush(
-                Mockito.anyList())).then(i -> mockUpdate(i.getArgument(0, List.class)));
-        when(productCategoryRepositoryQueryMethod.findById(productCategoryId1))
-                .thenReturn(Optional.of(productCategory1));
-        when(productCategoryRepositoryQueryMethod.findById(productCategoryId2))
-                .thenReturn(Optional.of(productCategory2));
-        when(productImageRepositoryQueryMethod.findById(productImageId1))
-                .thenReturn(Optional.of(productImage1));
-        when(productImageRepositoryQueryMethod.findById(productImageId2))
-                .thenReturn(Optional.of(productImage2));
-        when(currencyRepositoryQueryMethod.findById(currencyId1))
-                .thenReturn(Optional.of(currency1));
-        when(currencyRepositoryQueryMethod.findById(currencyId2))
-                .thenReturn(Optional.of(currency2));
+        when(productRepositoryQueryMethod.findById(productId)).thenReturn(Optional.of(product));
 
+        when(productRepositoryQueryMethod.saveAndFlush(
+                Mockito.any(Product.class))).then(i -> mockUpdate(i.getArgument(0, Product.class)));
+
+        when(productCategoryRepositoryQueryMethod.findById(productCategoryId))
+                .thenReturn(Optional.of(productCategory));
+        when(productImageRepositoryQueryMethod.findById(productImageId))
+                .thenReturn(Optional.of(productImage));
+
+        when(currencyRepositoryQueryMethod.findById(currencyId))
+                .thenReturn(Optional.of(currency));
         // act
-        List<ProductModel> productModels = productService.updateProducts(dtos);
+        var productModel = productService.updateProduct(dto, userId);
 
         // assert
-        assertNotNull(productModels);
-        assertEquals(dtos.size(), productModels.size());
-        assertNotNull(productModels.get(0).getId());
-        assertNotNull(productModels.get(1).getId());
-        assertNotNull(productModels.get(0).getCreatedOn());
-        assertNotNull(productModels.get(1).getCreatedOn());
-        assertNotNull(productModels.get(0).getLastModifiedOn());
-        assertNotNull(productModels.get(1).getLastModifiedOn());
-        assertEquals(dtos.get(0).getTitle(), productModels.get(0).getTitle());
-        assertEquals(dtos.get(1).getTitle(), productModels.get(1).getTitle());
-        assertEquals(dtos.get(0).getDescription(), productModels.get(0).getDescription());
-        assertEquals(dtos.get(1).getDescription(), productModels.get(1).getDescription());
-        assertEquals(dtos.get(0).getPrice(), productModels.get(0).getPrice().getPrice());
-        assertEquals(dtos.get(1).getPrice(), productModels.get(1).getPrice().getPrice());
+        assertNotNull(productModel);
+        assertNotNull(productModel.getId());
+        assertNotNull(productModel.getCreatedOn());
+        assertNotNull(productModel.getLastModifiedOn());
+        assertEquals(dto.getTitle(), productModel.getTitle());
+        assertEquals(dto.getDescription(), productModel.getDescription());
+        assertEquals(dto.getPrice(), productModel.getPrice().getPrice());
     }
 
     @Test
-    void updateProducts_withInvalidProductId_fail() {
+    void updateProduct_withInvalidProductId_fail() {
         // arrange
-        String productId1 = "PR-NOT-PRESENT";
-        String productCategoryId1 = "PC-1";
-        String productImageId1 = "PI-1";
-        String currencyId1 = "CUR-1";
-        List<UpdateProductDto> dtos = List.of(
-                UpdateProductDto.builder()
-                        .productId(productId1)
-                        .title("Apple iPhone 15 Plus (256 GB) - Blue (Updated)")
-                        .description("DYNAMIC ISLAND COMES TO IPHONE 15  (Updated)")
-                        .currencyId(currencyId1)
-                        .price(BigDecimal.valueOf(92990))
-                        .productImageIds(List.of(productImageId1))
-                        .taggedCategoryIds(List.of(productCategoryId1))
-                        .build()
-        );
-        ProductCategory productCategory1 = ProductCategory.builder().id(productCategoryId1).build();
+        var productId = "PR-NOT-PRESENT";
+        var productCategoryId1 = "PC-1";
+        var productImageId1 = "PI-1";
+        var currencyId1 = "CUR-1";
+        var userId = "U-1";
+        UpdateProductDto dto = UpdateProductDto.builder()
+                .productId(productId)
+                .title("Apple iPhone 15 Plus (256 GB) - Blue (Updated)")
+                .description("DYNAMIC ISLAND COMES TO IPHONE 15  (Updated)")
+                .currencyId(currencyId1)
+                .price(BigDecimal.valueOf(92990))
+                .productImageIds(List.of(productImageId1))
+                .taggedCategoryIds(List.of(productCategoryId1))
+                .build();
 
         // mock method calls
-        when(productRepositoryQueryMethod.findById(productId1)).thenReturn(Optional.empty());
+        when(productRepositoryQueryMethod.findById(productId)).thenReturn(Optional.empty());
 
         // act & assert
-        assertThrows(ProductNotFoundException.class, () -> productService.updateProducts(dtos));
+        assertThrows(ProductNotFoundException.class, () -> productService.updateProduct(dto, userId));
     }
 
 
     @Test
-    void updateProducts_invalidProductCategoryId_fail() {
+    void updateProduct_invalidProductCategoryId_fail() {
         // arrange
-        String productId1 = "PR-1";
-        String productCategoryId1 = "PC-1";
-        String productImageId1 = "PI-1";
-        String currencyId1 = "CUR-1";
+        var productId = "PR-1";
+        var productCategoryId = "PC-1";
+        var productImageId = "PI-1";
+        var currencyId = "CUR-1";
+        var price = BigDecimal.valueOf(92990);
+        var userId = "U-1";
 
-        List<UpdateProductDto> dtos = List.of(
-                UpdateProductDto.builder()
-                        .productId(productId1)
-                        .title("Apple iPhone 15 Plus (256 GB) - Blue (Updated)")
-                        .description("DYNAMIC ISLAND COMES TO IPHONE 15  (Updated)")
-                        .currencyId(currencyId1)
-                        .price(BigDecimal.valueOf(92990))
-                        .productImageIds(List.of(productImageId1))
-                        .taggedCategoryIds(List.of(productCategoryId1))
-                        .build()
-        );
-        Product product1 = Product.builder().id(productId1).createdOn(ZonedDateTime.now()).lastModifiedOn(ZonedDateTime.now()).build();
-        ProductImage productImage1 = ProductImage.builder().id(productImageId1).build();
-        Currency currency1 = Currency.builder().id(currencyId1).build();
+        var dto = UpdateProductDto.builder()
+                .productId(productId)
+                .title("Apple iPhone 15 Plus (256 GB) - Blue (Updated)")
+                .description("DYNAMIC ISLAND COMES TO IPHONE 15  (Updated)")
+                .currencyId(currencyId)
+                .price(price)
+                .productImageIds(List.of(productImageId))
+                .taggedCategoryIds(List.of(productCategoryId))
+                .build();
+
+        var product = Product.builder()
+                .id(productId)
+                .createdOn(ZonedDateTime.now())
+                .lastModifiedOn(ZonedDateTime.now())
+                .build();
+        var productImage = ProductImage.builder().id(productImageId).build();
+        var currency = Currency.builder().id(currencyId).build();
 
         // mock method calls
-        when(productRepositoryQueryMethod.findById(productId1)).thenReturn(Optional.of(product1));
-        when(productCategoryRepositoryQueryMethod.findById(productCategoryId1))
+        when(productRepositoryQueryMethod.findById(productId)).thenReturn(Optional.of(product));
+        when(productCategoryRepositoryQueryMethod.findById(productCategoryId))
                 .thenReturn(Optional.empty());
-        when(productImageRepositoryQueryMethod.findById(productImageId1))
-                .thenReturn(Optional.of(productImage1));
-        when(currencyRepositoryQueryMethod.findById(currencyId1))
-                .thenReturn(Optional.of(currency1));
+        when(productImageRepositoryQueryMethod.findById(productImageId))
+                .thenReturn(Optional.of(productImage));
+        when(currencyRepositoryQueryMethod.findById(currencyId))
+                .thenReturn(Optional.of(currency));
         // act & assert
-        assertThrows(ProductCategoryNotFoundException.class, () -> productService.updateProducts(dtos));
+        assertThrows(ProductCategoryNotFoundException.class, () -> productService.updateProduct(dto, userId));
     }
 
     @Test
-    void updateProducts_withInvalidProductImageId_fail() {
+    void updateProduct_withInvalidProductImageId_fail() {
         // arrange
-        String productId1 = "PR-1";
-        String productCategoryId1 = "PC-1";
-        String productImageId1 = "PI-NOT-PRESENT";
-        String currencyId1 = "CUR-1";
+        var productId = "PR-1";
+        var productCategoryId = "PC-1";
+        var productImageId = "PI-NOT-PRESENT";
+        var currencyId = "CUR-1";
+        var userId = "U-1";
 
-        List<UpdateProductDto> dtos = List.of(
-                UpdateProductDto.builder()
-                        .productId(productId1)
-                        .title("Apple iPhone 15 Plus (256 GB) - Blue (Updated)")
-                        .description("DYNAMIC ISLAND COMES TO IPHONE 15  (Updated)")
-                        .currencyId(currencyId1)
-                        .price(BigDecimal.valueOf(92990))
-                        .productImageIds(List.of(productImageId1))
-                        .taggedCategoryIds(List.of(productCategoryId1))
-                        .build()
-        );
-        Product product1 = Product.builder().id(productId1).createdOn(ZonedDateTime.now()).lastModifiedOn(ZonedDateTime.now()).build();
-        Currency currency1 = Currency.builder().id(currencyId1).build();
+        var dto = UpdateProductDto.builder()
+                .productId(productId)
+                .title("Apple iPhone 15 Plus (256 GB) - Blue (Updated)")
+                .description("DYNAMIC ISLAND COMES TO IPHONE 15  (Updated)")
+                .currencyId(currencyId)
+                .price(BigDecimal.valueOf(92990))
+                .productImageIds(List.of(productImageId))
+                .taggedCategoryIds(List.of(productCategoryId))
+                .build();
+
+        Product product = Product.builder()
+                .id(productId)
+                .createdOn(ZonedDateTime.now())
+                .lastModifiedOn(ZonedDateTime.now())
+                .build();
+        Currency currency = Currency.builder().id(currencyId).build();
 
         // mock method calls
-        when(productRepositoryQueryMethod.findById(productId1)).thenReturn(Optional.of(product1));
-        when(productImageRepositoryQueryMethod.findById(productImageId1))
+        when(productRepositoryQueryMethod.findById(productId)).thenReturn(Optional.of(product));
+        when(productImageRepositoryQueryMethod.findById(productImageId))
                 .thenReturn(Optional.empty());
-        when(currencyRepositoryQueryMethod.findById(currencyId1))
-                .thenReturn(Optional.of(currency1));
+        when(currencyRepositoryQueryMethod.findById(currencyId))
+                .thenReturn(Optional.of(currency));
 
         // act & assert
-        assertThrows(ProductImageNotFoundException.class, () -> productService.updateProducts(dtos));
+        assertThrows(ProductImageNotFoundException.class, () -> productService.updateProduct(dto, userId));
     }
 
 
     @Test
-    void updateProducts_withInvalidCurrencyId_fail() {
+    void updateProduct_withInvalidCurrencyId_fail() {
         // arrange
-        String productId1 = "PR-1";
-        String productCategoryId1 = "PC-1";
-        String productImageId1 = "PI-1";
-        String currencyId1 = "CUR-NOT-PRESENT";
+        var productId = "PR-1";
+        var productCategoryId = "PC-1";
+        var productImageId = "PI-1";
+        var currencyId = "CUR-NOT-PRESENT";
+        var userId = "U-1";
 
-        List<UpdateProductDto> dtos = List.of(
-                UpdateProductDto.builder()
-                        .productId(productId1)
-                        .title("Apple iPhone 15 Plus (256 GB) - Blue (Updated)")
-                        .description("DYNAMIC ISLAND COMES TO IPHONE 15  (Updated)")
-                        .currencyId(currencyId1)
-                        .price(BigDecimal.valueOf(92990))
-                        .productImageIds(List.of(productImageId1))
-                        .taggedCategoryIds(List.of(productCategoryId1))
-                        .build()
-        );
-        Product product1 = Product.builder().id(productId1).createdOn(ZonedDateTime.now()).lastModifiedOn(ZonedDateTime.now()).build();
+        var dto = UpdateProductDto.builder()
+                .productId(productId)
+                .title("Apple iPhone 15 Plus (256 GB) - Blue (Updated)")
+                .description("DYNAMIC ISLAND COMES TO IPHONE 15  (Updated)")
+                .currencyId(currencyId)
+                .price(BigDecimal.valueOf(92990))
+                .productImageIds(List.of(productImageId))
+                .taggedCategoryIds(List.of(productCategoryId))
+                .build();
+
+        Product product = Product.builder()
+                .id(productId)
+                .createdOn(ZonedDateTime.now())
+                .lastModifiedOn(ZonedDateTime.now())
+                .build();
 
         // mock method calls
-        when(productRepositoryQueryMethod.findById(productId1)).thenReturn(Optional.of(product1));
+        when(productRepositoryQueryMethod.findById(productId)).thenReturn(Optional.of(product));
 
-        when(currencyRepositoryQueryMethod.findById(currencyId1))
-                .thenReturn(Optional.empty());
-
-        // act & assert
-        assertThrows(CurrencyNotFoundException.class, () -> productService.updateProducts(dtos));
-    }
-
-    @Test
-    void deleteProducts_success() {
-
-        // arrange
-        String productId1 = "PR-1";
-        String productId2 = "PR-2";
-        List<DeleteProductDto> dtos = List.of(
-                DeleteProductDto.builder().productId(productId1).build(),
-                DeleteProductDto.builder().productId(productId2).build()
-        );
-        Product product1 = Product.builder().id(productId1).build();
-        Product product2 = Product.builder().id(productId2).build();
-
-        // mock method calls
-        when(productRepositoryQueryMethod.findById(productId1))
-                .thenReturn(Optional.of(product1));
-        when(productRepositoryQueryMethod.findById(productId2))
-                .thenReturn(Optional.of(product2));
-
-        // act
-        List<ProductModel> productModels = productService.deleteProducts(dtos);
-
-        // assert
-        assertNotNull(productModels);
-        assertEquals(dtos.size(), productModels.size());
-    }
-
-    @Test
-    void deleteProducts_withInvalidProductId_fail() {
-
-        // arrange
-        String productId1 = "PR-NOT-PRESENT";
-        List<DeleteProductDto> dtos = List.of(
-                DeleteProductDto.builder().productId(productId1).build()
-        );
-
-        // mock method calls
-        when(productRepositoryQueryMethod.findById(productId1))
+        when(currencyRepositoryQueryMethod.findById(currencyId))
                 .thenReturn(Optional.empty());
 
         // act & assert
-        assertThrows(ProductNotFoundException.class, () -> productService.deleteProducts(dtos));
+        assertThrows(CurrencyNotFoundException.class, () -> productService.updateProduct(dto, userId));
     }
 
     /**

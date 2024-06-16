@@ -60,7 +60,9 @@ public class ProductRepositoryImpl implements ProductRepository {
         dataQuery.select(dataRoot)
                 .where(dataPredicates);
 
-        TypedQuery<Product> dataTypedQuery = entityManager.createQuery(dataQuery);
+        TypedQuery<Product> dataTypedQuery = entityManager.createQuery(dataQuery)
+                .setFirstResult(pageIndex * pageSize)
+                .setMaxResults(pageSize);
 
         List<Product> products = dataTypedQuery.getResultList();
 

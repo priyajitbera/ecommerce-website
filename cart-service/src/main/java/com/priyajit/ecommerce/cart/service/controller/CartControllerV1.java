@@ -3,14 +3,19 @@ package com.priyajit.ecommerce.cart.service.controller;
 import com.priyajit.ecommerce.cart.service.dto.CreateCartDto;
 import com.priyajit.ecommerce.cart.service.dto.UpdateCartProductQuantityDto;
 import com.priyajit.ecommerce.cart.service.model.CartModel;
-import com.priyajit.ecommerce.cart.service.model.CartModelV2;
+import com.priyajit.ecommerce.cart.service.model.CartWithValueModel;
 import com.priyajit.ecommerce.cart.service.service.CartService;
+import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import static org.springframework.http.ResponseEntity.ok;
 
+@Slf4j
 @RestController
 @RequestMapping("/v1/cart")
+@CrossOrigin("*")
 public class CartControllerV1 {
 
     private CartService cartService;
@@ -20,31 +25,32 @@ public class CartControllerV1 {
     }
 
     @GetMapping
-    CartModel findCart(
+    public ResponseEntity<CartModel> findCart(
             @RequestParam(name = "userId") String userId
     ) {
-        return cartService.findCart(userId);
+        return ok(cartService.findCart(userId));
     }
 
-    @GetMapping("/v2")
-    CartModelV2 findCartV2(
+    @GetMapping("/with-value")
+    public ResponseEntity<CartWithValueModel> findCartWithValue(
             @RequestParam(name = "userId") String userId,
-            @RequestParam(name = "curreny", defaultValue = "INR") String currency
+            @RequestParam(name = "currency", defaultValue = "INR") String currency
     ) {
-        return cartService.findCartV2(userId, currency);
+        return ok(cartService.findCartWithValue(userId, currency));
     }
 
     @PostMapping
-    List<CartModel> createCarts(
-            @RequestBody List<CreateCartDto> dtoList
+    public ResponseEntity<CartModel> createCart(
+            @Valid @RequestBody CreateCartDto dtoList
     ) {
-        return cartService.createCarts(dtoList);
+        return ok(cartService.createCart(dtoList));
     }
 
     @PostMapping("/update-cart-product-quantity")
-    CartModel addProduct(
-            @RequestBody UpdateCartProductQuantityDto dto
+    public ResponseEntity<CartModel> updateCartProductQuantity(
+            @RequestHeader(name = "userId") String userId,
+            @Valid @RequestBody UpdateCartProductQuantityDto dto
     ) {
-        return cartService.updateCartProductQuantity(dto);
+        return ok(cartService.updateCartProductQuantity(userId, dto));
     }
 }

@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigInteger;
+import java.util.List;
 
 @Data
 @Builder
@@ -17,5 +18,8 @@ public class LoginModel {
     private LoginAttemptStatus status;
     private String message;
     private BigInteger userId;
+    private String name;
+    private String emailId;
+    private List<String> roles;
     private String token;
 }

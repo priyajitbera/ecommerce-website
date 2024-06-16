@@ -1,9 +1,6 @@
 package com.priyajit.ecommerce.product.catalog.service.model;
 
-import com.priyajit.ecommerce.product.catalog.service.entity.Product;
-import com.priyajit.ecommerce.product.catalog.service.entity.ProductCategory;
-import com.priyajit.ecommerce.product.catalog.service.entity.ProductImage;
-import com.priyajit.ecommerce.product.catalog.service.entity.ProductPrice;
+import com.priyajit.ecommerce.product.catalog.service.entity.*;
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
@@ -18,22 +15,56 @@ import java.util.stream.Collectors;
 @RedisHash(value = "productModel", timeToLive = 3600) // 1 hour
 public class ProductModel {
 
+    @Id // to store & search in Redis
+    private String id;
+    private ZonedDateTime createdOn;
+    private ZonedDateTime lastModifiedOn;
+    private String title;
+    private ProductPriceModel price;
+    private String description;
+    private List<ProductImageModel> images;
+    private List<ProductCategoryModel> taggedCategories;
+
+
     @Data
     @Builder
     public static class ProductPriceModel {
 
         private BigDecimal price;
-        private String currencyName;
+        private CurrencyModel currency;
 
         public static ProductPriceModel from(ProductPrice productPrice) {
             if (productPrice == null) return null;
 
             String currencyName = productPrice.getCurrency() == null ? null :
-                    productPrice.getCurrency().getName();
+                    productPrice.getCurrency().getId();
 
             return ProductPriceModel.builder()
                     .price(productPrice.getPrice())
-                    .currencyName(currencyName)
+                    .currency(CurrencyModel.buildFrom(productPrice.getCurrency()))
+                    .build();
+        }
+    }
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class CurrencyModel {
+
+        private String id;
+        private String name;
+        private String symbol;
+        private String shortSymbol;
+
+        public static CurrencyModel buildFrom(Currency currency) {
+            if (currency == null) return null;
+
+            return CurrencyModel.builder()
+                    .id(currency.getId())
+                    .name(currency.getName())
+                    .symbol(currency.getSymbol())
+                    .shortSymbol(currency.getShortSymbol())
                     .build();
         }
     }
@@ -76,16 +107,6 @@ public class ProductModel {
                     .build();
         }
     }
-
-    @Id // to store & search in Redis
-    private String id;
-    private ZonedDateTime createdOn;
-    private ZonedDateTime lastModifiedOn;
-    private String title;
-    private ProductPriceModel price;
-    private String description;
-    private List<ProductImageModel> images;
-    private List<ProductCategoryModel> taggedCategories;
 
     public static ProductModel from(Product product) {
         if (product == null) return null;

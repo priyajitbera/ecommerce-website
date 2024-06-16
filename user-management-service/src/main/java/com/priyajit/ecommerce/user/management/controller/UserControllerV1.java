@@ -1,20 +1,20 @@
 package com.priyajit.ecommerce.user.management.controller;
 
-import com.priyajit.ecommerce.user.management.dto.CreateUserDto;
-import com.priyajit.ecommerce.user.management.dto.RequestEmailVerificationSecretDto;
-import com.priyajit.ecommerce.user.management.dto.VerifyEmailDto;
-import com.priyajit.ecommerce.user.management.model.CreateUserModel;
 import com.priyajit.ecommerce.user.management.model.FindUserModel;
-import com.priyajit.ecommerce.user.management.model.RequestEmailVerificationSecretModel;
-import com.priyajit.ecommerce.user.management.model.VerifyEmailModel;
 import com.priyajit.ecommerce.user.management.service.service.UserService;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigInteger;
 import java.util.List;
 
+import static org.springframework.http.ResponseEntity.ok;
+
+@Slf4j
 @RestController
 @RequestMapping("/v1/user")
+@CrossOrigin("*")
 public class UserControllerV1 {
 
     private UserService userService;
@@ -24,43 +24,23 @@ public class UserControllerV1 {
     }
 
     @GetMapping("/find-one")
-    FindUserModel findUser(
-            @RequestParam BigInteger userId) {
-        return userService.findUser(userId);
+    public ResponseEntity<FindUserModel> findUser(
+            @RequestParam BigInteger userId
+    ) {
+        return ok(userService.findUser(userId));
     }
 
     @GetMapping
-    List<FindUserModel> findUsers(
+    public ResponseEntity<List<FindUserModel>> findUsers(
             @RequestParam(name = "userIds") List<BigInteger> userIds
     ) {
-        return userService.findUsers(userIds);
+        return ok(userService.findUsers(userIds));
     }
 
     @GetMapping("/by-email")
-    List<FindUserModel> findUsersByEmailIds(
+    public ResponseEntity<List<FindUserModel>> findUsersByEmailIds(
             @RequestParam(name = "emailIds") List<String> emailIdList
     ) {
-        return userService.findUsersByEmailIds(emailIdList);
-    }
-
-    @PostMapping
-    List<CreateUserModel> createUser(
-            @RequestBody List<CreateUserDto> dtoList
-    ) {
-        return userService.createUsers(dtoList);
-    }
-
-    @PostMapping("/request-email-verification-secret")
-    List<RequestEmailVerificationSecretModel> requestEmailVerificationSecret(
-            @RequestBody List<RequestEmailVerificationSecretDto> dtoList
-    ) {
-        return userService.requestEmailVerificationSecret(dtoList);
-    }
-
-    @PostMapping("/verify-email")
-    List<VerifyEmailModel> verifyEamil(
-            @RequestBody List<VerifyEmailDto> dtoList
-    ) {
-        return userService.verifyUserEmails(dtoList);
+        return ok(userService.findUsersByEmailIds(emailIdList));
     }
 }

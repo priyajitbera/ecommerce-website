@@ -1,0 +1,936 @@
+openapi: 3.0.1
+info:
+  title: Orchestrator Service
+  version: v0
+servers:
+  - url: http://localhost:8080
+    description: Generated server url
+tags:
+  - name: OrchestratorService
+paths:
+  /product-catalog-service/v1/product:
+    get:
+      tags:
+        - product-controller-v-1
+      operationId: findProducts
+      parameters:
+        - name: productIds
+          in: query
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+        - name: productNamePart
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: produdctCategoryIds
+          in: query
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+        - name: productCategoryNames
+          in: query
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+        - name: pageIndex
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 0
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 10
+      responses:
+        '200':
+          description: OK
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/PaginatedProductList'
+    post:
+      tags:
+        - product-controller-v-1
+      operationId: createProduct
+      parameters:
+        - $ref: '#/components/parameters/UserToken'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateProductDto'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/ProductModel'
+    patch:
+      tags:
+        - product-controller-v-1
+      operationId: updateProduct
+      parameters:
+        - $ref: '#/components/parameters/UserToken'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateProductDto'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/ProductModel'
+  /product-catalog-service/v1/product/elastic-search/index:
+    post:
+      tags:
+        - product-controller-v-1
+      operationId: indexProductsInElasticSearch
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IndexProductsInElasticSearchDto'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/IndexProductsInElasticSearchModel'
+  /product-catalog-service/v1/product-image:
+    post:
+      tags:
+        - product-image-controller-v-1
+      operationId: uploadProductImages
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UploadProductImagesDto'
+      responses:
+        '200':
+          description: OK
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/UploadProductImagesModel'
+  /product-catalog-service/v1/product-category:
+    get:
+      tags:
+        - product-category-controller-v-1
+      operationId: findProductCategories
+      parameters:
+        - name: id
+          in: query
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+        - name: name
+          in: query
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            'application/json':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProductCategoryModel'
+    post:
+      tags:
+        - product-category-controller-v-1
+      operationId: createProductCategories
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/CreateProductCategoryDto'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            'application/json':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProductCategoryModel'
+  /product-catalog-service/v1/currency:
+    get:
+      tags:
+        - currency-controller-v-1
+      operationId: findCurrencies
+      parameters:
+        - name: id
+          in: query
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+        - name: name
+          in: query
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            'application/json':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CurrencyModel'
+    post:
+      tags:
+        - currency-controller-v-1
+      operationId: createCurrencies
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/CreateCurrencyDto'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            'application/json':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CurrencyModel'
+  /product-catalog-service/v1/product/search:
+    get:
+      tags:
+        - product-controller-v-1
+      operationId: search
+      parameters:
+        - name: searchKeyword
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: pageIndex
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 0
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 10
+      responses:
+        '200':
+          description: OK
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/PaginatedProductList'
+  /product-catalog-service/v1/product/find-one:
+    get:
+      tags:
+        - product-controller-v-1
+      operationId: findOneById
+      parameters:
+        - name: productId
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/ProductModel'
+  /user-management-service/v1/auth/verify-email:
+    post:
+      tags:
+        - auth-controller-v-1
+      operationId: verifyEamil
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VerifyEmailDto'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/VerifyEmailModel'
+  /user-management-service/v1/auth/signup:
+    post:
+      tags:
+        - auth-controller-v-1
+      operationId: signup
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignupDto'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/SignupModel'
+  /user-management-service/v1/auth/request-email-verification-secret:
+    post:
+      tags:
+        - auth-controller-v-1
+      operationId: requestEmailVerificationSecret
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RequestEmailVerificationSecretDto'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/RequestEmailVerificationSecretModel'
+  /user-management-service/v1/auth/login:
+    post:
+      tags:
+        - auth-controller-v-1
+      operationId: login
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginDto'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/LoginModel'
+  /user-management-service/v1/auth/get-user-details-from-token:
+    post:
+      tags:
+        - auth-controller-v-1
+      operationId: getUserDetailsFromUserToken
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GetUserDetailsRequestDto'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/UserDetailsModel'
+  /user-management-service/v1/user:
+    get:
+      tags:
+        - user-controller-v-1
+      operationId: findUsers
+      parameters:
+        - name: userIds
+          in: query
+          required: true
+          schema:
+            type: array
+            items:
+              type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            'application/json':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FindUserModel'
+  /user-management-service/v1/user/find-one:
+    get:
+      tags:
+        - user-controller-v-1
+      operationId: findUser
+      parameters:
+        - name: userId
+          in: query
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/FindUserModel'
+  /user-management-service/v1/user/by-email:
+    get:
+      tags:
+        - user-controller-v-1
+      operationId: findUsersByEmailIds
+      parameters:
+        - name: emailIds
+          in: query
+          required: true
+          schema:
+            type: array
+            items:
+              type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            'application/json':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FindUserModel'
+  /user-management-service/v1/auth/check-email-id-available:
+    get:
+      tags:
+        - auth-controller-v-1
+      operationId: checkEmailIdAvailable
+      parameters:
+        - name: emailId
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/CheckEmailIdAvailableModel'
+  /cart-service/v1/cart:
+    get:
+      tags:
+        - cart-controller-v-1
+      operationId: findCart
+      parameters:
+        - $ref: '#/components/parameters/UserToken'
+        - name: userId
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/CartModel'
+    post:
+      tags:
+        - cart-controller-v-1
+      operationId: createCart
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCartDto'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/CartModel'
+  # cart-service endpoints
+  /cart-service/v1/cart/update-cart-product-quantity:
+    post:
+      tags:
+        - cart-controller-v-1
+      operationId: updateCartProductQuantity
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateCartProductQuantityDto'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/CartModel'
+  /cart-service/v1/cart/with-value:
+    get:
+      tags:
+        - cart-controller-v-1
+      operationId: findCartWithValue
+      parameters:
+        - $ref: '#/components/parameters/UserToken'
+        - name: userId
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: currency
+          in: query
+          required: false
+          schema:
+            type: string
+            default: INR
+      responses:
+        '200':
+          description: OK
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/CartWithValueModel'
+components:
+  # common parameters
+  parameters:
+    UserToken:
+      name: Authorization
+      in: header
+      schema:
+        type: string
+      required: true
+  schemas:
+    ResponseVoid:
+      type: object
+      properties:
+        data:
+          type: object
+        error:
+          type: string
+    CreateProductDto:
+      required:
+        - currencyId
+        - description
+        - price
+        - taggedCategoryIds
+        - title
+      type: object
+      properties:
+        title:
+          type: string
+        price:
+          minimum: 0
+          type: number
+        currencyId:
+          type: string
+        description:
+          type: string
+        taggedCategoryIds:
+          type: array
+          items:
+            type: string
+        productImageIds:
+          type: array
+          items:
+            type: string
+    ProductCategoryModel:
+      type: object
+      properties:
+        id:
+          type: string
+        createdOn:
+          type: string
+          format: date-time
+        lastModifiedOn:
+          type: string
+          format: date-time
+        name:
+          type: string
+    ProductImageModel:
+      type: object
+      properties:
+        id:
+          type: string
+        url:
+          type: string
+    ProductModel:
+      type: object
+      properties:
+        id:
+          type: string
+        createdOn:
+          type: string
+          format: date-time
+        lastModifiedOn:
+          type: string
+          format: date-time
+        title:
+          type: string
+        price:
+          $ref: '#/components/schemas/ProductPriceModel'
+        description:
+          type: string
+        images:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductImageModel'
+        taggedCategories:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductCategoryModel'
+    ProductPriceModel:
+      type: object
+      properties:
+        price:
+          type: number
+        currency:
+          $ref: '#/components/schemas/CurrencyModel'
+    IndexProductsInElasticSearchDto:
+      type: object
+      properties:
+        productIds:
+          type: array
+          items:
+            type: string
+    IndexProductsInElasticSearchModel:
+      type: object
+      properties:
+        productIds:
+          type: array
+          items:
+            type: string
+    UploadProductImagesDto:
+      type: object
+      properties:
+        productId:
+          type: string
+        imageFiles:
+          type: array
+          items:
+            type: string
+            format: binary
+    UploadProductImagesModel:
+      type: object
+      properties:
+        productId:
+          type: string
+        productImages:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductImageModel'
+    CreateProductCategoryDto:
+      type: object
+      properties:
+        name:
+          type: string
+        parentCategoryId:
+          type: string
+    CreateCurrencyDto:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        symbol:
+          type: string
+        shortSymbol:
+          type: string
+    CurrencyModel:
+      type: object
+      properties:
+        id:
+          type: string
+        createdOn:
+          type: string
+          format: date-time
+        lastModifiedOn:
+          type: string
+          format: date-time
+        name:
+          type: string
+        symbol:
+          type: string
+        shortSymbol:
+          type: string
+    UpdateProductDto:
+      required:
+        - productId
+      type: object
+      properties:
+        productId:
+          type: string
+        title:
+          type: string
+        price:
+          type: number
+        currencyId:
+          type: string
+        description:
+          type: string
+        taggedCategoryIds:
+          type: array
+          items:
+            type: string
+        productImageIds:
+          type: array
+          items:
+            type: string
+    PaginatedProductList:
+      type: object
+      properties:
+        products:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductModel'
+        totalPages:
+          type: integer
+          format: int32
+        totalElements:
+          type: integer
+          format: int64
+        size:
+          type: integer
+          format: int32
+        number:
+          type: integer
+          format: int32
+    VerifyEmailDto:
+      type: object
+      properties:
+        userId:
+          type: integer
+        emailVerificationSecret:
+          type: string
+    VerifyEmailModel:
+      type: object
+      properties:
+        userId:
+          type: integer
+        emailId:
+          type: string
+        verificationStatus:
+          type: string
+          enum:
+            - NOT_VERIFIED
+            - VERIFIED
+        verifiedOn:
+          type: string
+          format: date-time
+    SignupDto:
+      required:
+        - emailId
+        - name
+        - password
+        - signUpAsSeller
+      type: object
+      properties:
+        signUpAsSeller:
+          type: boolean
+        emailId:
+          type: string
+        name:
+          type: string
+        password:
+          type: string
+    SignupModel:
+      type: object
+      properties:
+        userId:
+          type: integer
+        emailId:
+          type: string
+        name:
+          type: string
+    RequestEmailVerificationSecretDto:
+      type: object
+      properties:
+        userId:
+          type: integer
+    RequestEmailVerificationSecretModel:
+      type: object
+      properties:
+        userId:
+          type: integer
+        status:
+          type: string
+          enum:
+            - SUCCESS
+            - FAILURE
+            - UNKNOWN
+        message:
+          type: string
+    LoginDto:
+      required:
+        - password
+        - userIdentifer
+      type: object
+      properties:
+        userIdentifer:
+          type: string
+        password:
+          type: string
+    LoginModel:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+            - SUCCESS
+            - FAILED
+        message:
+          type: string
+        userId:
+          type: integer
+        name:
+          type: string
+        emailId:
+          type: string
+        roles:
+          type: array
+          items:
+            type: string
+        token:
+          type: string
+    GetUserDetailsRequestDto:
+      required:
+        - token
+      type: object
+      properties:
+        token:
+          type: string
+    UserDetailsModel:
+      type: object
+      properties:
+        userId:
+          type: string
+        roles:
+          type: array
+          items:
+            type: string
+    FindUserModel:
+      type: object
+      properties:
+        id:
+          type: integer
+        email:
+          type: string
+        name:
+          type: string
+    CheckEmailIdAvailableModel:
+      type: object
+      properties:
+        emailId:
+          type: string
+        available:
+          type: boolean
+    # cart-service schemas
+    CreateCartDto:
+      required:
+        - userId
+      type: object
+      properties:
+        userId:
+          type: string
+    CartModel:
+      type: object
+      properties:
+        cartId:
+          type: string
+        userId:
+          type: string
+        products:
+          type: array
+          items:
+            $ref: '#/components/schemas/CartProductModel'
+    CartProductModel:
+      type: object
+      properties:
+        productId:
+          type: string
+        productTitle:
+          type: string
+        quantity:
+          type: integer
+          format: int64
+    UpdateCartProductQuantityDto:
+      required:
+        - cartId
+        - operation
+        - productId
+        - quantity
+      type: object
+      properties:
+        cartId:
+          type: string
+        productId:
+          type: string
+        quantity:
+          minimum: 1
+          type: integer
+          format: int64
+        operation:
+          type: string
+          enum:
+            - INCREASE
+            - DECREASE
+            - REMOVE
+    CartWithValueModel:
+      type: object
+      properties:
+        cartId:
+          type: string
+        userId:
+          type: string
+        products:
+          type: array
+          items:
+            $ref: '#/components/schemas/CartProductModel'
+        cartValue:
+          type: number
+        currency:
+          type: string

@@ -1,0 +1,500 @@
+openapi: 3.0.1
+info:
+  title: OpenAPI definition
+  version: v0
+servers:
+  - url: http://localhost:8081
+    description: Generated server url
+paths:
+  /v1/product:
+    get:
+      tags:
+        - product-controller-v-1
+      operationId: findProducts
+      parameters:
+        - name: productIds
+          in: query
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+        - name: productNamePart
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: produdctCategoryIds
+          in: query
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+        - name: productCategoryNames
+          in: query
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+        - name: pageIndex
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 0
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 10
+      responses:
+        '200':
+          description: OK
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/PaginatedProductList'
+    post:
+      tags:
+        - product-controller-v-1
+      operationId: createProduct
+      parameters:
+        - name: userId
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateProductDto'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/ProductModel'
+    patch:
+      tags:
+        - product-controller-v-1
+      operationId: updateProduct
+      parameters:
+        - name: userId
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateProductDto'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/ProductModel'
+  /v1/product/elastic-search/index:
+    post:
+      tags:
+        - product-controller-v-1
+      operationId: indexProductsInElasticSearch
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IndexProductsInElasticSearchDto'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/IndexProductsInElasticSearchModel'
+  /v1/product-image:
+    post:
+      tags:
+        - product-image-controller-v-1
+      operationId: uploadProductImages
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UploadProductImagesDto'
+      responses:
+        '200':
+          description: OK
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/UploadProductImagesModel'
+  /v1/product-category:
+    get:
+      tags:
+        - product-category-controller-v-1
+      operationId: findProductCategories
+      parameters:
+        - name: id
+          in: query
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+        - name: name
+          in: query
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            'application/json':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProductCategoryModel'
+    post:
+      tags:
+        - product-category-controller-v-1
+      operationId: createProductCategories
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/CreateProductCategoryDto'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            'application/json':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProductCategoryModel'
+  /v1/currency:
+    get:
+      tags:
+        - currency-controller-v-1
+      operationId: findCurrencies
+      parameters:
+        - name: id
+          in: query
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+        - name: name
+          in: query
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            'application/json':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CurrencyModel'
+    post:
+      tags:
+        - currency-controller-v-1
+      operationId: createCurrencies
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/CreateCurrencyDto'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            'application/json':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CurrencyModel'
+  /v1/product/search:
+    get:
+      tags:
+        - product-controller-v-1
+      operationId: search
+      parameters:
+        - name: searchKeyword
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: pageIndex
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 0
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 10
+      responses:
+        '200':
+          description: OK
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/PaginatedProductList'
+  /v1/product/find-one:
+    get:
+      tags:
+        - product-controller-v-1
+      operationId: findOneById
+      parameters:
+        - name: productId
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/ProductModel'
+  /v1/currency/find-one:
+    get:
+      tags:
+        - currency-controller-v-1
+      operationId: findOneById_1
+      parameters:
+        - name: id
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/CurrencyModel'
+components:
+  schemas:
+    CreateProductDto:
+      required:
+        - currencyId
+        - description
+        - price
+        - taggedCategoryIds
+        - title
+      type: object
+      properties:
+        title:
+          type: string
+        price:
+          minimum: 0
+          type: number
+        currencyId:
+          type: string
+        description:
+          type: string
+        taggedCategoryIds:
+          type: array
+          items:
+            type: string
+        productImageIds:
+          type: array
+          items:
+            type: string
+    ProductCategoryModel:
+      type: object
+      properties:
+        id:
+          type: string
+        createdOn:
+          type: string
+          format: date-time
+        lastModifiedOn:
+          type: string
+          format: date-time
+        name:
+          type: string
+    ProductImageModel:
+      type: object
+      properties:
+        id:
+          type: string
+        url:
+          type: string
+    ProductModel:
+      type: object
+      properties:
+        id:
+          type: string
+        createdOn:
+          type: string
+          format: date-time
+        lastModifiedOn:
+          type: string
+          format: date-time
+        title:
+          type: string
+        price:
+          $ref: '#/components/schemas/ProductPriceModel'
+        description:
+          type: string
+        images:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductImageModel'
+        taggedCategories:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductCategoryModel'
+    ProductPriceModel:
+      type: object
+      properties:
+        price:
+          type: number
+        currency:
+          $ref: '#/components/schemas/CurrencyModel'
+    IndexProductsInElasticSearchDto:
+      type: object
+      properties:
+        productIds:
+          type: array
+          items:
+            type: string
+    IndexProductsInElasticSearchModel:
+      type: object
+      properties:
+        productIds:
+          type: array
+          items:
+            type: string
+    UploadProductImagesDto:
+      type: object
+      properties:
+        productId:
+          type: string
+        imageFiles:
+          type: array
+          items:
+            type: string
+            format: binary
+    UploadProductImagesModel:
+      type: object
+      properties:
+        productId:
+          type: string
+        productImages:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductImageModel'
+    CreateProductCategoryDto:
+      type: object
+      properties:
+        name:
+          type: string
+        parentCategoryId:
+          type: string
+    CreateCurrencyDto:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        symbol:
+          type: string
+        shortSymbol:
+          type: string
+    CurrencyModel:
+      type: object
+      properties:
+        id:
+          type: string
+        createdOn:
+          type: string
+          format: date-time
+        lastModifiedOn:
+          type: string
+          format: date-time
+        name:
+          type: string
+        symbol:
+          type: string
+        shortSymbol:
+          type: string
+    UpdateProductDto:
+      required:
+        - productId
+      type: object
+      properties:
+        productId:
+          type: string
+        title:
+          type: string
+        price:
+          type: number
+        currencyId:
+          type: string
+        description:
+          type: string
+        taggedCategoryIds:
+          type: array
+          items:
+            type: string
+        productImageIds:
+          type: array
+          items:
+            type: string
+    PaginatedProductList:
+      type: object
+      properties:
+        products:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductModel'
+        totalPages:
+          type: integer
+          format: int32
+        totalElements:
+          type: integer
+          format: int64
+        size:
+          type: integer
+          format: int32
+        number:
+          type: integer
+          format: int32

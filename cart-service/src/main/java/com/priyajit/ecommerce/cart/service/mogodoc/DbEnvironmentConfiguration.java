@@ -75,6 +75,9 @@ public class DbEnvironmentConfiguration {
         // freecurrencyapi.com service
         public final static String FREECURRENCY_SERVICE_BASE_URL = "freecurrency-service.base-url";
         public final static String FREECURRENCY_SERVICE_API_KEY = "freecurrency-service.api-key";
+
+        // JWT
+        public final static String JWT_SECRET_KEY = "jwt.secret-key";
     }
 
     public static class Values {

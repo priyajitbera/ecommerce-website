@@ -1,0 +1,18 @@
+{
+  "sourceFolder": "src/gen/java/main",
+  "apiPackage": "com.priyajit.ecommerce.user-management-service.api",
+  "modelPackage": "com.priyajit.ecommerce.user-management-service.model",
+  "serializableModel": "true",
+  "dateLibray": "java8",
+  "interfaceOnly": "true",
+  "useBeanValidation": "true",
+  "java8": "true",
+  "reactive": "true",
+  "useOptional": "true",
+  "unhandledException": "true",
+  "swaggerDocketConfig": "true",
+  "library": "webclient",
+  "useJakartaEe": "true",
+  "apiTests" : "false",
+  "generateApiTests": "false"
+}

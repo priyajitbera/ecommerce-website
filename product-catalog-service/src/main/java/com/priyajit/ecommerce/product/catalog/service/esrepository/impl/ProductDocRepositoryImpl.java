@@ -14,10 +14,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
@@ -74,64 +74,35 @@ public class ProductDocRepositoryImpl implements ProductDocRepository {
     /**
      * Method to search indexed ProductDoc items
      *
-     * @param productIds
-     * @param productNamePart
-     * @param productDescriptionPart
-     * @param productCategoryIds
-     * @param productCategoryNames
+     * @param searchKeyword
      * @param pageIndex
      * @param pageSize
      * @return
      */
     @Override
-    public Page<ProductDoc> search(
-            @Nullable List<String> productIds,
-            @Nullable String productNamePart,
-            @Nullable String productDescriptionPart,
-            @Nullable List<String> productCategoryIds,
-            @Nullable List<String> productCategoryNames,
-            int pageIndex, int pageSize
-    ) {
+    public Page<ProductDoc> search(String searchKeyword, int pageIndex, int pageSize) {
 
         try {
-            Query.Builder queryBuilder = new Query.Builder();
 
-            // filter based on productIds
-            if (productIds != null) {
-                List<Query> queries = productIds.stream()
-                        .map(id -> new Query.Builder().match(t -> t.field("id").query(id)).build())
-                        .collect(Collectors.toList());
-                queryBuilder.bool(b -> b.should(queries));
-            }
 
-            // filter based on productNamePart
-            if (productNamePart != null) {
-                queryBuilder.match(q -> q.field("title").query(productNamePart));
-            }
+            List<Query> queries = new ArrayList<>();
+            // apply searchKeyword on title
+            queries.add(
+                    new Query.Builder().match(q -> q.field("title").query(searchKeyword)).build()
+            );
 
-            // filter based on productDescriptionPart
-            if (productDescriptionPart != null) {
-                queryBuilder.match(q -> q.field("description").query(productDescriptionPart));
-            }
+            // apply searchKeyword on description
+            queries.add(
+                    new Query.Builder().match(q -> q.field("description").query(searchKeyword)).build()
+            );
 
-            // filter based on productCategoryIds
-            if (productCategoryIds != null) {
-                List<Query> queries = productCategoryIds.stream()
-                        .map(id -> new Query.Builder().match(t -> t.field("taggedCategories.id").query(id)).build())
-                        .collect(Collectors.toList());
-                queryBuilder.bool(b -> b.should(queries));
-            }
+            // apply searchKeyword on taggedCategories.name
+            queries.add(
+                    new Query.Builder().match(q -> q.field("taggedCategories.name").query(searchKeyword)).build()
+            );
 
-            // filter based on productCategoryNames
-            if (productCategoryNames != null) {
-                List<Query> queries = productCategoryNames.stream()
-                        .map(name -> new Query.Builder().match(t -> t.field("taggedCategories.name").query(name)).build())
-                        .collect(Collectors.toList());
-                queryBuilder.bool(b -> b.should(queries));
-            }
-
-            // build query
-            Query query = queryBuilder.build();
+            // build fina query
+            Query query = new Query.Builder().bool(boolQuery -> boolQuery.should(queries)).build();
 
             log.info("Elastic Search Query: {}", query.toString());
 
@@ -166,7 +137,8 @@ public class ProductDocRepositoryImpl implements ProductDocRepository {
             }).join();
 
         } catch (Exception e) {
-            throw new RuntimeException("Error while searching", e);
+            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 

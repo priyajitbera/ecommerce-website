@@ -1,5 +1,6 @@
 package com.priyajit.ecommerce.product.catalog.service.dto;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,6 +15,7 @@ import java.util.List;
 @AllArgsConstructor
 public class UpdateProductDto {
 
+    @NotBlank
     private String productId;
     private String title;
     private BigDecimal price;

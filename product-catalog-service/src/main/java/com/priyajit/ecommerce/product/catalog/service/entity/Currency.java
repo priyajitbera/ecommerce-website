@@ -1,8 +1,7 @@
 package com.priyajit.ecommerce.product.catalog.service.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -20,7 +19,6 @@ import java.util.Objects;
 public class Currency {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
     @CreationTimestamp
@@ -29,7 +27,14 @@ public class Currency {
     @UpdateTimestamp
     private ZonedDateTime lastModifiedOn;
 
+    @Column(unique = true)
     private String name;
+
+    @Column(unique = true)
+    private String symbol;
+
+    @Column(unique = true)
+    private String shortSymbol;
 
     @Override
     public boolean equals(Object o) {
