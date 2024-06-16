@@ -3,13 +3,12 @@ package com.priyajit.ecommerce.payment.service.controller;
 import com.priyajit.ecommerce.payment.service.dto.ConfirmPaymentStatusDto;
 import com.priyajit.ecommerce.payment.service.dto.CreatePaymentDto;
 import com.priyajit.ecommerce.payment.service.model.PaymentModel;
-import com.priyajit.ecommerce.payment.service.model.Response;
 import com.priyajit.ecommerce.payment.service.service.PaymentService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import static com.priyajit.ecommerce.payment.service.controller.ControllerHelper.supplyResponse;
+import static org.springframework.http.ResponseEntity.ok;
 
 @Slf4j
 @RestController
@@ -23,23 +22,23 @@ public class PaymentControllerV1 {
     }
 
     @PostMapping
-    public ResponseEntity<Response<PaymentModel>> createPayment(
+    public ResponseEntity<PaymentModel> createPayment(
             @RequestBody CreatePaymentDto dto
     ) {
-        return supplyResponse(() -> paymentService.createPayment(dto), log);
+        return ok(paymentService.createPayment(dto));
     }
 
     @GetMapping
-    public ResponseEntity<Response<PaymentModel>> findPayment(
+    public ResponseEntity<PaymentModel> findPayment(
             @RequestParam(name = "paymentId") String paymentId
     ) {
-        return supplyResponse(() -> paymentService.findPayment(paymentId), log);
+        return ok(paymentService.findPayment(paymentId));
     }
 
     @PostMapping("/confirm-payment-status")
-    public ResponseEntity<Response<PaymentModel>> confirmPaymentStatus(
+    public ResponseEntity<PaymentModel> confirmPaymentStatus(
             @RequestBody ConfirmPaymentStatusDto dto
     ) {
-        return supplyResponse(() -> paymentService.confirmPaymentStatus(dto), log);
+        return ok(paymentService.confirmPaymentStatus(dto));
     }
 }

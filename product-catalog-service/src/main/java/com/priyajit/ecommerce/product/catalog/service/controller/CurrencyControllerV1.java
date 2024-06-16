@@ -2,7 +2,6 @@ package com.priyajit.ecommerce.product.catalog.service.controller;
 
 import com.priyajit.ecommerce.product.catalog.service.dto.CreateCurrencyDto;
 import com.priyajit.ecommerce.product.catalog.service.model.CurrencyModel;
-import com.priyajit.ecommerce.product.catalog.service.model.Response;
 import com.priyajit.ecommerce.product.catalog.service.service.CurrencyService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -10,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-import static com.priyajit.ecommerce.product.catalog.service.controller.ControllerHelper.supplyResponse;
+import static org.springframework.http.ResponseEntity.ok;
 
 @Slf4j
 @RestController
@@ -25,24 +24,24 @@ public class CurrencyControllerV1 {
     }
 
     @PostMapping
-    public ResponseEntity<Response<List<CurrencyModel>>> createCurrencies(
+    public ResponseEntity<List<CurrencyModel>> createCurrencies(
             @RequestBody List<CreateCurrencyDto> dtos
     ) {
-        return supplyResponse(() -> currencyService.createCurrencies(dtos), log);
+        return ok(currencyService.createCurrencies(dtos));
     }
 
     @GetMapping
-    public ResponseEntity<Response<List<CurrencyModel>>> findCurrencies(
+    public ResponseEntity<List<CurrencyModel>> findCurrencies(
             @RequestParam(name = "id", required = false) List<String> ids,
             @RequestParam(name = "name", required = false) List<String> names
     ) {
-        return supplyResponse(() -> currencyService.findCurrencies(ids, names), log);
+        return ok(currencyService.findCurrencies(ids, names));
     }
 
     @GetMapping("find-one")
-    public ResponseEntity<Response<CurrencyModel>> findOneById(
+    public ResponseEntity<CurrencyModel> findOneById(
             @RequestParam(name = "id") String id
     ) {
-        return supplyResponse(() -> currencyService.findById(id), log);
+        return ok(currencyService.findById(id));
     }
 }

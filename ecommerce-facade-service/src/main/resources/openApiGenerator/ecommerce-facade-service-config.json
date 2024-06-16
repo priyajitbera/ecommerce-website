@@ -1,0 +1,18 @@
+{
+  "sourceFolder": "src/gen/java/main",
+  "apiPackage": "com.priyajit.ecommerce.orchestrator_service.api",
+  "modelPackage": "com.priyajit.ecommerce.orchestrator_service.model",
+  "serializableModel": "true",
+  "dateLibray": "java8",
+  "interfaceOnly": "true",
+  "useBeanValidation": "true",
+  "java8": "true",
+  "reactive": "true",
+  "useOptional": "true",
+  "unhandledException": "true",
+  "swaggerDocketConfig": "true",
+  "library": "spring-boot",
+  "useJakartaEe": "true",
+  "apiTests" : "false",
+  "generateApiTests": "false"
+}

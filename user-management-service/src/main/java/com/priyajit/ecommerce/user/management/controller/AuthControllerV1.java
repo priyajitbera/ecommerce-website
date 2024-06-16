@@ -1,7 +1,6 @@
 package com.priyajit.ecommerce.user.management.controller;
 
 import com.priyajit.ecommerce.user.management.dto.*;
-import com.priyajit.ecommerce.user.management.exceptionhandler.MethodArgumentNotValidExceptionHandler;
 import com.priyajit.ecommerce.user.management.model.*;
 import com.priyajit.ecommerce.user.management.service.service.AuthService;
 import jakarta.validation.Valid;
@@ -9,11 +8,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import static org.springframework.http.ResponseEntity.ok;
+
 @Slf4j
 @RestController
 @RequestMapping("/v1/auth")
 @CrossOrigin(originPatterns = "*")
-public class AuthControllerV1 implements MethodArgumentNotValidExceptionHandler {
+public class AuthControllerV1 {
 
     private AuthService authService;
 
@@ -22,43 +23,43 @@ public class AuthControllerV1 implements MethodArgumentNotValidExceptionHandler 
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Response<LoginModel>> login(@Valid @RequestBody LoginDto dto) {
-        return ControllerHelper.supplyResponse(() -> authService.login(dto), log);
+    public ResponseEntity<LoginModel> login(@Valid @RequestBody LoginDto dto) {
+        return ok(authService.login(dto));
     }
 
 
     @PostMapping("/signup")
-    public ResponseEntity<Response<SignupModel>> signup(
+    public ResponseEntity<SignupModel> signup(
             @Valid @RequestBody SignupDto dto
     ) {
-        return ControllerHelper.supplyResponse(() -> authService.signup(dto), log);
+        return ok(authService.signup(dto));
     }
 
     @PostMapping("/request-email-verification-secret")
-    ResponseEntity<Response<RequestEmailVerificationSecretModel>> requestEmailVerificationSecret(
+    ResponseEntity<RequestEmailVerificationSecretModel> requestEmailVerificationSecret(
             @RequestBody RequestEmailVerificationSecretDto dto
     ) {
-        return ControllerHelper.supplyResponse(() -> authService.requestEmailVerificationSecret(dto), log);
+        return ok(authService.requestEmailVerificationSecret(dto));
     }
 
     @PostMapping("/verify-email")
-    ResponseEntity<Response<VerifyEmailModel>> verifyEamil(
+    ResponseEntity<VerifyEmailModel> verifyEamil(
             @RequestBody VerifyEmailDto dto
     ) {
-        return ControllerHelper.supplyResponse(() -> authService.verifyUserEmail(dto), log);
+        return ok(authService.verifyUserEmail(dto));
     }
 
     @GetMapping("/check-email-id-available")
-    public ResponseEntity<Response<CheckEmailIdAvailableModel>> checkEmailIdAvailable(
+    public ResponseEntity<CheckEmailIdAvailableModel> checkEmailIdAvailable(
             @RequestParam(name = "emailId") String emailId
     ) {
-        return ControllerHelper.supplyResponse(() -> authService.checkEmailIdAvailable(emailId), log);
+        return ok(authService.checkEmailIdAvailable(emailId));
     }
 
     @PostMapping("/get-user-details-from-token")
-    public ResponseEntity<Response<UserDetailsModel>> getUserDetailsFromUserToken(
+    public ResponseEntity<UserDetailsModel> getUserDetailsFromUserToken(
             @Valid @RequestBody GetUserDetailsRequestDto dto
     ) {
-        return ControllerHelper.supplyResponse(() -> authService.getUserDetailsFromUserToken(dto), log);
+        return ok(authService.getUserDetailsFromUserToken(dto));
     }
 }

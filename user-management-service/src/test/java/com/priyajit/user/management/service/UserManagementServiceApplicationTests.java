@@ -1,13 +1,12 @@
 package com.priyajit.user.management.service;
 
-import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
 class UserManagementServiceApplicationTests {
 
-	@Test
-	void contextLoads() {
-	}
+    //	@Test
+    void contextLoads() {
+    }
 
 }

@@ -1,0 +1,158 @@
+openapi: 3.0.1
+info:
+  title: OpenAPI definition
+  version: v0
+servers:
+  - url: http://localhost:8083
+    description: Generated server url
+paths:
+  /v1/cart:
+    get:
+      tags:
+        - cart-controller-v-1
+      operationId: findCart
+      parameters:
+        - name: userId
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/CartModel'
+    post:
+      tags:
+        - cart-controller-v-1
+      operationId: createCart
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCartDto'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/CartModel'
+  /v1/cart/update-cart-product-quantity:
+    post:
+      tags:
+        - cart-controller-v-1
+      operationId: updateCartProductQuantity
+      parameters:
+        - name: userId
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateCartProductQuantityDto'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/CartModel'
+  /v1/cart/with-value:
+    get:
+      tags:
+        - cart-controller-v-1
+      operationId: findCartWithValue
+      parameters:
+        - name: userId
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: currency
+          in: query
+          required: false
+          schema:
+            type: string
+            default: INR
+      responses:
+        '200':
+          description: OK
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/CartWithValueModel'
+components:
+  schemas:
+    CreateCartDto:
+      required:
+        - userId
+      type: object
+      properties:
+        userId:
+          type: string
+    CartModel:
+      type: object
+      properties:
+        cartId:
+          type: string
+        userId:
+          type: string
+        products:
+          type: array
+          items:
+            $ref: '#/components/schemas/CartProductModel'
+    CartProductModel:
+      type: object
+      properties:
+        productId:
+          type: string
+        productTitle:
+          type: string
+        quantity:
+          type: integer
+          format: int64
+    UpdateCartProductQuantityDto:
+      required:
+        - cartId
+        - operation
+        - productId
+        - quantity
+      type: object
+      properties:
+        cartId:
+          type: string
+        productId:
+          type: string
+        quantity:
+          minimum: 1
+          type: integer
+          format: int64
+        operation:
+          type: string
+          enum:
+            - INCREASE
+            - DECREASE
+            - REMOVE
+    CartWithValueModel:
+      type: object
+      properties:
+        cartId:
+          type: string
+        userId:
+          type: string
+        products:
+          type: array
+          items:
+            $ref: '#/components/schemas/CartProductModel'
+        cartValue:
+          type: number
+        currency:
+          type: string

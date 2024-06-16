@@ -1,18 +1,21 @@
 package com.priyajit.ecommerce.cart.service.service.impl;
 
-import com.priyajit.ecommerce.cart.service.client.FreecurrencyApiClient;
-import com.priyajit.ecommerce.cart.service.client.ProductCatalogServiceClient;
+import com.priyajit.ecommerce.cart.service.component.ExchangeRatesRepository;
 import com.priyajit.ecommerce.cart.service.domain.CartProductOperation;
 import com.priyajit.ecommerce.cart.service.dto.CreateCartDto;
 import com.priyajit.ecommerce.cart.service.dto.UpdateCartProductQuantityDto;
-import com.priyajit.ecommerce.cart.service.exception.*;
+import com.priyajit.ecommerce.cart.service.exception.BadProductQuantityValueException;
+import com.priyajit.ecommerce.cart.service.exception.ExchangeRateNotAvailableException;
+import com.priyajit.ecommerce.cart.service.exception.InvalidCurrencyNameException;
+import com.priyajit.ecommerce.cart.service.exception.NullArgument;
 import com.priyajit.ecommerce.cart.service.model.CartModel;
-import com.priyajit.ecommerce.cart.service.model.CartModelV2;
+import com.priyajit.ecommerce.cart.service.model.CartWithValueModel;
 import com.priyajit.ecommerce.cart.service.mogodoc.Cart;
 import com.priyajit.ecommerce.cart.service.mongorepository.CartRepository;
-import com.priyajit.ecommerce.cart.service.redisdoc.FreecurrencyApiExchangeRates;
-import com.priyajit.ecommerce.cart.service.redisrepository.ExchangeRatesRedisRepository;
 import com.priyajit.ecommerce.cart.service.service.CartService;
+import com.priyajit.ecommerce.product.catalog.service.api.CurrencyControllerV1Api;
+import com.priyajit.ecommerce.product.catalog.service.api.ProductControllerV1Api;
+import com.priyajit.ecommerce.product.catalog.service.model.CurrencyModel;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -22,9 +25,10 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.time.ZonedDateTime;
-import java.util.*;
-import java.util.concurrent.CompletableFuture;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -32,15 +36,20 @@ import java.util.stream.Collectors;
 public class CartServiceImplV1 implements CartService {
 
     private CartRepository cartRepository;
-    private ProductCatalogServiceClient productCatalogServiceClient;
-    private FreecurrencyApiClient freeCurrencyApiClient;
-    private ExchangeRatesRedisRepository exchangeRatesRedisRepository;
+    private ProductControllerV1Api productControllerV1Api;
+    private CurrencyControllerV1Api currencyControllerV1Api;
+    private ExchangeRatesRepository exchangeRatesRepository;
 
-    public CartServiceImplV1(CartRepository cartRepository, ProductCatalogServiceClient productCatalogServiceClient, FreecurrencyApiClient freeCurrencyApiClient, ExchangeRatesRedisRepository exchangeRatesRedisRepository) {
+    public CartServiceImplV1(
+            CartRepository cartRepository,
+            ProductControllerV1Api productControllerV1Api,
+            CurrencyControllerV1Api currencyControllerV1Api,
+            ExchangeRatesRepository exchangeRatesRepository
+    ) {
         this.cartRepository = cartRepository;
-        this.productCatalogServiceClient = productCatalogServiceClient;
-        this.freeCurrencyApiClient = freeCurrencyApiClient;
-        this.exchangeRatesRedisRepository = exchangeRatesRedisRepository;
+        this.productControllerV1Api = productControllerV1Api;
+        this.currencyControllerV1Api = currencyControllerV1Api;
+        this.exchangeRatesRepository = exchangeRatesRepository;
     }
 
     @Override
@@ -54,23 +63,20 @@ public class CartServiceImplV1 implements CartService {
     }
 
     @Override
-    public CartModelV2 findCartV2(String userId, String currency) {
+    public CartWithValueModel findCartWithValue(String userId, String currency) {
         // validate the currency
         // get all currencies
-        var allCurrencies = productCatalogServiceClient.findCurrencies(null, null)
-                .stream()
-                .map(currencyModel -> currencyModel.getId())
-                .collect(Collectors.toSet());
+        var allCurrencies = currencyControllerV1Api.findCurrencies(null, null)
+                .stream().map(CurrencyModel::getId).collect(Collectors.toList());
 
-        if (!allCurrencies.contains(currency)) {
+        if (!allCurrencies.contains(currency))
             throw new InvalidCurrencyNameException(currency, allCurrencies);
-        }
 
         // search in primary DB
         var cart = cartRepository.findByUserId(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
-        return createCartModelV1(cart, currency);
+        return createCartWithValueModel(cart, currency);
     }
 
 
@@ -97,13 +103,19 @@ public class CartServiceImplV1 implements CartService {
     }
 
     @Override
-    public CartModel updateCartProductQuantity(@Valid UpdateCartProductQuantityDto dto) {
+    public CartModel updateCartProductQuantity(String userId, @Valid UpdateCartProductQuantityDto dto) {
         // validation
+        if (userId == null)
+            throw new NullArgument("Unexpected null value for arg userId:String");
         if (dto == null)
             throw new NullArgument("Unexpected null value for arg dto:AddProductRequestDto");
 
         Cart cart = cartRepository.findById(dto.getCartId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        // validation: given userId is same as cart's userId
+        if (!userId.equals(cart.getUserId())) {
+            new ResponseStatusException(HttpStatus.FORBIDDEN);
+        }
 
         // update Cart
         doCartOperation(cart, dto.getProductId(), dto.getQuantity(), dto.getOperation());
@@ -149,13 +161,13 @@ public class CartServiceImplV1 implements CartService {
         }
     }
 
-    private void doCartOperationIncrease(Cart cart, String productId, Long quantity, Optional<Cart.CartProduct> existingCartProductOpt) {
+    private void doCartOperationIncrease(Cart cart, String productId, Long
+            quantity, Optional<Cart.CartProduct> existingCartProductOpt) {
         // if CartProduct doesn't exist for given productId
         // create CartProduct with given productId and quantity
         if (existingCartProductOpt.isEmpty()) {
             // validate whether a Product exists with given Product
-            productCatalogServiceClient.findProductByProductId(productId)
-                    .orElseThrow(ProductNotFoundException.supplier(productId));
+            productControllerV1Api.findOneById(productId);
 
             // validate quantity
             if (quantity <= 0) {
@@ -177,7 +189,8 @@ public class CartServiceImplV1 implements CartService {
         }
     }
 
-    private void doCartOperationDecrease(Cart cart, String productId, Long quantity, Optional<Cart.CartProduct> existingCartProductOpt) {
+    private void doCartOperationDecrease(Cart cart, String productId, Long
+            quantity, Optional<Cart.CartProduct> existingCartProductOpt) {
         // since SUBTRACT operation only update quantity if CartProduct exist
         if (existingCartProductOpt.isPresent()) {
             // validate quantity
@@ -202,36 +215,8 @@ public class CartServiceImplV1 implements CartService {
 
     private BigDecimal getExchangeRate(String baseCurrency, String toCurrency) {
         if (baseCurrency.equals(toCurrency)) return BigDecimal.ONE;
-
-        Map<String, BigDecimal> exchangeRates = null;
-        // search in Redis
-        try {
-            var exchangeRatesOpt = exchangeRatesRedisRepository.findById(baseCurrency);
-            if (exchangeRatesOpt.isPresent()) {
-                exchangeRates = exchangeRatesOpt.get().getRates().getData();
-            }
-        } catch (Exception e) {
-            log.error("Error while fetching ExchangeRates object from Redis");
-            e.printStackTrace();
-        }
-
-        // cache miss, call API
-        if (exchangeRates == null) {
-            var freeCurrencyApiModel = freeCurrencyApiClient.getExchangeRate(baseCurrency);
-            exchangeRates = freeCurrencyApiModel.getData();
-            saveExchangeRatesToRedisOptimistic(
-                    FreecurrencyApiExchangeRates.builder()
-                            .baseCurrency(baseCurrency)
-                            .createdOn(ZonedDateTime.now())
-                            .rates(freeCurrencyApiModel)
-                            .build()
-            );
-        }
-
-        BigDecimal exchangeRate = exchangeRates.getOrDefault(toCurrency, null);
-        if (exchangeRate == null) {
-            throw new ExchangeRateNotAvailableException(baseCurrency, toCurrency);
-        } else return exchangeRate;
+        return exchangeRatesRepository.getExchangeRate(baseCurrency, toCurrency)
+                .orElseThrow(ExchangeRateNotAvailableException.supplier(baseCurrency, toCurrency));
     }
 
     private void doCartOperationRemove(Cart cart, Optional<Cart.CartProduct> existingCartProductOpt) {
@@ -245,8 +230,7 @@ public class CartServiceImplV1 implements CartService {
 
         // create CartProductModel objects
         var cartProducts = cart.getProducts().stream().map(cartProduct -> {
-            var product = productCatalogServiceClient.findProductByProductId(cartProduct.getProductId())
-                    .orElseThrow(ProductNotFoundException.supplier(cartProduct.getProductId()));
+            var product = productControllerV1Api.findOneById(cartProduct.getProductId());
 
             return CartModel.CartProductModel.builder()
                     .productId(cartProduct.getProductId())
@@ -264,24 +248,23 @@ public class CartServiceImplV1 implements CartService {
                 .build();
     }
 
-    private CartModelV2 createCartModelV1(Cart cart, String currency) {
+    private CartWithValueModel createCartWithValueModel(Cart cart, String currency) {
         // create CartProductModel objects & compute cart value
         // cartValue = ∑ (quantity * price)
         BigDecimal cartValue = BigDecimal.ZERO;
-        List<CartModelV2.CartProductModel> cartProductModels = new ArrayList<>();
+        List<CartWithValueModel.CartProductModel> cartProductModels = new ArrayList<>();
         for (var cartProduct : cart.getProducts()) {
 
-            var product = productCatalogServiceClient.findProductByProductId(cartProduct.getProductId())
-                    .orElseThrow(ProductNotFoundException.supplier(cartProduct.getProductId()));
-
-            BigDecimal EXCHANGE_RATE = getExchangeRate(product.getPrice().getCurrencyName(), currency);
+            var product = productControllerV1Api.findOneById(cartProduct.getProductId());
+            BigDecimal EXCHANGE_RATE = getExchangeRate(product.getPrice().getCurrency().getId(), currency);
+            log.info("[createCartWithValueModel] baseCurrency: {} toCurrency: {} EXCHANGE_RATE: {}", product.getPrice().getCurrency().getId(), currency, EXCHANGE_RATE);
             BigDecimal priceInBaseCurrency = EXCHANGE_RATE
                     .multiply(product.getPrice().getPrice())
                     .multiply(BigDecimal.valueOf(cartProduct.getQuantity()));
             priceInBaseCurrency = priceInBaseCurrency.setScale(2, RoundingMode.HALF_EVEN);
             cartValue = cartValue.add(priceInBaseCurrency);
 
-            cartProductModels.add(CartModelV2.CartProductModel.builder()
+            cartProductModels.add(CartWithValueModel.CartProductModel.builder()
                     .productId(cartProduct.getProductId())
                     .quantity(cartProduct.getQuantity())
                     .productTitle(product.getTitle())
@@ -289,7 +272,7 @@ public class CartServiceImplV1 implements CartService {
                     .build());
         }
 
-        return CartModelV2.builder()
+        return CartWithValueModel.builder()
                 .cartId(cart.getId())
                 .userId(cart.getUserId())
                 .products(cartProductModels)
@@ -298,26 +281,17 @@ public class CartServiceImplV1 implements CartService {
                 .build();
     }
 
+    /**
+     * Helper method creates Cart object from CreateCartDto object
+     *
+     * @param dto
+     * @return
+     */
     private Cart createCartFromDto(CreateCartDto dto) {
 
         return Cart.builder()
                 .userId(dto.getUserId())
                 .products(new ArrayList<>())
                 .build();
-    }
-
-    private void saveExchangeRatesToRedisOptimistic(FreecurrencyApiExchangeRates exchangeRates) {
-        try {
-            CompletableFuture.supplyAsync(() -> exchangeRatesRedisRepository.save(exchangeRates))
-                    .thenAccept(saved -> log.info("Saved ExchangeRates object to Redis successfully"))
-                    .exceptionally(e -> {
-                        log.error("Error occurred while saving ExchangeRates object to Redis, {}", e.getMessage());
-                        e.printStackTrace();
-                        return null;
-                    });
-        } catch (Exception e) {
-            log.error("Error occurred while saving ExchangeRates object to Redis, {}", e.getMessage());
-            e.printStackTrace();
-        }
     }
 }
