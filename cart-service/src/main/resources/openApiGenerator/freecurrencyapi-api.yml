@@ -1,0 +1,140 @@
+openapi: 3.0.1
+info:
+  title: OpenAPI definition
+  version: v0
+servers:
+  - url: https://api.freecurrencyapi.com
+    description: Generated server url
+paths:
+  /v1/latest:
+    get:
+      tags: [ "freecurrency-exchange-rates" ]
+      operationId: fetchByBaseCurrency
+      summary: Get exchange rates
+      description: Retrieve the exchange rates for various currencies
+      parameters:
+        - name: base_currency
+          in: query
+          required: false
+          schema:
+            type: string
+            default: USD
+      responses:
+        '200':
+          description: A list of exchange rates
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ExchangeRatesResponseSchema"
+
+components:
+  schemas:
+    ExchangeRatesResponseSchema:
+      type: object
+      properties:
+        data:
+          $ref: "#/components/schemas/ExchangeRatesData"
+    ExchangeRatesData:
+      type: object
+      additionalProperties:
+        type: number
+#      properties:
+#        AUD:
+#          type: number
+#          example: 1.5186002886
+#        BGN:
+#          type: number
+#          example: 1.7922602483
+#        BRL:
+#          type: number
+#          example: 5.3509108337
+#        CAD:
+#          type: number
+#          example: 1.3759801775
+#        CHF:
+#          type: number
+#          example: 0.8958700902
+#        CNY:
+#          type: number
+#          example: 7.2443213287
+#        CZK:
+#          type: number
+#          example: 22.7934728941
+#        DKK:
+#          type: number
+#          example: 6.9041712158
+#        EUR:
+#          type: number
+#          example: 0.925360096
+#        GBP:
+#          type: number
+#          example: 0.7859001465
+#        HKD:
+#          type: number
+#          example: 7.808601548
+#        HRK:
+#          type: number
+#          example: 6.6530106925
+#        HUF:
+#          type: number
+#          example: 361.9146370254
+#        IDR:
+#          type: number
+#          example: 16171.108671328
+#        ILS:
+#          type: number
+#          example: 3.7565804469
+#        INR:
+#          type: number
+#          example: 83.3664797643
+#        ISK:
+#          type: number
+#          example: 137.4842020422
+#        JPY:
+#          type: number
+#          example: 156.7544258916
+#        KRW:
+#          type: number
+#          example: 1377.1919239717
+#        MXN:
+#          type: number
+#          example: 18.4211331923
+#        MYR:
+#          type: number
+#          example: 4.688570584
+#        NOK:
+#          type: number
+#          example: 10.7076213422
+#        NZD:
+#          type: number
+#          example: 1.6378702355
+#        PHP:
+#          type: number
+#          example: 58.6837861889
+#        PLN:
+#          type: number
+#          example: 3.9921306341
+#        RON:
+#          type: number
+#          example: 4.6044708703
+#        RUB:
+#          type: number
+#          example: 89.0163062827
+#        SEK:
+#          type: number
+#          example: 10.5309516399
+#        SGD:
+#          type: number
+#          example: 1.3502202401
+#        THB:
+#          type: number
+#          example: 36.7880454478
+#        TRY:
+#          type: number
+#          example: 32.354393368
+#        USD:
+#          type: number
+#          example: 1
+#        ZAR:
+#          type: number
+#          example: 18.8382934052ō

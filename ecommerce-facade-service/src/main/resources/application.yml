@@ -1,0 +1,19 @@
+spring:
+  application:
+    name: ecommerce-facade-service
+  main:
+    web-application-type: reactive
+
+product-catalog-service:
+  base-url: ${PRODUCT_CATALOG_SERVICE_BASE_URL:http://localhost:8081}
+user-management-service:
+  base-url: ${USER_MANAGEMENT_SERVICE_BASE_URL:http://localhost:8082}
+cart-service:
+  base-url: ${CART_SERVICE_BASE_URL:http://localhost:8083}
+
+user-token-parser:
+  algorithm:${USER_TOKEN_PARSER_ALGORITHM}
+  secret:${USER_TOKEN_PARSER_SECRET}
+
+web-security:
+  jwt-secret: ${JWT_SECRET}

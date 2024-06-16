@@ -4,14 +4,13 @@ import com.priyajit.order.management.service.dto.CreateOrderDto;
 import com.priyajit.order.management.service.dto.PostDeliveryUpdateDto;
 import com.priyajit.order.management.service.dto.UpdateDeliveryStatusDto;
 import com.priyajit.order.management.service.model.OrderModel;
-import com.priyajit.order.management.service.model.Response;
 import com.priyajit.order.management.service.service.OrderService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import static com.priyajit.order.management.service.controller.ControllerHelper.supplyResponse;
+import static org.springframework.http.ResponseEntity.ok;
 
 @Slf4j
 @RestController("/v1/order")
@@ -24,39 +23,39 @@ public class OrderControllerV1 {
     }
 
     @PostMapping
-    public ResponseEntity<Response<OrderModel>> createOrder(
+    public ResponseEntity<OrderModel> createOrder(
             @RequestBody CreateOrderDto dto
     ) {
-        return supplyResponse(() -> orderService.createOrder(dto), log);
+        return ok(orderService.createOrder(dto));
     }
 
     @GetMapping("/find-one")
-    public ResponseEntity<Response<OrderModel>> findOrder(
+    public ResponseEntity<OrderModel> findOrder(
             @RequestParam String orderId
     ) {
-        return supplyResponse(() -> orderService.findOrder(orderId), log);
+        return ok(orderService.findOrder(orderId));
     }
 
     @GetMapping("/user-orders")
-    private ResponseEntity<Response<Page<OrderModel>>> findUserOrders(
+    private ResponseEntity<Page<OrderModel>> findUserOrders(
             @RequestParam String userId,
             @RequestParam(defaultValue = "0") Integer page,
             @RequestParam(defaultValue = "5") Integer pageSize
     ) {
-        return supplyResponse(() -> orderService.findUserOrders(userId, page, pageSize), log);
+        return ok(orderService.findUserOrders(userId, page, pageSize));
     }
 
     @PatchMapping("/update-delivery-status")
-    public ResponseEntity<Response<OrderModel>> updateDeliveryStatus(
+    public ResponseEntity<OrderModel> updateDeliveryStatus(
             @RequestBody UpdateDeliveryStatusDto updateDeliveryStatusDto
     ) {
-        return supplyResponse(() -> orderService.updateDeliveryStatus(updateDeliveryStatusDto), log);
+        return ok(orderService.updateDeliveryStatus(updateDeliveryStatusDto));
     }
 
     @PostMapping("/post-delivery-update")
-    public ResponseEntity<Response<OrderModel>> postDelivateUpdate(
+    public ResponseEntity<OrderModel> postDeliveryUpdate(
             @RequestBody PostDeliveryUpdateDto dto
     ) {
-        return supplyResponse(() -> orderService.postDeliveryUpdate(dto), log);
+        return ok(orderService.postDeliveryUpdate(dto));
     }
 }

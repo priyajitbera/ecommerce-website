@@ -1,0 +1,18 @@
+{
+  "sourceFolder": "src/gen/java/main",
+  "apiPackage": "com.freecurrencyapi.api",
+  "modelPackage": "com.freecurrencyapi.model",
+  "serializableModel": "true",
+  "dateLibray": "java8",
+  "interfaceOnly": "true",
+  "useBeanValidation": "false",
+  "java8": "true",
+  "reactive": "false",
+  "useOptional": "true",
+  "unhandledException": "true",
+  "swaggerDocketConfig": "true",
+  "library": "restclient",
+  "useJakartaEe": "true",
+  "apiTests" : "false",
+  "generateApiTests": "false"
+}

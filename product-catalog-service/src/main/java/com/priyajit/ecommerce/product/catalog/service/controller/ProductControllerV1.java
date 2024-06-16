@@ -3,30 +3,25 @@ package com.priyajit.ecommerce.product.catalog.service.controller;
 import com.priyajit.ecommerce.product.catalog.service.dto.CreateProductDto;
 import com.priyajit.ecommerce.product.catalog.service.dto.IndexProductsInElasticSearchDto;
 import com.priyajit.ecommerce.product.catalog.service.dto.UpdateProductDto;
-import com.priyajit.ecommerce.product.catalog.service.exceptionhandler.MethodArgumentNotValidExceptionHandler;
 import com.priyajit.ecommerce.product.catalog.service.model.IndexProductsInElasticSearchModel;
 import com.priyajit.ecommerce.product.catalog.service.model.PaginatedProductList;
 import com.priyajit.ecommerce.product.catalog.service.model.ProductModel;
-import com.priyajit.ecommerce.product.catalog.service.model.Response;
 import com.priyajit.ecommerce.product.catalog.service.service.ProductService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-import static com.priyajit.ecommerce.product.catalog.service.controller.ControllerHelper.getUserId;
-import static com.priyajit.ecommerce.product.catalog.service.controller.ControllerHelper.supplyResponse;
+import static org.springframework.http.ResponseEntity.ok;
 
 @Slf4j
 @RestController
 @RequestMapping("/v1/product")
 @CrossOrigin("*")
-public class ProductControllerV1 implements MethodArgumentNotValidExceptionHandler {
+public class ProductControllerV1 {
 
     private ProductService productService;
 
@@ -36,7 +31,7 @@ public class ProductControllerV1 implements MethodArgumentNotValidExceptionHandl
     }
 
     @GetMapping
-    public ResponseEntity<Response<PaginatedProductList>> findProducts(
+    public ResponseEntity<PaginatedProductList> findProducts(
             @RequestParam(required = false) List<String> productIds,
             @RequestParam(required = false) String productNamePart,
             @RequestParam(required = false) List<String> produdctCategoryIds,
@@ -44,54 +39,47 @@ public class ProductControllerV1 implements MethodArgumentNotValidExceptionHandl
             @RequestParam(name = "pageIndex", required = false, defaultValue = "0") Integer pageIndex,
             @RequestParam(name = "pageSize", required = false, defaultValue = "10") Integer pageSize
     ) {
-        return supplyResponse(
-                () -> productService.findProducts(
-                        productIds, productNamePart, produdctCategoryIds, productCategoryNames,
-                        pageIndex, pageSize
-                ), log);
+        return ok(productService.findProducts(
+                productIds, productNamePart, produdctCategoryIds, productCategoryNames,
+                pageIndex, pageSize));
     }
 
     @GetMapping("/search")
-    public ResponseEntity<Response<PaginatedProductList>> search(
+    public ResponseEntity<PaginatedProductList> search(
             @RequestParam(required = true) String searchKeyword,
             @RequestParam(name = "pageIndex", required = false, defaultValue = "0") Integer pageIndex,
             @RequestParam(name = "pageSize", required = false, defaultValue = "10") Integer pageSize
     ) {
-        return supplyResponse(
-                () -> productService.search(searchKeyword, pageIndex, pageSize), log);
+        return ok(productService.search(searchKeyword, pageIndex, pageSize));
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('SELLER')")
-    public ResponseEntity<Response<ProductModel>> createProduct(
-            Authentication auth,
-            @Valid @RequestBody CreateProductDto dto
+    public ResponseEntity<ProductModel> createProduct(
+            @Valid @RequestBody CreateProductDto dto,
+            @RequestHeader(name = "userId") String userId
     ) {
-        return supplyResponse(() -> productService.createProduct(dto, getUserId(auth)), log);
+        return ok(productService.createProduct(dto, userId));
     }
 
     @PatchMapping
-    @PreAuthorize("hasRole('SELLER')")
-    public ResponseEntity<Response<ProductModel>> updateProduct(
-            Authentication auth,
-            @RequestBody UpdateProductDto dto
+    public ResponseEntity<ProductModel> updateProduct(
+            @RequestBody UpdateProductDto dto,
+            @RequestHeader(name = "userId") String userId
     ) {
-        return supplyResponse(() -> productService.updateProduct(dto, getUserId(auth)), log);
+        return ok(productService.updateProduct(dto, userId));
     }
 
     @PostMapping("/elastic-search/index")
-    public ResponseEntity<Response<IndexProductsInElasticSearchModel>> indexProductsInElasticSearch(
+    public ResponseEntity<IndexProductsInElasticSearchModel> indexProductsInElasticSearch(
             @RequestBody IndexProductsInElasticSearchDto indexProductsInElasticSearchDto
     ) {
-        return supplyResponse(
-                () -> productService.indexProductsInElasticSearch(indexProductsInElasticSearchDto),
-                log);
+        return ok(productService.indexProductsInElasticSearch(indexProductsInElasticSearchDto));
     }
 
     @GetMapping("/find-one")
-    public ResponseEntity<Response<ProductModel>> findOneById(
+    public ResponseEntity<ProductModel> findOneById(
             @RequestParam("productId") String productId
     ) {
-        return supplyResponse(() -> productService.findOneById(productId), log);
+        return ok(productService.findOneById(productId));
     }
 }

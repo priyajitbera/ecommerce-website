@@ -2,23 +2,21 @@ package com.priyajit.ecommerce.cart.service.controller;
 
 import com.priyajit.ecommerce.cart.service.dto.CreateCartDto;
 import com.priyajit.ecommerce.cart.service.dto.UpdateCartProductQuantityDto;
-import com.priyajit.ecommerce.cart.service.exceptionhandler.MethodArgumentNotValidExceptionHandler;
 import com.priyajit.ecommerce.cart.service.model.CartModel;
-import com.priyajit.ecommerce.cart.service.model.CartModelV2;
-import com.priyajit.ecommerce.cart.service.model.Response;
+import com.priyajit.ecommerce.cart.service.model.CartWithValueModel;
 import com.priyajit.ecommerce.cart.service.service.CartService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import static com.priyajit.ecommerce.cart.service.controller.ControllerHelper.supplyResponse;
+import static org.springframework.http.ResponseEntity.ok;
 
 @Slf4j
 @RestController
 @RequestMapping("/v1/cart")
 @CrossOrigin("*")
-public class CartControllerV1 implements MethodArgumentNotValidExceptionHandler {
+public class CartControllerV1 {
 
     private CartService cartService;
 
@@ -27,31 +25,32 @@ public class CartControllerV1 implements MethodArgumentNotValidExceptionHandler 
     }
 
     @GetMapping
-    public ResponseEntity<Response<CartModel>> findCart(
+    public ResponseEntity<CartModel> findCart(
             @RequestParam(name = "userId") String userId
     ) {
-        return supplyResponse(() -> cartService.findCart(userId), log);
+        return ok(cartService.findCart(userId));
     }
 
-    @GetMapping("/v2")
-    public ResponseEntity<Response<CartModelV2>> findCartV2(
+    @GetMapping("/with-value")
+    public ResponseEntity<CartWithValueModel> findCartWithValue(
             @RequestParam(name = "userId") String userId,
-            @RequestParam(name = "curreny", defaultValue = "INR") String currency
+            @RequestParam(name = "currency", defaultValue = "INR") String currency
     ) {
-        return supplyResponse(() -> cartService.findCartV2(userId, currency), log);
+        return ok(cartService.findCartWithValue(userId, currency));
     }
 
     @PostMapping
-    public ResponseEntity<Response<CartModel>> createCart(
+    public ResponseEntity<CartModel> createCart(
             @Valid @RequestBody CreateCartDto dtoList
     ) {
-        return supplyResponse(() -> cartService.createCart(dtoList), log);
+        return ok(cartService.createCart(dtoList));
     }
 
     @PostMapping("/update-cart-product-quantity")
-    public ResponseEntity<Response<CartModel>> addProduct(
+    public ResponseEntity<CartModel> updateCartProductQuantity(
+            @RequestHeader(name = "userId") String userId,
             @Valid @RequestBody UpdateCartProductQuantityDto dto
     ) {
-        return supplyResponse(() -> cartService.updateCartProductQuantity(dto), log);
+        return ok(cartService.updateCartProductQuantity(userId, dto));
     }
 }

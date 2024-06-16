@@ -1,11 +1,12 @@
 package com.priyajit.ecommerce.product.catalog.service.service.impl;
 
+import com.priyajit.ecommerce.product.catalog.service.dto.CreateProductCategoryDto;
 import com.priyajit.ecommerce.product.catalog.service.entity.ProductCategory;
 import com.priyajit.ecommerce.product.catalog.service.exception.ProductCategoryNotFoundException;
+import com.priyajit.ecommerce.product.catalog.service.model.ProductCategoryModel;
+import com.priyajit.ecommerce.product.catalog.service.repository.querydsl.ProductCategoryRepository;
 import com.priyajit.ecommerce.product.catalog.service.repository.querymethod.ProductCategoryRepositoryQueryMethod;
 import com.priyajit.ecommerce.product.catalog.service.service.ProductCategoryService;
-import com.priyajit.ecommerce.product.catalog.service.dto.CreateProductCategoryDto;
-import com.priyajit.ecommerce.product.catalog.service.model.ProductCategoryModel;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
@@ -17,10 +18,15 @@ import java.util.stream.Collectors;
 public class ProductCategoriesServiceImplv1 implements ProductCategoryService {
 
     private ProductCategoryRepositoryQueryMethod productCategoryRepositoryQueryMethod;
+    private ProductCategoryRepository productCategoryRepository;
 
 
-    public ProductCategoriesServiceImplv1(ProductCategoryRepositoryQueryMethod productCategoryRepositoryQueryMethod) {
+    public ProductCategoriesServiceImplv1(
+            ProductCategoryRepositoryQueryMethod productCategoryRepositoryQueryMethod,
+            ProductCategoryRepository productCategoryRepository
+    ) {
         this.productCategoryRepositoryQueryMethod = productCategoryRepositoryQueryMethod;
+        this.productCategoryRepository = productCategoryRepository;
     }
 
     /**
@@ -52,7 +58,7 @@ public class ProductCategoriesServiceImplv1 implements ProductCategoryService {
     @Override
     public List<ProductCategoryModel> findProductCategories(List<String> ids, List<String> names) {
 
-        return productCategoryRepositoryQueryMethod.findByIdInOrNameIn(ids, names).stream()
+        return productCategoryRepository.findProductCategories(ids, names).stream()
                 .map(ProductCategoryModel::from)
                 .collect(Collectors.toList());
     }

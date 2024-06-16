@@ -15,7 +15,6 @@ public class ConstraintViolationValidator<T> {
         Validator validator = validatorFactory.getValidator();
         Set<ConstraintViolation<T>> violations = validator.validate(object);
         for (var violation : violations) {
-            System.out.println(violation);
             String message = violation.getPropertyPath() + " " + violation.getMessage();
             throw new CustomConstraintViolationException(message);
         }
