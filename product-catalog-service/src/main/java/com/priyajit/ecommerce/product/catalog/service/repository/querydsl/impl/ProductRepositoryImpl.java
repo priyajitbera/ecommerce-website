@@ -42,7 +42,8 @@ public class ProductRepositoryImpl implements ProductRepository {
         CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
         Root<Product> countRoot = countQuery.from(Product.class);
 
-        Predicate[] countPredicates = createPredicates(countRoot, cb, productIds, productNamePart, productCategoryIds, productCategoryNames);
+        Predicate[] countPredicates = createPredicates_findProducts(
+                countRoot, cb, productIds, productNamePart, productCategoryIds, productCategoryNames);
 
         countQuery.select(cb.count(countRoot))
                 .where(countPredicates);
@@ -55,7 +56,8 @@ public class ProductRepositoryImpl implements ProductRepository {
         CriteriaQuery<Product> dataQuery = cb.createQuery(Product.class);
         Root<Product> dataRoot = dataQuery.from(Product.class);
 
-        Predicate[] dataPredicates = createPredicates(dataRoot, cb, productIds, productNamePart, productCategoryIds, productCategoryNames);
+        Predicate[] dataPredicates = createPredicates_findProducts(
+                dataRoot, cb, productIds, productNamePart, productCategoryIds, productCategoryNames);
 
         dataQuery.select(dataRoot)
                 .where(dataPredicates);
@@ -74,7 +76,55 @@ public class ProductRepositoryImpl implements ProductRepository {
 
     }
 
-    private Predicate[] createPredicates(
+    @Override
+    public Page<Product> findProductsByCreatedByUserId(
+            String createdByUserId,
+            @Nullable List<String> productIds,
+            @Nullable String productNamePart,
+            @Nullable List<String> productCategoryIds,
+            @Nullable List<String> productCategoryNames,
+            int pageIndex, int pageSize
+    ) {
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+
+        // fetch total count for pagination
+        CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
+        Root<Product> countRoot = countQuery.from(Product.class);
+
+        Predicate[] countPredicates = createPredicates_findProductsByCreatedByUserId(
+                countRoot, cb, createdByUserId, productIds, productNamePart, productCategoryIds, productCategoryNames);
+
+        countQuery.select(cb.count(countRoot))
+                .where(countPredicates);
+
+        TypedQuery<Long> countTypedQuery = entityManager.createQuery(countQuery);
+
+        long total = countTypedQuery.getSingleResult();
+
+        // fetch actual data
+        CriteriaQuery<Product> dataQuery = cb.createQuery(Product.class);
+        Root<Product> dataRoot = dataQuery.from(Product.class);
+
+        Predicate[] dataPredicates = createPredicates_findProductsByCreatedByUserId(
+                dataRoot, cb, createdByUserId, productIds, productNamePart, productCategoryIds, productCategoryNames);
+
+        dataQuery.select(dataRoot)
+                .where(dataPredicates);
+
+        TypedQuery<Product> dataTypedQuery = entityManager.createQuery(dataQuery)
+                .setFirstResult(pageIndex * pageSize)
+                .setMaxResults(pageSize);
+
+        List<Product> products = dataTypedQuery.getResultList();
+
+        return new PageImpl<>(
+                products,
+                Pageable.ofSize(pageSize),
+                total
+        );
+    }
+
+    private Predicate[] createPredicates_findProducts(
             Root<Product> root,
             CriteriaBuilder criteriaBuilder,
             @Nullable List<String> productIds,
@@ -83,6 +133,37 @@ public class ProductRepositoryImpl implements ProductRepository {
             @Nullable List<String> productCategoryNames) {
 
         List<Predicate> predicates = new ArrayList<>();
+        if (productIds != null) {
+            predicates.add(root.get("id").in(productIds));
+        }
+        if (productNamePart != null) {
+            predicates.add(
+                    criteriaBuilder.like(criteriaBuilder.lower(
+                                    root.get("title")),
+                            "%" + productNamePart.toLowerCase() + "%"
+                    )
+            );
+        }
+        if (productCategoryIds != null) {
+            predicates.add(root.join("taggedCategories").get("id").in(productCategoryIds));
+        }
+        if (productCategoryNames != null) {
+            predicates.add(root.join("taggedCategories").get("name").in(productCategoryNames));
+        }
+        return predicates.toArray(new Predicate[]{});
+    }
+
+    private Predicate[] createPredicates_findProductsByCreatedByUserId(
+            Root<Product> root,
+            CriteriaBuilder criteriaBuilder,
+            String createdByUserId,
+            @Nullable List<String> productIds,
+            @Nullable String productNamePart,
+            @Nullable List<String> productCategoryIds,
+            @Nullable List<String> productCategoryNames) {
+
+        List<Predicate> predicates = new ArrayList<>();
+        predicates.add(criteriaBuilder.equal(root.get("createdByUserId"), createdByUserId));
         if (productIds != null) {
             predicates.add(root.get("id").in(productIds));
         }

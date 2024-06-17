@@ -44,6 +44,22 @@ public class ProductControllerV1 {
                 pageIndex, pageSize));
     }
 
+    @GetMapping("/sellers")
+    public ResponseEntity<PaginatedProductList> findSellersProducts(
+            @RequestHeader(name = "userId") String userId,
+            @RequestParam(required = false) List<String> productIds,
+            @RequestParam(required = false) String productNamePart,
+            @RequestParam(required = false) List<String> produdctCategoryIds,
+            @RequestParam(required = false) List<String> productCategoryNames,
+            @RequestParam(name = "pageIndex", required = false, defaultValue = "0") Integer pageIndex,
+            @RequestParam(name = "pageSize", required = false, defaultValue = "10") Integer pageSize
+    ) {
+        return ok(productService.findSellersProducts(
+                userId,
+                productIds, productNamePart, produdctCategoryIds, productCategoryNames,
+                pageIndex, pageSize));
+    }
+
     @GetMapping("/search")
     public ResponseEntity<PaginatedProductList> search(
             @RequestParam(required = true) String searchKeyword,
