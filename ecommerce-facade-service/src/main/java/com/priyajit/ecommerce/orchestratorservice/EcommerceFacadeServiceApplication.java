@@ -17,13 +17,13 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
         UserManagementServiceApiClientProperties.class,
         CartServiceApiClientProperties.class
 })
-public class OrchestratorServiceApplication {
+public class EcommerceFacadeServiceApplication {
 
     @Autowired
     private ObjectMapper objectMapper;
 
     public static void main(String[] args) {
-        SpringApplication.run(OrchestratorServiceApplication.class, args);
+        SpringApplication.run(EcommerceFacadeServiceApplication.class, args);
     }
 
 }
