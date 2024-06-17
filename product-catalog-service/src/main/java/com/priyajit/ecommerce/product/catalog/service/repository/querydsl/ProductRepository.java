@@ -16,4 +16,15 @@ public interface ProductRepository {
             int pageIndex,
             int pageSize
     );
+
+
+    Page<Product> findProductsByCreatedByUserId(
+            String createdByUserId,
+            @Nullable List<String> productIds,
+            @Nullable String productNamePart,
+            @Nullable List<String> productCategoryIds,
+            @Nullable List<String> productCategoryNames,
+            int pageIndex,
+            int pageSize
+    );
 }

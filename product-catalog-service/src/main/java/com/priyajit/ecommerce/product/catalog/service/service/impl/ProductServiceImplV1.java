@@ -105,6 +105,24 @@ public class ProductServiceImplV1 implements ProductService {
         return PaginatedProductList.from(productPage);
     }
 
+    @Override
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public PaginatedProductList findSellersProducts(
+            String sellerUserId,
+            List<String> productIds,
+            String productNamePart,
+            List<String> productCategoryIds,
+            List<String> productCategoryNames,
+            Integer pageIndex,
+            Integer pageSize
+    ) {
+        var productsPage = productRepository.findProductsByCreatedByUserId(
+                sellerUserId, productIds, productNamePart, productCategoryIds, productCategoryNames, pageIndex, pageSize);
+        // create response model and return
+        return PaginatedProductList.from(productsPage);
+    }
+
+
     /**
      * Method to create Products
      *
@@ -367,6 +385,7 @@ public class ProductServiceImplV1 implements ProductService {
         return productModel;
     }
 
+
     private void saveToRedisOptimistic(ProductModel productModel) {
         try {
             CompletableFuture.supplyAsync(() -> productModelRedisRepository.save(productModel))
@@ -380,7 +399,6 @@ public class ProductServiceImplV1 implements ProductService {
             log.error("Error while saving ProductModel object in Redis", e.getMessage());
             e.printStackTrace();
         }
-
     }
 
     /**

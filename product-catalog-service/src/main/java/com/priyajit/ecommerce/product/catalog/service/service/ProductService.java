@@ -12,6 +12,7 @@ import org.springframework.lang.Nullable;
 import java.util.List;
 
 public interface ProductService {
+
     PaginatedProductList findProducts(
             @Nullable List<String> productIds,
             @Nullable String productNamePart,
@@ -19,6 +20,15 @@ public interface ProductService {
             @Nullable List<String> productCategoryNames,
             int pageIndex,
             int pageSize
+    );
+
+    PaginatedProductList findSellersProducts(
+            String userId,
+            List<String> productIds,
+            String productNamePart,
+            List<String> produdctCategoryIds,
+            List<String> productCategoryNames,
+            Integer pageIndex, Integer pageSize
     );
 
     ProductModel createProduct(CreateProductDto dto, String userId);

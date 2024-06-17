@@ -13,6 +13,8 @@ import com.priyajit.ecommerce.product_catalog_service.api.ProductControllerV1Api
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -148,5 +150,43 @@ public class ProductCatalogServiceController implements ProductCatalogServiceApi
                 .map(response -> ResponseEntity.status(response.getStatusCode())
                         .body(Flux.fromIterable(objectMapper.map(response.getBody(), new TypeReference<>() {
                         }))));
+    }
+
+    /**
+     * GET /product-catalog-service/v1/product/sellers
+     *
+     * @param userToken            (required)
+     * @param productIds           (optional)
+     * @param productNamePart      (optional)
+     * @param productCategoryIds   (optional)
+     * @param productCategoryNames (optional)
+     * @param pageIndex            (optional, default to 0)
+     * @param pageSize             (optional, default to 10)
+     * @return OK (status code 200)
+     */
+    @Override
+    @PreAuthorize("hasAuthority('SELLER')")
+    public Mono<ResponseEntity<PaginatedProductList>> findSellersProducts(
+            String userToken,
+            Optional<List<String>> productIds,
+            Optional<String> productNamePart,
+            Optional<List<String>> productCategoryIds,
+            Optional<List<String>> productCategoryNames,
+            Optional<Integer> pageIndex,
+            Optional<Integer> pageSize,
+            final ServerWebExchange exchange
+    ) throws Exception {
+        return Mono.empty().doFirst(() -> log.info("[findSellersProducts] reqId: {}", exchange.getRequest().getId()))
+                .then(securityContextHelper.getUserId())
+                .flatMap(userId -> productControllerV1Api.findSellersProductsWithHttpInfo(
+                        userId,
+                        productIds.orElse(null),
+                        productNamePart.orElse(null),
+                        productCategoryIds.orElse(null),
+                        productCategoryNames.orElse(null), pageIndex.orElse(null), pageSize.orElse(null)))
+                .doOnSuccess((model) -> log.info("After calling productControllerV1Api.findSellersProductsWithHttpInfo"))
+                .doOnError((e) -> log.info("After calling productControllerV1Api.findSellersProductsWithHttpInfo error occurred, {}", e.getMessage()))
+                .map(response -> ResponseEntity.status(response.getStatusCode()).body(
+                        objectMapper.map(response.getBody(), PaginatedProductList.class)));
     }
 }
