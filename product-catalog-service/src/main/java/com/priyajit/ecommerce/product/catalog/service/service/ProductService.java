@@ -1,10 +1,9 @@
 package com.priyajit.ecommerce.product.catalog.service.service;
 
 import com.priyajit.ecommerce.product.catalog.service.dto.CreateProductDto;
-import com.priyajit.ecommerce.product.catalog.service.dto.IndexProductsInElasticSearchDto;
+import com.priyajit.ecommerce.product.catalog.service.dto.IndexProductsDto;
 import com.priyajit.ecommerce.product.catalog.service.dto.UpdateProductDto;
-import com.priyajit.ecommerce.product.catalog.service.model.DeleteProductsInElasticSearchModel;
-import com.priyajit.ecommerce.product.catalog.service.model.IndexProductsInElasticSearchModel;
+import com.priyajit.ecommerce.product.catalog.service.model.IndexedProductList;
 import com.priyajit.ecommerce.product.catalog.service.model.PaginatedProductList;
 import com.priyajit.ecommerce.product.catalog.service.model.ProductModel;
 import org.springframework.lang.Nullable;
@@ -37,9 +36,9 @@ public interface ProductService {
 
     PaginatedProductList search(String searchKeyWord, int pageIndex, int pageSize);
 
-    IndexProductsInElasticSearchModel indexProductsInElasticSearch(IndexProductsInElasticSearchDto indexProductsInElasticSearchDto);
+    IndexedProductList indexProductsInElasticSearch(IndexProductsDto indexProductsDto, String userId);
 
-    DeleteProductsInElasticSearchModel deleteProductsInElasticSearch(IndexProductsInElasticSearchDto dto);
+    IndexedProductList deIndexProductsInElasticSearch(IndexProductsDto indexProductsDto, String userId);
 
     ProductModel findOneById(String productId);
 }

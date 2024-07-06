@@ -1,7 +1,7 @@
 package com.priyajit.ecommerce.product.catalog.service.service.impl;
 
 import com.priyajit.ecommerce.product.catalog.service.dto.CreateProductDto;
-import com.priyajit.ecommerce.product.catalog.service.dto.IndexProductsInElasticSearchDto;
+import com.priyajit.ecommerce.product.catalog.service.dto.IndexProductsDto;
 import com.priyajit.ecommerce.product.catalog.service.dto.UpdateProductDto;
 import com.priyajit.ecommerce.product.catalog.service.entity.*;
 import com.priyajit.ecommerce.product.catalog.service.esdoc.ProductDoc;
@@ -10,8 +10,7 @@ import com.priyajit.ecommerce.product.catalog.service.exception.CurrencyNotFound
 import com.priyajit.ecommerce.product.catalog.service.exception.ProductCategoryNotFoundException;
 import com.priyajit.ecommerce.product.catalog.service.exception.ProductImageNotFoundException;
 import com.priyajit.ecommerce.product.catalog.service.exception.ProductNotFoundException;
-import com.priyajit.ecommerce.product.catalog.service.model.DeleteProductsInElasticSearchModel;
-import com.priyajit.ecommerce.product.catalog.service.model.IndexProductsInElasticSearchModel;
+import com.priyajit.ecommerce.product.catalog.service.model.IndexedProductList;
 import com.priyajit.ecommerce.product.catalog.service.model.PaginatedProductList;
 import com.priyajit.ecommerce.product.catalog.service.model.ProductModel;
 import com.priyajit.ecommerce.product.catalog.service.redisrepository.ProductModelRedisRepository;
@@ -134,7 +133,10 @@ public class ProductServiceImplV1 implements ProductService {
         if (userId == null)
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "userId can not be null");
         var product = buildProductFromDto(dto);
+
         product.setCreatedByUserId(userId);
+        product.setProductIndexingInfo(ProductIndexingInfo.builder().product(product).build());
+
         productRepositoryQueryMethod.saveAndFlush(product);
         return ProductModel.from(product);
     }
@@ -312,7 +314,7 @@ public class ProductServiceImplV1 implements ProductService {
     }
 
     @Override
-    public IndexProductsInElasticSearchModel indexProductsInElasticSearch(IndexProductsInElasticSearchDto dto) {
+    public IndexedProductList indexProductsInElasticSearch(@Valid IndexProductsDto dto, String userId) {
         if (dto == null || dto.getProductIds() == null)
             throw new IllegalArgumentException("Expected non null value for IndexProductsInElasticSearchDto and product ids");
 
@@ -323,19 +325,20 @@ public class ProductServiceImplV1 implements ProductService {
         List<String> indexProductsIds = productDocRepository.indexAll(ProductDoc.buildFrom(products));
 
         // update index audit info
+        var now = ZonedDateTime.now();
         products.forEach(product -> {
-            product.setElasticSearchIndexedOn(ZonedDateTime.now());
-            product.setIsIndexedOnElasticSearch(true);
+            if (product.getProductIndexingInfo() == null)
+                product.setProductIndexingInfo(ProductIndexingInfo.builder().product(product).build());
+            product.getProductIndexingInfo().setElasticSearchIndexedOn(now);
+            product.getProductIndexingInfo().setIsIndexedOnElasticSearch(true);
         });
         productRepositoryQueryMethod.saveAllAndFlush(products);
 
-        return IndexProductsInElasticSearchModel.builder()
-                .productIds(indexProductsIds)
-                .build();
+        return IndexedProductList.buildFrom(products);
     }
 
     @Override
-    public DeleteProductsInElasticSearchModel deleteProductsInElasticSearch(IndexProductsInElasticSearchDto dto) {
+    public IndexedProductList deIndexProductsInElasticSearch(@Valid IndexProductsDto dto, String userId) {
         if (dto == null || dto.getProductIds() == null)
             throw new IllegalArgumentException("Expected non null value for IndexProductsInElasticSearchDto and product ids");
 
@@ -351,14 +354,15 @@ public class ProductServiceImplV1 implements ProductService {
 
         // update index audit info
         products.forEach(product -> {
-            product.setElasticSearchIndexedOn(null);
-            product.setIsIndexedOnElasticSearch(false);
+            if (product.getProductIndexingInfo() == null)
+                product.setProductIndexingInfo(ProductIndexingInfo.builder().product(product).build());
+            product.getProductIndexingInfo().setElasticSearchIndexedOn(null);
+            product.getProductIndexingInfo().setIsIndexedOnElasticSearch(false);
+            product.getProductIndexingInfo().setIndexedByUserId(userId);
         });
         productRepositoryQueryMethod.saveAllAndFlush(products);
 
-        return DeleteProductsInElasticSearchModel.builder()
-                .productIds(indexProductsIds)
-                .build();
+        return IndexedProductList.buildFrom(products);
     }
 
     @Override

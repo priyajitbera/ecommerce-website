@@ -1,9 +1,9 @@
 package com.priyajit.ecommerce.product.catalog.service.controller;
 
 import com.priyajit.ecommerce.product.catalog.service.dto.CreateProductDto;
-import com.priyajit.ecommerce.product.catalog.service.dto.IndexProductsInElasticSearchDto;
+import com.priyajit.ecommerce.product.catalog.service.dto.IndexProductsDto;
 import com.priyajit.ecommerce.product.catalog.service.dto.UpdateProductDto;
-import com.priyajit.ecommerce.product.catalog.service.model.IndexProductsInElasticSearchModel;
+import com.priyajit.ecommerce.product.catalog.service.model.IndexedProductList;
 import com.priyajit.ecommerce.product.catalog.service.model.PaginatedProductList;
 import com.priyajit.ecommerce.product.catalog.service.model.ProductModel;
 import com.priyajit.ecommerce.product.catalog.service.service.ProductService;
@@ -86,10 +86,19 @@ public class ProductControllerV1 {
     }
 
     @PostMapping("/elastic-search/index")
-    public ResponseEntity<IndexProductsInElasticSearchModel> indexProductsInElasticSearch(
-            @RequestBody IndexProductsInElasticSearchDto indexProductsInElasticSearchDto
+    public ResponseEntity<IndexedProductList> indexProductsInElasticSearch(
+            @RequestBody IndexProductsDto indexProductsDto,
+            @RequestHeader(name = "userId") String userId
     ) {
-        return ok(productService.indexProductsInElasticSearch(indexProductsInElasticSearchDto));
+        return ok(productService.indexProductsInElasticSearch(indexProductsDto, userId));
+    }
+
+    @DeleteMapping("/elastic-search/index")
+    public ResponseEntity<IndexedProductList> deIndexProductsInElasticSearch(
+            @RequestBody IndexProductsDto indexProductsDto,
+            @RequestHeader(name = "userId") String userId
+    ) {
+        return ok(productService.deIndexProductsInElasticSearch(indexProductsDto, userId));
     }
 
     @GetMapping("/find-one")
