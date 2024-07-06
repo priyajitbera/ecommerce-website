@@ -1,6 +1,7 @@
 package com.priyajit.ecommerce.orchestratorservice.config;
 
 import com.priyajit.ecommerce.orchestratorservice.config.properties.UserTokenParserProperties;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
@@ -14,16 +15,19 @@ import org.springframework.security.oauth2.jwt.NimbusReactiveJwtDecoder;
 import org.springframework.security.oauth2.jwt.ReactiveJwtDecoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.security.web.server.SecurityWebFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.reactive.CorsConfigurationSource;
 import reactor.core.publisher.Mono;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
 import java.util.stream.Collectors;
 
-
+@Slf4j
 @Configuration
 @EnableWebFluxSecurity
 @EnableReactiveMethodSecurity
@@ -43,6 +47,10 @@ public class WebSecurityConfig {
 
     @Bean
     public SecurityWebFilterChain securityFilterChain(ServerHttpSecurity httpSecurity) throws Exception {
+        log.info("Configuring securityFilterChain");
+        log.info("UNAUTHENTICATED_ENDPOINTS: {}", Arrays.toString(UNAUTHENTICATED_ENDPOINTS));
+        httpSecurity.csrf(csrfSpec -> csrfSpec.disable());
+        httpSecurity.cors(corsSpec -> corsSpec.configurationSource(corsConfigurationSource()));
 
         httpSecurity.authorizeExchange(customizer -> customizer
                 .pathMatchers(UNAUTHENTICATED_ENDPOINTS).permitAll()
@@ -77,18 +85,32 @@ public class WebSecurityConfig {
      * @param key
      * @return
      */
-    private ReactiveJwtDecoder reactiveJwtDecoder(byte[] key, String alrorithm) {
-        SecretKey secretKey = new SecretKeySpec(key, alrorithm);
+    private ReactiveJwtDecoder reactiveJwtDecoder(byte[] key, String algorithm) {
+        SecretKey secretKey = new SecretKeySpec(key, algorithm);
         return NimbusReactiveJwtDecoder.withSecretKey(secretKey).build();
     }
 
     /**
-     * Helper method creates map a role to GrantedAuthority
+     * Helper method maps a role:String to GrantedAuthority
      *
      * @param role
      * @return
      */
     private GrantedAuthority roleToGrantedAuthority(String role) {
         return () -> role;
+    }
+
+    private CorsConfigurationSource corsConfigurationSource() {
+        return exchange -> {
+            CorsConfiguration configuration = new CorsConfiguration();
+            configuration.setAllowedOriginPatterns(List.of("*"));
+            configuration.setAllowedOrigins(List.of("localhost:3000"));
+            configuration.setAllowedMethods(List.of("GET", "POST", "PUT",
+                    "DELETE", "OPTIONS"));
+            configuration.setAllowedHeaders(List.of("Access-Control-Allow-Origin",
+                    "Authorization", "Content-Type"));
+            configuration.setAllowCredentials(true);
+            return configuration;
+        };
     }
 }
