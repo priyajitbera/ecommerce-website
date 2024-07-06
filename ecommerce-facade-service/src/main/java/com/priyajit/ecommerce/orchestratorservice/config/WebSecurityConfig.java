@@ -22,7 +22,6 @@ import reactor.core.publisher.Mono;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -48,7 +47,6 @@ public class WebSecurityConfig {
     @Bean
     public SecurityWebFilterChain securityFilterChain(ServerHttpSecurity httpSecurity) throws Exception {
         log.info("Configuring securityFilterChain");
-        log.info("UNAUTHENTICATED_ENDPOINTS: {}", Arrays.toString(UNAUTHENTICATED_ENDPOINTS));
         httpSecurity.csrf(csrfSpec -> csrfSpec.disable());
         httpSecurity.cors(corsSpec -> corsSpec.configurationSource(corsConfigurationSource()));
 
@@ -105,10 +103,8 @@ public class WebSecurityConfig {
             CorsConfiguration configuration = new CorsConfiguration();
             configuration.setAllowedOriginPatterns(List.of("*"));
             configuration.setAllowedOrigins(List.of("localhost:3000"));
-            configuration.setAllowedMethods(List.of("GET", "POST", "PUT",
-                    "DELETE", "OPTIONS"));
-            configuration.setAllowedHeaders(List.of("Access-Control-Allow-Origin",
-                    "Authorization", "Content-Type"));
+            configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+            configuration.setAllowedHeaders(List.of("Access-Control-Allow-Origin", "Authorization", "Content-Type"));
             configuration.setAllowCredentials(true);
             return configuration;
         };
