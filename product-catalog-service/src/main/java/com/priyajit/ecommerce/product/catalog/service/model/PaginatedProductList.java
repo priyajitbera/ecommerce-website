@@ -49,6 +49,7 @@ public class PaginatedProductList {
         private String description;
         private List<ProductImageModel> images;
         private List<ProductCategoryModel> taggedCategories;
+        private ZonedDateTime elasticSearchIndexedOn;
 
         public static List<ProductModel> buildFrom(List<ProductDoc> productDocs) {
             if (productDocs == null) return null;
@@ -216,6 +217,7 @@ public class PaginatedProductList {
                     .images(productImages)
                     .taggedCategories(taggedCategories)
                     .price(ProductPriceModel.from(product.getPrice()))
+                    .elasticSearchIndexedOn(product.getElasticSearchIndexedOn())
                     .build();
         }
     }

@@ -676,6 +676,9 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ProductCategoryModel'
+        elasticSearchIndexedOn:
+          type: string
+          format: date-time
     ProductPriceModel:
       type: object
       properties:
