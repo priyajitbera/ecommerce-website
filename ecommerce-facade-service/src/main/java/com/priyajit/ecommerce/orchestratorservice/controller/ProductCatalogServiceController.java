@@ -13,8 +13,6 @@ import com.priyajit.ecommerce.product_catalog_service.api.ProductControllerV1Api
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -188,5 +186,33 @@ public class ProductCatalogServiceController implements ProductCatalogServiceApi
                 .doOnError((e) -> log.info("After calling productControllerV1Api.findSellersProductsWithHttpInfo error occurred, {}", e.getMessage()))
                 .map(response -> ResponseEntity.status(response.getStatusCode()).body(
                         objectMapper.map(response.getBody(), PaginatedProductList.class)));
+    }
+
+    /**
+     * POST /product-catalog-service/v1/product/elastic-search/index
+     *
+     * @param indexProductsInElasticSearchDto (required)
+     * @return OK (status code 200)
+     */
+    @Override
+    public Mono<ResponseEntity<com.priyajit.ecommerce.orchestrator_service.model.IndexProductsInElasticSearchModel>> indexProductsInElasticSearch(
+            Mono<com.priyajit.ecommerce.orchestrator_service.model.IndexProductsInElasticSearchDto> indexProductsInElasticSearchDto,
+            final ServerWebExchange exchange
+    ) throws Exception {
+
+        return
+                Mono.empty()
+                        .doFirst(() -> log.info("[indexProductsInElasticSearch] reqId: {}", exchange.getRequest().getId()))
+                        .then(
+                                Mono.zip(securityContextHelper.getUserId(), indexProductsInElasticSearchDto)
+                                        .flatMap(tuple -> {
+                                            var userId = tuple.getT1();
+                                            var payload = objectMapper.map(tuple.getT2(), com.priyajit.ecommerce.product_catalog_service.model.IndexProductsInElasticSearchDto.class);
+                                            return productControllerV1Api.indexProductsInElasticSearchWithHttpInfo(payload);
+                                        }))
+                        .doOnSuccess((model) -> log.info("[indexProductsInElasticSearch] After calling productControllerV1Api.indexProductsInElasticSearchWithHttpInfo"))
+                        .doOnError((e) -> log.info("[indexProductsInElasticSearch] After calling productControllerV1Api.indexProductsInElasticSearchWithHttpInfo error occurred, {}", e.getMessage()))
+                        .map(response -> ResponseEntity.status(response.getStatusCode()).body(
+                                objectMapper.map(response.getBody(), com.priyajit.ecommerce.orchestrator_service.model.IndexProductsInElasticSearchModel.class)));
     }
 }
