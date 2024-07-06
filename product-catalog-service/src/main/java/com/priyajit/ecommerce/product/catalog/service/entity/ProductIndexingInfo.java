@@ -8,7 +8,6 @@ import org.springframework.util.comparator.Comparators;
 
 import java.time.ZonedDateTime;
 import java.util.Objects;
-import java.util.SortedSet;
 
 @Entity
 @Getter
@@ -16,7 +15,7 @@ import java.util.SortedSet;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Product implements Comparable<Product> {
+public class ProductIndexingInfo implements Comparable<ProductIndexingInfo> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -28,32 +27,23 @@ public class Product implements Comparable<Product> {
     @UpdateTimestamp
     private ZonedDateTime lastModifiedOn;
 
-    private String title;
-    private String description;
+    private Boolean isIndexedOnElasticSearch;
+    private ZonedDateTime elasticSearchIndexedOn;
+    private String indexedByUserId;
 
-    @OneToOne(mappedBy = "product", cascade = CascadeType.PERSIST)
-    private ProductPrice price;
-
-    @OneToMany(mappedBy = "product")
-    private SortedSet<ProductImage> images;
-
-    @ManyToMany(mappedBy = "taggedProducts")
-    private SortedSet<ProductCategory> taggedCategories;
-
-    @OneToMany(mappedBy = "product")
-    private SortedSet<ProductReview> reviews;
-
-    @OneToOne(mappedBy = "product", cascade = CascadeType.PERSIST)
-    private ProductIndexingInfo productIndexingInfo;
-
-    private String createdByUserId;
-    private String lastModifiedByUserId;
+    @OneToOne
+    @JoinColumn(
+            name = "product_id",
+            referencedColumnName = "id",
+            foreignKey = @ForeignKey(name = "FK__PRODUCT_INDEXING_INFO__PRODUCT_ID__01")
+    )
+    private Product product;
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Product product = (Product) o;
+        ProductIndexingInfo product = (ProductIndexingInfo) o;
         return Objects.equals(id, product.id);
     }
 
@@ -63,7 +53,7 @@ public class Product implements Comparable<Product> {
     }
 
     @Override
-    public int compareTo(Product o) {
+    public int compareTo(ProductIndexingInfo o) {
         return Comparators.comparable().compare(this.getId(), o.getId());
     }
 }

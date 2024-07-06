@@ -170,7 +170,24 @@ paths:
           content:
             'application/json':
               schema:
-                $ref: '#/components/schemas/IndexProductsInElasticSearchModel'
+                $ref: '#/components/schemas/IndexedProductList'
+    delete:
+      tags:
+        - product-controller-v-1
+      operationId: deIndexProductsInElasticSearch
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IndexProductsInElasticSearchDto'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/IndexedProductList'
   /product-catalog-service/v1/product-image:
     post:
       tags:
@@ -676,9 +693,8 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ProductCategoryModel'
-        elasticSearchIndexedOn:
-          type: string
-          format: date-time
+        productIndexingInfo:
+          $ref: "#/components/schemas/ProductIndexingInfoModel"
     ProductPriceModel:
       type: object
       properties:
@@ -693,13 +709,13 @@ components:
           type: array
           items:
             type: string
-    IndexProductsInElasticSearchModel:
+    IndexedProductList:
       type: object
       properties:
-        productIds:
+        indexedProducts:
           type: array
           items:
-            type: string
+            $ref: '#/components/schemas/IndexedProductModel'
     UploadProductImagesDto:
       type: object
       properties:
@@ -991,3 +1007,18 @@ components:
           type: number
         currency:
           type: string
+    ProductIndexingInfoModel:
+      type: object
+      properties:
+        isIndexedOnElasticSearch:
+          type: boolean
+        elasticSearchIndexedOn:
+          type: string
+          format: date-time
+    IndexedProductModel:
+      type: object
+      properties:
+        id:
+          type: string
+        productIndexingInfo:
+          $ref: '#/components/schemas/ProductIndexingInfoModel'

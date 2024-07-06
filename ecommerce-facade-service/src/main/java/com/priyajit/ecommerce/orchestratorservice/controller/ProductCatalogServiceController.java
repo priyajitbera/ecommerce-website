@@ -195,24 +195,51 @@ public class ProductCatalogServiceController implements ProductCatalogServiceApi
      * @return OK (status code 200)
      */
     @Override
-    public Mono<ResponseEntity<com.priyajit.ecommerce.orchestrator_service.model.IndexProductsInElasticSearchModel>> indexProductsInElasticSearch(
+    @PreAuthorize("hasAuthority('SELLER')")
+    public Mono<ResponseEntity<com.priyajit.ecommerce.orchestrator_service.model.IndexedProductList>> indexProductsInElasticSearch(
             Mono<com.priyajit.ecommerce.orchestrator_service.model.IndexProductsInElasticSearchDto> indexProductsInElasticSearchDto,
             final ServerWebExchange exchange
     ) throws Exception {
 
-        return
-                Mono.empty()
-                        .doFirst(() -> log.info("[indexProductsInElasticSearch] reqId: {}", exchange.getRequest().getId()))
-                        .then(
-                                Mono.zip(securityContextHelper.getUserId(), indexProductsInElasticSearchDto)
-                                        .flatMap(tuple -> {
-                                            var userId = tuple.getT1();
-                                            var payload = objectMapper.map(tuple.getT2(), com.priyajit.ecommerce.product_catalog_service.model.IndexProductsInElasticSearchDto.class);
-                                            return productControllerV1Api.indexProductsInElasticSearchWithHttpInfo(payload);
-                                        }))
-                        .doOnSuccess((model) -> log.info("[indexProductsInElasticSearch] After calling productControllerV1Api.indexProductsInElasticSearchWithHttpInfo"))
-                        .doOnError((e) -> log.info("[indexProductsInElasticSearch] After calling productControllerV1Api.indexProductsInElasticSearchWithHttpInfo error occurred, {}", e.getMessage()))
-                        .map(response -> ResponseEntity.status(response.getStatusCode()).body(
-                                objectMapper.map(response.getBody(), com.priyajit.ecommerce.orchestrator_service.model.IndexProductsInElasticSearchModel.class)));
+        return Mono.empty()
+                .doFirst(() -> log.info("[indexProductsInElasticSearch] reqId: {}", exchange.getRequest().getId()))
+                .then(
+                        Mono.zip(securityContextHelper.getUserId(), indexProductsInElasticSearchDto)
+                                .flatMap(tuple -> {
+                                    var userId = tuple.getT1();
+                                    var payload = objectMapper.map(tuple.getT2(), com.priyajit.ecommerce.product_catalog_service.model.IndexProductsInElasticSearchDto.class);
+                                    return productControllerV1Api.indexProductsInElasticSearchWithHttpInfo(userId, payload);
+                                }))
+                .doOnSuccess((model) -> log.info("[indexProductsInElasticSearch] After calling productControllerV1Api.indexProductsInElasticSearchWithHttpInfo"))
+                .doOnError((e) -> log.info("[indexProductsInElasticSearch] After calling productControllerV1Api.indexProductsInElasticSearchWithHttpInfo error occurred, {}", e.getMessage()))
+                .map(response -> ResponseEntity.status(response.getStatusCode()).body(
+                        objectMapper.map(response.getBody(), com.priyajit.ecommerce.orchestrator_service.model.IndexedProductList.class)));
+    }
+
+    /**
+     * DELETE /product-catalog-service/v1/product/elastic-search/index
+     *
+     * @param indexProductsInElasticSearchDto (required)
+     * @return OK (status code 200)
+     */
+    @Override
+    public Mono<ResponseEntity<com.priyajit.ecommerce.orchestrator_service.model.IndexedProductList>> deIndexProductsInElasticSearch(
+            Mono<com.priyajit.ecommerce.orchestrator_service.model.IndexProductsInElasticSearchDto> indexProductsInElasticSearchDto,
+            ServerWebExchange exchange
+    ) throws Exception {
+
+        return Mono.empty()
+                .doFirst(() -> log.info("[deIndexProductsInElasticSearch] reqId: {}", exchange.getRequest().getId()))
+                .then(
+                        Mono.zip(securityContextHelper.getUserId(), indexProductsInElasticSearchDto)
+                                .flatMap(tuple -> {
+                                    var userId = tuple.getT1();
+                                    var payload = objectMapper.map(tuple.getT2(), com.priyajit.ecommerce.product_catalog_service.model.IndexProductsInElasticSearchDto.class);
+                                    return productControllerV1Api.deIndexProductsInElasticSearchWithHttpInfo(userId, payload);
+                                }))
+                .doOnSuccess((model) -> log.info("[deIndexProductsInElasticSearch] After calling productControllerV1Api.indexProductsInElasticSearchWithHttpInfo"))
+                .doOnError((e) -> log.info("[deIndexProductsInElasticSearch] After calling productControllerV1Api.indexProductsInElasticSearchWithHttpInfo error occurred, {}", e.getMessage()))
+                .map(response -> ResponseEntity.status(response.getStatusCode()).body(
+                        objectMapper.map(response.getBody(), com.priyajit.ecommerce.orchestrator_service.model.IndexedProductList.class)));
     }
 }
