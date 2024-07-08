@@ -6,6 +6,7 @@ import com.priyajit.ecommerce.product.catalog.service.dto.UpdateProductDto;
 import com.priyajit.ecommerce.product.catalog.service.model.IndexedProductList;
 import com.priyajit.ecommerce.product.catalog.service.model.PaginatedProductList;
 import com.priyajit.ecommerce.product.catalog.service.model.ProductModel;
+import com.priyajit.ecommerce.product.catalog.service.model.SellerProductList;
 import org.springframework.lang.Nullable;
 
 import java.util.List;
@@ -21,7 +22,7 @@ public interface ProductService {
             int pageSize
     );
 
-    PaginatedProductList findSellersProducts(
+    SellerProductList findSellersProducts(
             String userId,
             List<String> productIds,
             String productNamePart,

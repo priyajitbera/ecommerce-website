@@ -3,6 +3,7 @@ package com.priyajit.ecommerce.product.catalog.service.service.impl;
 import com.priyajit.ecommerce.product.catalog.service.dto.CreateProductDto;
 import com.priyajit.ecommerce.product.catalog.service.dto.IndexProductsDto;
 import com.priyajit.ecommerce.product.catalog.service.dto.UpdateProductDto;
+import com.priyajit.ecommerce.product.catalog.service.entity.Currency;
 import com.priyajit.ecommerce.product.catalog.service.entity.*;
 import com.priyajit.ecommerce.product.catalog.service.esdoc.ProductDoc;
 import com.priyajit.ecommerce.product.catalog.service.esrepository.ProductDocRepository;
@@ -13,6 +14,7 @@ import com.priyajit.ecommerce.product.catalog.service.exception.ProductNotFoundE
 import com.priyajit.ecommerce.product.catalog.service.model.IndexedProductList;
 import com.priyajit.ecommerce.product.catalog.service.model.PaginatedProductList;
 import com.priyajit.ecommerce.product.catalog.service.model.ProductModel;
+import com.priyajit.ecommerce.product.catalog.service.model.SellerProductList;
 import com.priyajit.ecommerce.product.catalog.service.redisrepository.ProductModelRedisRepository;
 import com.priyajit.ecommerce.product.catalog.service.repository.querydsl.ProductRepository;
 import com.priyajit.ecommerce.product.catalog.service.repository.querymethod.CurrencyRepositoryQueryMethod;
@@ -20,6 +22,8 @@ import com.priyajit.ecommerce.product.catalog.service.repository.querymethod.Pro
 import com.priyajit.ecommerce.product.catalog.service.repository.querymethod.ProductImageRepositoryQueryMethod;
 import com.priyajit.ecommerce.product.catalog.service.repository.querymethod.ProductRepositoryQueryMethod;
 import com.priyajit.ecommerce.product.catalog.service.service.ProductService;
+import com.priyajit.ecommerce.user_management_service.api.UserControllerV1Api;
+import com.priyajit.ecommerce.user_management_service.model.FindUserModel;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -33,11 +37,10 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
-import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Slf4j
 @Service
@@ -50,6 +53,7 @@ public class ProductServiceImplV1 implements ProductService {
     private CurrencyRepositoryQueryMethod currencyRepositoryQueryMethod;
     private ProductDocRepository productDocRepository;
     private ProductModelRedisRepository productModelRedisRepository;
+    private UserControllerV1Api userControllerV1Api;
 
     public ProductServiceImplV1(
             ProductRepositoryQueryMethod productRepositoryQueryMethod,
@@ -58,7 +62,8 @@ public class ProductServiceImplV1 implements ProductService {
             ProductImageRepositoryQueryMethod productImageRepositoryQueryMethod,
             CurrencyRepositoryQueryMethod currencyRepositoryQueryMethod,
             ProductDocRepository productDocRepository,
-            ProductModelRedisRepository productModelRedisRepository
+            ProductModelRedisRepository productModelRedisRepository,
+            UserControllerV1Api userControllerV1Api
     ) {
 
         this.productRepositoryQueryMethod = productRepositoryQueryMethod;
@@ -68,6 +73,7 @@ public class ProductServiceImplV1 implements ProductService {
         this.currencyRepositoryQueryMethod = currencyRepositoryQueryMethod;
         this.productDocRepository = productDocRepository;
         this.productModelRedisRepository = productModelRedisRepository;
+        this.userControllerV1Api = userControllerV1Api;
     }
 
     /**
@@ -106,7 +112,7 @@ public class ProductServiceImplV1 implements ProductService {
 
     @Override
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public PaginatedProductList findSellersProducts(
+    public SellerProductList findSellersProducts(
             String sellerUserId,
             List<String> productIds,
             String productNamePart,
@@ -117,8 +123,19 @@ public class ProductServiceImplV1 implements ProductService {
     ) {
         var productsPage = productRepository.findProductsByCreatedByUserId(
                 sellerUserId, productIds, productNamePart, productCategoryIds, productCategoryNames, pageIndex, pageSize);
+
+        // fetch users by id
+        var userIds = Stream.concat(
+                Stream.concat(
+                        productsPage.get().map(Product::getCreatedByUserId),
+                        productsPage.get().map(Product::getLastModifiedByUserId)
+                ),
+                Stream.of(sellerUserId)
+        ).filter(Objects::nonNull).distinct().toList();
+        var users = findUsers(userIds);
+
         // create response model and return
-        return PaginatedProductList.from(productsPage);
+        return SellerProductList.from(productsPage, users);
     }
 
 
@@ -416,5 +433,14 @@ public class ProductServiceImplV1 implements ProductService {
         return products.stream()
                 .map(ProductModel::from)
                 .collect(Collectors.toList());
+    }
+
+    private Map<String, FindUserModel> findUsers(List<String> userIds) {
+        return userControllerV1Api.findUsers(userIds.stream().map(Integer::valueOf).toList())
+                .stream()
+                .collect(() -> new HashMap<>(), (map, user) -> {
+                    map.put(String.valueOf(user.getId()), user);
+                }, (t1, t2) -> {
+                });
     }
 }

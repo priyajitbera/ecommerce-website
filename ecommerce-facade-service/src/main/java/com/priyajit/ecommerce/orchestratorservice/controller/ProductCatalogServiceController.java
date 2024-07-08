@@ -5,6 +5,7 @@ import com.priyajit.ecommerce.orchestrator_service.api.ProductCatalogServiceApi;
 import com.priyajit.ecommerce.orchestrator_service.model.CreateProductDto;
 import com.priyajit.ecommerce.orchestrator_service.model.PaginatedProductList;
 import com.priyajit.ecommerce.orchestrator_service.model.ProductModel;
+import com.priyajit.ecommerce.orchestrator_service.model.SellersProductList;
 import com.priyajit.ecommerce.orchestratorservice.component.CustomObjectMapper;
 import com.priyajit.ecommerce.orchestratorservice.component.SecurityContextHelper;
 import com.priyajit.ecommerce.product_catalog_service.api.CurrencyControllerV1Api;
@@ -164,7 +165,7 @@ public class ProductCatalogServiceController implements ProductCatalogServiceApi
      */
     @Override
     @PreAuthorize("hasAuthority('SELLER')")
-    public Mono<ResponseEntity<PaginatedProductList>> findSellersProducts(
+    public Mono<ResponseEntity<SellersProductList>> findSellersProducts(
             String userToken,
             Optional<List<String>> productIds,
             Optional<String> productNamePart,
@@ -185,7 +186,7 @@ public class ProductCatalogServiceController implements ProductCatalogServiceApi
                 .doOnSuccess((model) -> log.info("After calling productControllerV1Api.findSellersProductsWithHttpInfo"))
                 .doOnError((e) -> log.info("After calling productControllerV1Api.findSellersProductsWithHttpInfo error occurred, {}", e.getMessage()))
                 .map(response -> ResponseEntity.status(response.getStatusCode()).body(
-                        objectMapper.map(response.getBody(), PaginatedProductList.class)));
+                        objectMapper.map(response.getBody(), SellersProductList.class)));
     }
 
     /**

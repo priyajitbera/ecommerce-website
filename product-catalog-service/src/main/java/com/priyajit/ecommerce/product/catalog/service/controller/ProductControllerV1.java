@@ -6,6 +6,7 @@ import com.priyajit.ecommerce.product.catalog.service.dto.UpdateProductDto;
 import com.priyajit.ecommerce.product.catalog.service.model.IndexedProductList;
 import com.priyajit.ecommerce.product.catalog.service.model.PaginatedProductList;
 import com.priyajit.ecommerce.product.catalog.service.model.ProductModel;
+import com.priyajit.ecommerce.product.catalog.service.model.SellerProductList;
 import com.priyajit.ecommerce.product.catalog.service.service.ProductService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -45,7 +46,7 @@ public class ProductControllerV1 {
     }
 
     @GetMapping("/sellers")
-    public ResponseEntity<PaginatedProductList> findSellersProducts(
+    public ResponseEntity<SellerProductList> findSellersProducts(
             @RequestHeader(name = "userId") String userId,
             @RequestParam(required = false) List<String> productIds,
             @RequestParam(required = false) String productNamePart,

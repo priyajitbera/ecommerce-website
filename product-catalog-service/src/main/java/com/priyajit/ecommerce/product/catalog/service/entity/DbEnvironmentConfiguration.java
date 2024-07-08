@@ -107,6 +107,9 @@ public class DbEnvironmentConfiguration {
 
         // JWT
         public final static String JWT_SECRET_KEY = "jwt.secret-key";
+
+        // user-management-serive
+        public final static String USER_MANAGEMENT_SERVICE_BASE_URL = "user-management-service.base-url";
     }
 
     public static class Values {

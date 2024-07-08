@@ -1,0 +1,309 @@
+openapi: 3.0.1
+info:
+  title: OpenAPI definition
+  version: v0
+servers:
+  - url: http://localhost:8082
+    description: Generated server url
+paths:
+  /v1/auth/verify-email:
+    post:
+      tags:
+        - auth-controller-v-1
+      operationId: verifyEamil
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VerifyEmailDto'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/VerifyEmailModel'
+  /v1/auth/signup:
+    post:
+      tags:
+        - auth-controller-v-1
+      operationId: signup
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignupDto'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/SignupModel'
+  /v1/auth/request-email-verification-secret:
+    post:
+      tags:
+        - auth-controller-v-1
+      operationId: requestEmailVerificationSecret
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RequestEmailVerificationSecretDto'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/RequestEmailVerificationSecretModel'
+  /v1/auth/login:
+    post:
+      tags:
+        - auth-controller-v-1
+      operationId: login
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginDto'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/LoginModel'
+  /v1/auth/get-user-details-from-token:
+    post:
+      tags:
+        - auth-controller-v-1
+      operationId: getUserDetailsFromUserToken
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GetUserDetailsRequestDto'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/UserDetailsModel'
+  /v1/user:
+    get:
+      tags:
+        - user-controller-v-1
+      operationId: findUsers
+      parameters:
+        - name: userIds
+          in: query
+          required: true
+          schema:
+            type: array
+            items:
+              type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            'application/json':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FindUserModel'
+  /v1/user/find-one:
+    get:
+      tags:
+        - user-controller-v-1
+      operationId: findUser
+      parameters:
+        - name: userId
+          in: query
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/FindUserModel'
+  /v1/user/by-email:
+    get:
+      tags:
+        - user-controller-v-1
+      operationId: findUsersByEmailIds
+      parameters:
+        - name: emailIds
+          in: query
+          required: true
+          schema:
+            type: array
+            items:
+              type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            'application/json':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FindUserModel'
+  /v1/auth/check-email-id-available:
+    get:
+      tags:
+        - auth-controller-v-1
+      operationId: checkEmailIdAvailable
+      parameters:
+        - name: emailId
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/CheckEmailIdAvailableModel'
+components:
+  schemas:
+    VerifyEmailDto:
+      type: object
+      properties:
+        userId:
+          type: integer
+        emailVerificationSecret:
+          type: string
+    VerifyEmailModel:
+      type: object
+      properties:
+        userId:
+          type: integer
+        emailId:
+          type: string
+        verificationStatus:
+          type: string
+          enum:
+            - NOT_VERIFIED
+            - VERIFIED
+        verifiedOn:
+          type: string
+          format: date-time
+    SignupDto:
+      required:
+        - emailId
+        - name
+        - password
+        - signUpAsSeller
+      type: object
+      properties:
+        signUpAsSeller:
+          type: boolean
+        emailId:
+          type: string
+        name:
+          type: string
+        password:
+          type: string
+    SignupModel:
+      type: object
+      properties:
+        userId:
+          type: integer
+        emailId:
+          type: string
+        name:
+          type: string
+    RequestEmailVerificationSecretDto:
+      type: object
+      properties:
+        userId:
+          type: integer
+    RequestEmailVerificationSecretModel:
+      type: object
+      properties:
+        userId:
+          type: integer
+        status:
+          type: string
+          enum:
+            - SUCCESS
+            - FAILURE
+            - UNKNOWN
+        message:
+          type: string
+    LoginDto:
+      required:
+        - password
+        - userIdentifer
+      type: object
+      properties:
+        userIdentifer:
+          type: string
+        password:
+          type: string
+    LoginModel:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+            - SUCCESS
+            - FAILED
+        message:
+          type: string
+        userId:
+          type: integer
+        name:
+          type: string
+        emailId:
+          type: string
+        roles:
+          type: array
+          items:
+            type: string
+        token:
+          type: string
+    GetUserDetailsRequestDto:
+      required:
+        - token
+      type: object
+      properties:
+        token:
+          type: string
+    UserDetailsModel:
+      type: object
+      properties:
+        userId:
+          type: string
+        roles:
+          type: array
+          items:
+            type: string
+    FindUserModel:
+      type: object
+      properties:
+        id:
+          type: integer
+        email:
+          type: string
+        name:
+          type: string
+    CheckEmailIdAvailableModel:
+      type: object
+      properties:
+        emailId:
+          type: string
+        available:
+          type: boolean
