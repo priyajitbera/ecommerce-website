@@ -1,3 +1,5 @@
+server:
+  port: 9090
 spring:
   application:
     name: ecommerce-facade-service
@@ -5,12 +7,17 @@ spring:
     web-application-type: reactive
 
 product-catalog-service:
-  base-url: ${PRODUCT_CATALOG_SERVICE_BASE_URL:http://localhost:8081}
+  base-url: ${PRODUCT_CATALOG_SERVICE_BASE_URL:http://localhost:8080/product-catalog-service}
 user-management-service:
-  base-url: ${USER_MANAGEMENT_SERVICE_BASE_URL:http://localhost:8082}
+  base-url: ${USER_MANAGEMENT_SERVICE_BASE_URL:http://localhost:8080/user-management-service}
 cart-service:
-  base-url: ${CART_SERVICE_BASE_URL:http://localhost:8083}
+  base-url: ${CART_SERVICE_BASE_URL:http://localhost:8080/cart-service}
+
+oauth2-authorization-service:
+  base-url: ${OAUTH2_AUTHORIZATION_SERVICE_BASE_URL:http://localhost:9000}
+  client-id: ${AUTH_SERVICE_CLIENT_ID}
+  secret: ${AUTH_SERVICE_SECRET}
 
 user-token-parser:
-  algorithm:${USER_TOKEN_PARSER_ALGORITHM}
-  secret:${USER_TOKEN_PARSER_SECRET}
+  algorithm: ${USER_TOKEN_PARSER_ALGORITHM}
+  secret: ${USER_TOKEN_PARSER_SECRET}
