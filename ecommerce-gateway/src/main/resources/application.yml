@@ -1,0 +1,18 @@
+spring:
+  main:
+    web-application-type: reactive
+  application:
+    name: ecommerce-gateway
+
+logging:
+  level:
+    root: debug
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: info
+
+auth-token:
+  public-key-file-path: ${AUTH_TOKEN_PUBLIC_KEY_FILE_PATCH:./public_key.txt}
