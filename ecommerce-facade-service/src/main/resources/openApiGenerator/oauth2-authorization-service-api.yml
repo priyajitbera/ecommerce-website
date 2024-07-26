@@ -1,0 +1,42 @@
+openapi: 3.0.1
+info:
+  title: OpenAPI definition
+  version: v0
+servers:
+  - url: http://localhost:9000
+    description: Generated server url
+paths:
+  /oauth2/token:
+    post:
+      tags:
+        - o-auth2-controller
+      operationId: fetchToken
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/FetchTokenRequestSchema'
+      responses:
+        '200':
+          description: OK
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/FetchTokenResponseSchema'
+components:
+  schemas:
+    FetchTokenRequestSchema:
+      type: object
+      properties:
+        grant_type:
+          type: string
+    FetchTokenResponseSchema:
+      type: object
+      properties:
+        access_token:
+          type: string
+        token_type:
+          type: string
+        expires_in:
+          type: integer
+          format: int32

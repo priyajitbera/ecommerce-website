@@ -162,7 +162,7 @@ paths:
           content:
             'application/json':
               schema:
-                $ref: '#/components/schemas/PaginatedProductList'
+                $ref: '#/components/schemas/SellersProductList'
   /v1/product/elastic-search/index:
     post:
       tags:
@@ -470,6 +470,37 @@ components:
             $ref: '#/components/schemas/ProductCategoryModel'
         productIndexingInfo:
           $ref: "#/components/schemas/ProductIndexingInfoModel"
+    SellersProductModel:
+      type: object
+      properties:
+        id:
+          type: string
+        createdOn:
+          type: string
+          format: date-time
+        lastModifiedOn:
+          type: string
+          format: date-time
+        title:
+          type: string
+        price:
+          $ref: '#/components/schemas/ProductPriceModel'
+        description:
+          type: string
+        images:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductImageModel'
+        taggedCategories:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductCategoryModel'
+        productIndexingInfo:
+          $ref: "#/components/schemas/ProductIndexingInfoModel"
+        createdBy:
+          $ref: "#/components/schemas/UserModel"
+        lastModifiedBy:
+          $ref: "#/components/schemas/UserModel"
     ProductPriceModel:
       type: object
       properties:
@@ -587,6 +618,25 @@ components:
         number:
           type: integer
           format: int32
+    SellersProductList:
+      type: object
+      properties:
+        products:
+          type: array
+          items:
+            $ref: '#/components/schemas/SellersProductModel'
+        totalPages:
+          type: integer
+          format: int32
+        totalElements:
+          type: integer
+          format: int64
+        size:
+          type: integer
+          format: int32
+        number:
+          type: integer
+          format: int32
     ProductIndexingInfoModel:
       type: object
       properties:
@@ -602,3 +652,10 @@ components:
           type: string
         productIndexingInfo:
           $ref: '#/components/schemas/ProductIndexingInfoModel'
+    UserModel:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string

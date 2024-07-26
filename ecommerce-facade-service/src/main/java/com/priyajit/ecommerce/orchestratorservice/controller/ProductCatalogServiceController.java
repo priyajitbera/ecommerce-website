@@ -1,15 +1,12 @@
 package com.priyajit.ecommerce.orchestratorservice.controller;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.priyajit.ecommerce.orchestrator_service.api.ProductCatalogServiceApi;
-import com.priyajit.ecommerce.orchestrator_service.model.CreateProductDto;
-import com.priyajit.ecommerce.orchestrator_service.model.PaginatedProductList;
-import com.priyajit.ecommerce.orchestrator_service.model.ProductModel;
+import com.priyajit.ecommerce.fs.api.ProductCatalogServiceApi;
+import com.priyajit.ecommerce.fs.model.PaginatedProductList;
+import com.priyajit.ecommerce.fs.model.ProductModel;
+import com.priyajit.ecommerce.fs.model.SellersProductList;
 import com.priyajit.ecommerce.orchestratorservice.component.CustomObjectMapper;
 import com.priyajit.ecommerce.orchestratorservice.component.SecurityContextHelper;
-import com.priyajit.ecommerce.product_catalog_service.api.CurrencyControllerV1Api;
-import com.priyajit.ecommerce.product_catalog_service.api.ProductCategoryControllerV1Api;
-import com.priyajit.ecommerce.product_catalog_service.api.ProductControllerV1Api;
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -31,16 +28,16 @@ import java.util.Optional;
 @CrossOrigin("*")
 public class ProductCatalogServiceController implements ProductCatalogServiceApi {
 
-    private ProductControllerV1Api productControllerV1Api;
-    private CurrencyControllerV1Api currencyControllerV1Api;
-    private ProductCategoryControllerV1Api productCategoryControllerV1Api;
+    private com.priyajit.ecommerce.pcs.api.ProductControllerV1Api productControllerV1Api;
+    private com.priyajit.ecommerce.pcs.api.CurrencyControllerV1Api currencyControllerV1Api;
+    private com.priyajit.ecommerce.pcs.api.ProductCategoryControllerV1Api productCategoryControllerV1Api;
     private CustomObjectMapper objectMapper;
     private SecurityContextHelper securityContextHelper;
 
     public ProductCatalogServiceController(
-            ProductControllerV1Api productControllerV1Api,
-            CurrencyControllerV1Api currencyControllerV1Api,
-            ProductCategoryControllerV1Api productCategoryControllerV1Api,
+            com.priyajit.ecommerce.pcs.api.ProductControllerV1Api productControllerV1Api,
+            com.priyajit.ecommerce.pcs.api.CurrencyControllerV1Api currencyControllerV1Api,
+            com.priyajit.ecommerce.pcs.api.ProductCategoryControllerV1Api productCategoryControllerV1Api,
             CustomObjectMapper objectMapper,
             SecurityContextHelper securityContextHelper
     ) {
@@ -62,20 +59,20 @@ public class ProductCatalogServiceController implements ProductCatalogServiceApi
      */
     @Override
     @PreAuthorize("hasAuthority('SELLER')")
-    public Mono<ResponseEntity<ProductModel>> createProduct(
+    public Mono<ResponseEntity<com.priyajit.ecommerce.fs.model.ProductModel>> createProduct(
             String userToken,
-            @Valid @RequestBody Mono<CreateProductDto> createProductDto,
+            @Valid @RequestBody Mono<com.priyajit.ecommerce.fs.model.CreateProductDto> createProductDto,
             final ServerWebExchange exchange
     ) throws Exception {
 
         return Mono.zip(securityContextHelper.getUserId(), createProductDto)
                 .doFirst(() -> log.info("Before calling productControllerV1Api.createProduct"))
                 .flatMap(tuple -> {
-                    var payLoad = objectMapper.map(tuple.getT2(), com.priyajit.ecommerce.product_catalog_service.model.CreateProductDto.class);
+                    var payLoad = objectMapper.map(tuple.getT2(), com.priyajit.ecommerce.pcs.model.CreateProductDto.class);
                     return productControllerV1Api.createProductWithHttpInfo(tuple.getT1(), payLoad);
                 })
                 .doOnSuccess((model) -> log.info("After calling productControllerV1Api.createProduct"))
-                .doOnError((e) -> log.info("After calling productControllerV1Api.createProduct error occurred, {}", e.getMessage()))
+                .doOnError((e) -> log.error("After calling productControllerV1Api.createProduct error occurred, {}", e.getMessage()))
                 .map(response -> ResponseEntity.status(response.getStatusCode()).body(objectMapper.map(response.getBody(), ProductModel.class)));
     }
 
@@ -111,7 +108,7 @@ public class ProductCatalogServiceController implements ProductCatalogServiceApi
      * @return OK (status code 200)
      */
     @Override
-    public Mono<ResponseEntity<Flux<com.priyajit.ecommerce.orchestrator_service.model.CurrencyModel>>> findCurrencies(
+    public Mono<ResponseEntity<Flux<com.priyajit.ecommerce.fs.model.CurrencyModel>>> findCurrencies(
             @Valid Optional<List<String>> id,
             @Valid Optional<List<String>> name,
             @Parameter(hidden = true) final ServerWebExchange exchange
@@ -136,7 +133,7 @@ public class ProductCatalogServiceController implements ProductCatalogServiceApi
      * @return OK (status code 200)
      */
     @Override
-    public Mono<ResponseEntity<Flux<com.priyajit.ecommerce.orchestrator_service.model.ProductCategoryModel>>> findProductCategories(
+    public Mono<ResponseEntity<Flux<com.priyajit.ecommerce.fs.model.ProductCategoryModel>>> findProductCategories(
             @Valid Optional<List<String>> id,
             @Valid @RequestParam(value = "name", required = false) Optional<List<String>> name,
             final ServerWebExchange exchange
@@ -164,7 +161,7 @@ public class ProductCatalogServiceController implements ProductCatalogServiceApi
      */
     @Override
     @PreAuthorize("hasAuthority('SELLER')")
-    public Mono<ResponseEntity<PaginatedProductList>> findSellersProducts(
+    public Mono<ResponseEntity<SellersProductList>> findSellersProducts(
             String userToken,
             Optional<List<String>> productIds,
             Optional<String> productNamePart,
@@ -174,7 +171,8 @@ public class ProductCatalogServiceController implements ProductCatalogServiceApi
             Optional<Integer> pageSize,
             final ServerWebExchange exchange
     ) throws Exception {
-        return Mono.empty().doFirst(() -> log.info("[findSellersProducts] reqId: {}", exchange.getRequest().getId()))
+        return Mono.empty()
+                .doFirst(() -> log.info("[findSellersProducts] reqId: {}", exchange.getRequest().getId()))
                 .then(securityContextHelper.getUserId())
                 .flatMap(userId -> productControllerV1Api.findSellersProductsWithHttpInfo(
                         userId,
@@ -185,7 +183,7 @@ public class ProductCatalogServiceController implements ProductCatalogServiceApi
                 .doOnSuccess((model) -> log.info("After calling productControllerV1Api.findSellersProductsWithHttpInfo"))
                 .doOnError((e) -> log.info("After calling productControllerV1Api.findSellersProductsWithHttpInfo error occurred, {}", e.getMessage()))
                 .map(response -> ResponseEntity.status(response.getStatusCode()).body(
-                        objectMapper.map(response.getBody(), PaginatedProductList.class)));
+                        objectMapper.map(response.getBody(), SellersProductList.class)));
     }
 
     /**
@@ -196,8 +194,8 @@ public class ProductCatalogServiceController implements ProductCatalogServiceApi
      */
     @Override
     @PreAuthorize("hasAuthority('SELLER')")
-    public Mono<ResponseEntity<com.priyajit.ecommerce.orchestrator_service.model.IndexedProductList>> indexProductsInElasticSearch(
-            Mono<com.priyajit.ecommerce.orchestrator_service.model.IndexProductsInElasticSearchDto> indexProductsInElasticSearchDto,
+    public Mono<ResponseEntity<com.priyajit.ecommerce.fs.model.IndexedProductList>> indexProductsInElasticSearch(
+            Mono<com.priyajit.ecommerce.fs.model.IndexProductsInElasticSearchDto> indexProductsInElasticSearchDto,
             final ServerWebExchange exchange
     ) throws Exception {
 
@@ -207,13 +205,13 @@ public class ProductCatalogServiceController implements ProductCatalogServiceApi
                         Mono.zip(securityContextHelper.getUserId(), indexProductsInElasticSearchDto)
                                 .flatMap(tuple -> {
                                     var userId = tuple.getT1();
-                                    var payload = objectMapper.map(tuple.getT2(), com.priyajit.ecommerce.product_catalog_service.model.IndexProductsInElasticSearchDto.class);
+                                    var payload = objectMapper.map(tuple.getT2(), com.priyajit.ecommerce.pcs.model.IndexProductsInElasticSearchDto.class);
                                     return productControllerV1Api.indexProductsInElasticSearchWithHttpInfo(userId, payload);
                                 }))
                 .doOnSuccess((model) -> log.info("[indexProductsInElasticSearch] After calling productControllerV1Api.indexProductsInElasticSearchWithHttpInfo"))
                 .doOnError((e) -> log.info("[indexProductsInElasticSearch] After calling productControllerV1Api.indexProductsInElasticSearchWithHttpInfo error occurred, {}", e.getMessage()))
                 .map(response -> ResponseEntity.status(response.getStatusCode()).body(
-                        objectMapper.map(response.getBody(), com.priyajit.ecommerce.orchestrator_service.model.IndexedProductList.class)));
+                        objectMapper.map(response.getBody(), com.priyajit.ecommerce.fs.model.IndexedProductList.class)));
     }
 
     /**
@@ -223,8 +221,8 @@ public class ProductCatalogServiceController implements ProductCatalogServiceApi
      * @return OK (status code 200)
      */
     @Override
-    public Mono<ResponseEntity<com.priyajit.ecommerce.orchestrator_service.model.IndexedProductList>> deIndexProductsInElasticSearch(
-            Mono<com.priyajit.ecommerce.orchestrator_service.model.IndexProductsInElasticSearchDto> indexProductsInElasticSearchDto,
+    public Mono<ResponseEntity<com.priyajit.ecommerce.fs.model.IndexedProductList>> deIndexProductsInElasticSearch(
+            Mono<com.priyajit.ecommerce.fs.model.IndexProductsInElasticSearchDto> indexProductsInElasticSearchDto,
             ServerWebExchange exchange
     ) throws Exception {
 
@@ -234,12 +232,12 @@ public class ProductCatalogServiceController implements ProductCatalogServiceApi
                         Mono.zip(securityContextHelper.getUserId(), indexProductsInElasticSearchDto)
                                 .flatMap(tuple -> {
                                     var userId = tuple.getT1();
-                                    var payload = objectMapper.map(tuple.getT2(), com.priyajit.ecommerce.product_catalog_service.model.IndexProductsInElasticSearchDto.class);
+                                    var payload = objectMapper.map(tuple.getT2(), com.priyajit.ecommerce.pcs.model.IndexProductsInElasticSearchDto.class);
                                     return productControllerV1Api.deIndexProductsInElasticSearchWithHttpInfo(userId, payload);
                                 }))
                 .doOnSuccess((model) -> log.info("[deIndexProductsInElasticSearch] After calling productControllerV1Api.indexProductsInElasticSearchWithHttpInfo"))
                 .doOnError((e) -> log.info("[deIndexProductsInElasticSearch] After calling productControllerV1Api.indexProductsInElasticSearchWithHttpInfo error occurred, {}", e.getMessage()))
                 .map(response -> ResponseEntity.status(response.getStatusCode()).body(
-                        objectMapper.map(response.getBody(), com.priyajit.ecommerce.orchestrator_service.model.IndexedProductList.class)));
+                        objectMapper.map(response.getBody(), com.priyajit.ecommerce.fs.model.IndexedProductList.class)));
     }
 }

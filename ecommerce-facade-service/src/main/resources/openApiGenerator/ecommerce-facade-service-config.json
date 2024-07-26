@@ -1,7 +1,7 @@
 {
   "sourceFolder": "src/gen/java/main",
-  "apiPackage": "com.priyajit.ecommerce.orchestrator_service.api",
-  "modelPackage": "com.priyajit.ecommerce.orchestrator_service.model",
+  "apiPackage": "com.priyajit.ecommerce.fs.api",
+  "modelPackage": "com.priyajit.ecommerce.fs.model",
   "serializableModel": "true",
   "dateLibray": "java8",
   "interfaceOnly": "true",

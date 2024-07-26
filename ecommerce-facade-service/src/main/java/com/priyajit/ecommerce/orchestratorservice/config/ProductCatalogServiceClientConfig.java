@@ -2,11 +2,11 @@ package com.priyajit.ecommerce.orchestratorservice.config;
 
 
 import com.priyajit.ecommerce.orchestratorservice.config.properties.ProductCatalogServiceApiClientProperties;
-import com.priyajit.ecommerce.product_catalog_service.ApiClient;
-import com.priyajit.ecommerce.product_catalog_service.api.CurrencyControllerV1Api;
-import com.priyajit.ecommerce.product_catalog_service.api.ProductCategoryControllerV1Api;
-import com.priyajit.ecommerce.product_catalog_service.api.ProductControllerV1Api;
-import com.priyajit.ecommerce.product_catalog_service.api.ProductImageControllerV1Api;
+import com.priyajit.ecommerce.pcs.ApiClient;
+import com.priyajit.ecommerce.pcs.api.CurrencyControllerV1Api;
+import com.priyajit.ecommerce.pcs.api.ProductCategoryControllerV1Api;
+import com.priyajit.ecommerce.pcs.api.ProductControllerV1Api;
+import com.priyajit.ecommerce.pcs.api.ProductImageControllerV1Api;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;

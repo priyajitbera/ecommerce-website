@@ -1,7 +1,7 @@
 package com.priyajit.ecommerce.orchestratorservice.controller;
 
-import com.priyajit.ecommerce.cart_service.api.CartControllerV1Api;
-import com.priyajit.ecommerce.orchestrator_service.api.CartServiceApi;
+import com.priyajit.ecommerce.cs.api.CartControllerV1Api;
+import com.priyajit.ecommerce.fs.api.CartServiceApi;
 import com.priyajit.ecommerce.orchestratorservice.component.CustomObjectMapper;
 import com.priyajit.ecommerce.orchestratorservice.component.SecurityContextHelper;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -20,7 +20,7 @@ import java.util.Optional;
 @RestController
 public class CartServiceController implements CartServiceApi {
 
-    private CartControllerV1Api cartControllerV1Api;
+    private com.priyajit.ecommerce.cs.api.CartControllerV1Api cartControllerV1Api;
     private CustomObjectMapper objectMapper;
     private SecurityContextHelper securityContextHelper;
 
@@ -41,8 +41,8 @@ public class CartServiceController implements CartServiceApi {
      * @return OK (status code 200)
      */
     @Override
-    public Mono<ResponseEntity<com.priyajit.ecommerce.orchestrator_service.model.CartModel>> createCart(
-            @Valid @RequestBody Mono<com.priyajit.ecommerce.orchestrator_service.model.CreateCartDto> createCartDto,
+    public Mono<ResponseEntity<com.priyajit.ecommerce.fs.model.CartModel>> createCart(
+            @Valid @RequestBody Mono<com.priyajit.ecommerce.fs.model.CreateCartDto> createCartDto,
             final ServerWebExchange exchange
     ) throws Exception {
         return null;
@@ -56,7 +56,7 @@ public class CartServiceController implements CartServiceApi {
      * @return OK (status code 200)
      */
     @Override
-    public Mono<ResponseEntity<com.priyajit.ecommerce.orchestrator_service.model.CartModel>> findCart(
+    public Mono<ResponseEntity<com.priyajit.ecommerce.fs.model.CartModel>> findCart(
             String authorization,
             @Valid @RequestParam(value = "userId", required = true) String userId,
             @Parameter(hidden = true) final ServerWebExchange exchange
@@ -67,7 +67,7 @@ public class CartServiceController implements CartServiceApi {
                 .doOnSuccess((model) -> log.info("After calling cartControllerV1Api.findCartWithHttpInfo"))
                 .doOnError((e) -> log.info("After calling cartControllerV1Api.findCartWithHttpInfo error occurred, {}", e.getMessage()))
                 .map(response -> ResponseEntity.status(response.getStatusCode())
-                        .body(objectMapper.map(response.getBody(), com.priyajit.ecommerce.orchestrator_service.model.CartModel.class)));
+                        .body(objectMapper.map(response.getBody(), com.priyajit.ecommerce.fs.model.CartModel.class)));
     }
 
 
@@ -79,7 +79,7 @@ public class CartServiceController implements CartServiceApi {
      * @return OK (status code 200)
      */
     @Override
-    public Mono<ResponseEntity<com.priyajit.ecommerce.orchestrator_service.model.CartWithValueModel>> findCartWithValue(
+    public Mono<ResponseEntity<com.priyajit.ecommerce.fs.model.CartWithValueModel>> findCartWithValue(
             String authorization,
             String userId,
             Optional<String> currency,
@@ -91,7 +91,7 @@ public class CartServiceController implements CartServiceApi {
                 .doOnSuccess((model) -> log.info("After calling cartControllerV1Api.findCartWithValueWithHttpInfo"))
                 .doOnError((e) -> log.info("After calling cartControllerV1Api.findCartWithValueWithHttpInfo error occurred, {}", e.getMessage()))
                 .map(response -> ResponseEntity.status(response.getStatusCode())
-                        .body(objectMapper.map(response.getBody(), com.priyajit.ecommerce.orchestrator_service.model.CartWithValueModel.class)));
+                        .body(objectMapper.map(response.getBody(), com.priyajit.ecommerce.fs.model.CartWithValueModel.class)));
     }
 
 
@@ -102,19 +102,19 @@ public class CartServiceController implements CartServiceApi {
      * @return OK (status code 200)
      */
     @Override
-    public Mono<ResponseEntity<com.priyajit.ecommerce.orchestrator_service.model.CartModel>> updateCartProductQuantity(
-            @Valid Mono<com.priyajit.ecommerce.orchestrator_service.model.UpdateCartProductQuantityDto> updateCartProductQuantityDto,
+    public Mono<ResponseEntity<com.priyajit.ecommerce.fs.model.CartModel>> updateCartProductQuantity(
+            @Valid Mono<com.priyajit.ecommerce.fs.model.UpdateCartProductQuantityDto> updateCartProductQuantityDto,
             @Parameter(hidden = true) final ServerWebExchange exchange
     ) throws Exception {
         return Mono.zip(securityContextHelper.getUserId(), updateCartProductQuantityDto)
                 .doFirst(() -> log.info("[updateCartProductQuantity] reqId: {}", exchange.getRequest().getId()))
                 .flatMap(tuple -> {
-                    var payLoad = objectMapper.map(tuple.getT2(), com.priyajit.ecommerce.cart_service.model.UpdateCartProductQuantityDto.class);
+                    var payLoad = objectMapper.map(tuple.getT2(), com.priyajit.ecommerce.cs.model.UpdateCartProductQuantityDto.class);
                     return cartControllerV1Api.updateCartProductQuantityWithHttpInfo(tuple.getT1(), payLoad);
                 })
                 .doOnSuccess((model) -> log.info("After calling cartControllerV1Api.updateCartProductQuantityWithHttpInfo"))
                 .doOnError((e) -> log.info("After calling cartControllerV1Api.updateCartProductQuantityWithHttpInfo error occurred, {}", e.getMessage()))
                 .map(response -> ResponseEntity.status(response.getStatusCode())
-                        .body(objectMapper.map(response.getBody(), com.priyajit.ecommerce.orchestrator_service.model.CartModel.class)));
+                        .body(objectMapper.map(response.getBody(), com.priyajit.ecommerce.fs.model.CartModel.class)));
     }
 }

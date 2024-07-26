@@ -1,7 +1,7 @@
 {
   "sourceFolder": "src/gen/java/main",
-  "apiPackage": "com.priyajit.ecommerce.product-catalog-service.api",
-  "modelPackage": "com.priyajit.ecommerce.product-catalog-service.model",
+  "apiPackage": "com.priyajit.ecommerce.pcs.api",
+  "modelPackage": "com.priyajit.ecommerce.pcs.model",
   "serializableModel": "true",
   "dateLibray": "java8",
   "interfaceOnly": "true",

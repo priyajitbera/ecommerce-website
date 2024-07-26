@@ -1,0 +1,15 @@
+spring:
+  application:
+    name: ecommerce-oauth2-authorization-server
+
+server:
+  port: 9000
+
+logging:
+  level:
+    org.springframework.security: trace
+
+auth-token:
+  username: ${AUTH_TOKEN_USER_NAME}
+  password: ${AUTH_TOKEN_PASSWORD}
+  private-key-file-path: ${AUTH_TOKEN_PRIVATE_KEY_FILE_PATH:./private_key.txt}
