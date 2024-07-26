@@ -1,10 +1,8 @@
 package com.priyajit.ecommerce.orchestratorservice.config;
 
-
-import com.priyajit.ecommerce.cart_service.ApiClient;
-import com.priyajit.ecommerce.cart_service.api.CartControllerV1Api;
+import com.priyajit.ecommerce.cs.ApiClient;
+import com.priyajit.ecommerce.cs.api.CartControllerV1Api;
 import com.priyajit.ecommerce.orchestratorservice.config.properties.CartServiceApiClientProperties;
-import com.priyajit.ecommerce.orchestratorservice.config.properties.UserManagementServiceApiClientProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;

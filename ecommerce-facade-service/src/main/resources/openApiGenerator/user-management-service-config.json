@@ -1,7 +1,7 @@
 {
   "sourceFolder": "src/gen/java/main",
-  "apiPackage": "com.priyajit.ecommerce.user-management-service.api",
-  "modelPackage": "com.priyajit.ecommerce.user-management-service.model",
+  "apiPackage": "com.priyajit.ecommerce.ums.api",
+  "modelPackage": "com.priyajit.ecommerce.ums.model",
   "serializableModel": "true",
   "dateLibray": "java8",
   "interfaceOnly": "true",

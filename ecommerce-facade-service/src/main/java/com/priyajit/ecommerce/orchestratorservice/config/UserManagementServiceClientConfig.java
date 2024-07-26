@@ -2,9 +2,9 @@ package com.priyajit.ecommerce.orchestratorservice.config;
 
 
 import com.priyajit.ecommerce.orchestratorservice.config.properties.UserManagementServiceApiClientProperties;
-import com.priyajit.ecommerce.user_management_service.ApiClient;
-import com.priyajit.ecommerce.user_management_service.api.AuthControllerV1Api;
-import com.priyajit.ecommerce.user_management_service.api.UserControllerV1Api;
+import com.priyajit.ecommerce.ums.ApiClient;
+import com.priyajit.ecommerce.ums.api.AuthControllerV1Api;
+import com.priyajit.ecommerce.ums.api.UserControllerV1Api;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;

@@ -1,7 +1,7 @@
 {
   "sourceFolder": "src/gen/java/main",
-  "apiPackage": "com.priyajit.ecommerce.oauth2-authorization-service.api",
-  "modelPackage": "com.priyajit.ecommerce.oauth2-authorization-service.model",
+  "apiPackage": "com.priyajit.ecommerce.oas.api",
+  "modelPackage": "com.priyajit.ecommerce.oas.model",
   "serializableModel": "true",
   "dateLibray": "java8",
   "interfaceOnly": "true",
