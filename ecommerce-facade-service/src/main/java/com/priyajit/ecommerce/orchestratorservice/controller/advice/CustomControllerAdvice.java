@@ -1,6 +1,7 @@
 package com.priyajit.ecommerce.orchestratorservice.controller.advice;
 
 import com.priyajit.ecommerce.orchestratorservice.model.ErrorResponseModel;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -12,43 +13,61 @@ import java.net.ConnectException;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
+@Slf4j
 @ControllerAdvice
 public class CustomControllerAdvice {
 
+    private final static String logPattern = "{} occurred, resolving with status: {}, error: {}, cause: {}";
+
     @ExceptionHandler(WebClientResponseException.class)
     public ResponseEntity<ErrorResponseModel> handleWebClientResponseException(WebClientResponseException throwable) {
-        throwable.printStackTrace();
-        var responseBuilder = ErrorResponseModel
-                .builder()
-                .timestamp(ZonedDateTime.now().format(DateTimeFormatter.ISO_ZONED_DATE_TIME));
+        var status = throwable.getStatusCode();
+        log.error(logPattern, WebClientResponseException.class.getSimpleName(), status, throwable.getMessage(), throwable.getCause(), throwable);
 
-        responseBuilder.status(String.valueOf(throwable.getStatusCode().value()));
-        responseBuilder.error(throwable.getResponseBodyAs(ErrorResponseModel.class).getError());
-        return ResponseEntity.status(throwable.getStatusCode()).body(responseBuilder.build());
+        var error = status.is5xxServerError()
+                ? "A server side error occurred in a downstream service"
+                : throwable.getResponseBodyAs(ErrorResponseModel.class).getError();
+        var model = ErrorResponseModel
+                .builder()
+                .timestamp(now())
+                .status(String.valueOf(status.value()))
+                .error(error)
+                .build();
+        return ResponseEntity.status(status).body(model);
     }
 
     @ExceptionHandler(ResponseStatusException.class)
     public ResponseEntity<ErrorResponseModel> handleResponseStatusException(ResponseStatusException throwable) {
-        throwable.printStackTrace();
-        var responseBuilder = ErrorResponseModel
-                .builder()
-                .timestamp(ZonedDateTime.now().format(DateTimeFormatter.ISO_ZONED_DATE_TIME));
+        var status = throwable.getStatusCode();
+        log.error(logPattern, WebClientResponseException.class.getSimpleName(), status, throwable.getMessage(), throwable.getCause(), throwable);
 
-        responseBuilder.status(String.valueOf(throwable.getStatusCode().value()));
-        responseBuilder.error(throwable.getReason());
-        return ResponseEntity.status(throwable.getStatusCode()).body(responseBuilder.build());
+        var error = status.is5xxServerError()
+                ? "An error occurred"
+                : throwable.getReason();
+        var model = ErrorResponseModel
+                .builder()
+                .timestamp(now())
+                .status(String.valueOf(status.value()))
+                .error(error)
+                .build();
+        return ResponseEntity.status(status).body(model);
     }
 
     @ExceptionHandler(ConnectException.class)
     public ResponseEntity<ErrorResponseModel> handleConnectException(ConnectException throwable) {
-        throwable.printStackTrace();
-        var responseBuilder = ErrorResponseModel
-                .builder()
-                .timestamp(ZonedDateTime.now().format(DateTimeFormatter.ISO_ZONED_DATE_TIME));
+        var status = HttpStatus.SERVICE_UNAVAILABLE;
+        log.error(logPattern, WebClientResponseException.class.getSimpleName(), status, throwable.getMessage(), throwable.getCause(), throwable);
 
-        var httpStatus = HttpStatus.BAD_GATEWAY;
-        responseBuilder.status(String.valueOf(httpStatus.value()));
-        responseBuilder.error("Unable to connect to downstream service");
-        return ResponseEntity.status(httpStatus).body(responseBuilder.build());
+        var model = ErrorResponseModel
+                .builder()
+                .timestamp(now())
+                .status(String.valueOf(status.value()))
+                .error("Unable to connect to downstream service")
+                .build();
+        return ResponseEntity.status(status).body(model);
+    }
+
+    private String now() {
+        return ZonedDateTime.now().format(DateTimeFormatter.ISO_ZONED_DATE_TIME);
     }
 }

@@ -10,6 +10,7 @@ import co.elastic.clients.elasticsearch.core.search.Hit;
 import com.priyajit.ecommerce.product.catalog.service.entity.DbEnvironmentConfiguration;
 import com.priyajit.ecommerce.product.catalog.service.esdoc.ProductDoc;
 import com.priyajit.ecommerce.product.catalog.service.esrepository.ProductDocRepository;
+import com.priyajit.ecommerce.product.catalog.service.exception.ElasticSearchConnectionException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -61,7 +62,9 @@ public class ProductDocRepositoryImpl implements ProductDocRepository {
             bulkResponse = elasticsearchClient.bulk(bulkRequestBuilder.build());
             log.info("After executing bulk index, errors:{}", bulkResponse.errors());
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            var msg = String.format("Error occurred while connecting to ElasticSearch, error: %s", e.getMessage());
+            log.error(msg);
+            throw new ElasticSearchConnectionException(msg);
         }
         if (bulkResponse.errors()) {
             String errorMessage = buildErrorMessage(bulkResponse.items());
@@ -83,8 +86,6 @@ public class ProductDocRepositoryImpl implements ProductDocRepository {
     public Page<ProductDoc> search(String searchKeyword, int pageIndex, int pageSize) {
 
         try {
-
-
             List<Query> queries = new ArrayList<>();
             // apply searchKeyword on title
             queries.add(
@@ -136,9 +137,10 @@ public class ProductDocRepositoryImpl implements ProductDocRepository {
                 return new PageImpl<>(productDocs, Pageable.ofSize(pageSize), totalFuture.join());
             }).join();
 
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException(e);
+        } catch (IOException e) {
+            var msg = String.format("Error occurred while connecting to ElasticSearch, error: %s", e.getMessage());
+            log.error(msg);
+            throw new ElasticSearchConnectionException(msg);
         }
     }
 
@@ -167,7 +169,9 @@ public class ProductDocRepositoryImpl implements ProductDocRepository {
             bulkResponse = elasticsearchClient.bulk(requestBuilder.build());
             log.info("After executing bulk index, errors:{}", bulkResponse.errors());
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            var msg = String.format("Error occurred while connecting to ElasticSearch, error: %s", e.getMessage());
+            log.error(msg);
+            throw new ElasticSearchConnectionException(msg);
         }
         // if error present response, accumulate the error cause and through exception
         if (bulkResponse.errors()) {
