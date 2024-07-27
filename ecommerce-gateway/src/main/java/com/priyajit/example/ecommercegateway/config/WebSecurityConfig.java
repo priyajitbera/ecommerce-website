@@ -1,5 +1,6 @@
 package com.priyajit.example.ecommercegateway.config;
 
+import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.util.encoders.Base64;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,7 +13,6 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtRea
 import org.springframework.security.oauth2.server.resource.web.server.BearerTokenServerAuthenticationEntryPoint;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.KeyFactory;
@@ -21,6 +21,7 @@ import java.security.interfaces.RSAPublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
 
+@Slf4j
 @Configuration
 @EnableWebFluxSecurity
 public class WebSecurityConfig {
@@ -73,9 +74,9 @@ public class WebSecurityConfig {
 
     private String loadPublicKeyAsString() {
         try {
-            String key = Files.readString(Path.of(authTokenProperties.getPublicKeyFilePath()));
-            return key;
-        } catch (IOException e) {
+            return Files.readString(Path.of(authTokenProperties.getPublicKeyFilePath()));
+        } catch (Throwable e) {
+            log.error("Error occurred while loading publicKey, error: {}", e.getMessage(), e);
             throw new RuntimeException(e);
         }
     }
