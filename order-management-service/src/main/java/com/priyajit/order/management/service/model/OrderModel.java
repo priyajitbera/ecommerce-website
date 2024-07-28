@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 import org.springframework.lang.Nullable;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Collection;
@@ -108,7 +107,7 @@ public class OrderModel {
     @AllArgsConstructor
     @NoArgsConstructor
     public static class DeliveryUpdateModel {
-        private LocalDateTime timeStamp;
+        private ZonedDateTime timeStamp;
         private String message;
 
         public static List<DeliveryUpdateModel> buildFrom(List<DeliveryUpdate> deliveryUpdates) {
@@ -123,7 +122,7 @@ public class OrderModel {
             if (deliveryUpdate == null) return null;
 
             return DeliveryUpdateModel.builder()
-                    .timeStamp(deliveryUpdate.getTimeStamp())
+                    .timeStamp(deliveryUpdate.getTimeStamp().atZone(ZoneId.of("UTC")))
                     .message(deliveryUpdate.getMessage())
                     .build();
         }

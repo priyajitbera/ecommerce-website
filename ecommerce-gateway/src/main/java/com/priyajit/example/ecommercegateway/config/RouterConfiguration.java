@@ -13,7 +13,7 @@ public class RouterConfiguration {
     private final String PRODUCT_SERVICE_BASE_PATH = "/product-catalog-service";
     private final String USER_SERVICE_BASE_PATH = "/user-management-service";
     private final String CART_SERVICE_BASE_PATH = "/cart-service";
-    private final String ORDER_SERVICE_BASE_PATH = "/order-service";
+    private final String ORDER_SERVICE_BASE_PATH = "/order-management-service";
     private final String PAYMENT_SERVICE_BASE_PATH = "/payment-service";
 
     @Bean
