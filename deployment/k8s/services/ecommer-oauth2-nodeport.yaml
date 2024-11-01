@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: ecommer-oauth2-nodeport
+  namespace: local
+spec:
+  type: NodePort
+  selector:
+    workload.user.cattle.io/workloadselector: apps.deployment-local-ecommer-oauth2
+  ports:
+    - name: 9000tcp30000
+      protocol: TCP
+      port: 9000
+      targetPort: 9000
+      nodePort: 30000
