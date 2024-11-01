@@ -19,17 +19,20 @@ public class ApiClientAspect {
     private com.priyajit.ecommerce.pcs.ApiClient productCatalogServiceApiClient;
     private com.priyajit.ecommerce.ums.ApiClient userManagementServiceApiClient;
     private com.priyajit.ecommerce.cs.ApiClient cartServiceApiClient;
+    private com.priyajit.ecommerce.oms.ApiClient orderManagementServiceApiClient;
     private com.priyajit.ecommerce.oas.api.OAuth2ControllerApi oAuth2ControllerApi;
 
     public ApiClientAspect(
             com.priyajit.ecommerce.pcs.ApiClient productCatalogServiceApiClient,
             com.priyajit.ecommerce.ums.ApiClient userManagementServiceApiClient,
             com.priyajit.ecommerce.cs.ApiClient cartServiceApiClient,
+            com.priyajit.ecommerce.oms.ApiClient orderManagementServiceApiClient,
             com.priyajit.ecommerce.oas.api.OAuth2ControllerApi oAuth2ControllerApi
     ) {
         this.productCatalogServiceApiClient = productCatalogServiceApiClient;
         this.userManagementServiceApiClient = userManagementServiceApiClient;
         this.cartServiceApiClient = cartServiceApiClient;
+        this.orderManagementServiceApiClient = orderManagementServiceApiClient;
         this.oAuth2ControllerApi = oAuth2ControllerApi;
     }
 
@@ -52,12 +55,21 @@ public class ApiClientAspect {
     }
 
     @Before("execution(* com.priyajit.ecommerce.cs.api.*.*(..))")
-    public void fetchAndUpdateBearerTokenForUserCartServiceApiClient() {
+    public void fetchAndUpdateBearerTokenForCartServiceApiClient() {
         cartServiceApiClient.addDefaultHeader(
                 HttpHeaders.AUTHORIZATION,
                 BEARER_PREFIX + fetchTokenResponseSchema().getAccessToken()
         );
         log.info("Updated Bearer token for cartServiceApiClient");
+    }
+
+    @Before("execution(* com.priyajit.ecommerce.oms.api.*.*(..))")
+    public void fetchAndUpdateBearerTokenForOrderManagementServiceApiClient() {
+        orderManagementServiceApiClient.addDefaultHeader(
+                HttpHeaders.AUTHORIZATION,
+                BEARER_PREFIX + fetchTokenResponseSchema().getAccessToken()
+        );
+        log.info("Updated Bearer token for orderManagementServiceApiClient");
     }
 
     private com.priyajit.ecommerce.oas.model.FetchTokenResponseSchema fetchTokenResponseSchema() {

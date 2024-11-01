@@ -46,12 +46,13 @@ public class OrderServiceImplV1 implements OrderService {
 
     @Override
     @Transactional
-    public OrderModel createOrder(CreateOrderDto dto) {
-        if (dto == null)
-            throw new NullArgumentException("Expected non null value for arg dto:CreateOrderDto");
+    public OrderModel createOrder(CreateOrderDto dto, String userId) {
+        if (dto == null) throw new NullArgumentException("Expected non null value for arg dto:CreateOrderDto");
+        if (userId == null) throw new NullArgumentException("Non null value required for arg userId");
 
         // create Order object from dto
         Order order = createOrderObjectFromDto(dto);
+        order.setUserId(userId);
         order.setCreatedOn(ZonedDateTime.now(ZoneId.of("UTC")).toLocalDateTime());
         order.setLastModifiedOn(ZonedDateTime.now(ZoneId.of("UTC")).toLocalDateTime());
 
@@ -269,15 +270,10 @@ public class OrderServiceImplV1 implements OrderService {
 
     private Order createOrderObjectFromDto(CreateOrderDto dto) {
 
-        // validate userId
-        var user = userManagementServiceClient.findUserByUserId(dto.getUserId())
-                .orElseThrow(UserNotFoundException.supplier(dto.getUserId()));
-
         var orderItems = createOrderItems(dto.getOrderItems());
         var deliveryInfo = createDeliveryInfoFromDto(dto);
 
         return Order.builder()
-                .userId(dto.getUserId())
                 .orderItems(orderItems)
                 .orderTotal(dto.getOrderTotal())
                 .deliveryInfo(deliveryInfo)

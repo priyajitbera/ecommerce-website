@@ -76,7 +76,6 @@ public class CreateOrderDto {
         private String upiId;
     }
 
-    private String userId;
     private List<OrderItemDto> orderItems;
     private BigDecimal orderTotal;
     private DeliveryAddressDto deliveryAddress;

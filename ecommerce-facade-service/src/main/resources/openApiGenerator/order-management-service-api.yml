@@ -1,0 +1,418 @@
+openapi: 3.0.1
+info:
+  title: OpenAPI definition
+  version: v0
+servers:
+  - url: http://localhost:8084
+    description: Generated server url
+paths:
+  /v1/order/post-delivery-update:
+    post:
+      tags:
+        - order-controller-v-1
+      operationId: postDeliveryUpdate
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostDeliveryUpdateDto'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/OrderModel'
+  /v1/order/:
+    post:
+      tags:
+        - order-controller-v-1
+      operationId: createOrder
+      parameters:
+        - name: userId
+          in: query
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateOrderDto'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/OrderModel'
+  /v1/order/update-delivery-status:
+    patch:
+      tags:
+        - order-controller-v-1
+      operationId: updateDeliveryStatus
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateDeliveryStatusDto'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/OrderModel'
+  /v1/order/user-orders:
+    get:
+      tags:
+        - order-controller-v-1
+      operationId: findUserOrders
+      parameters:
+        - name: userId
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 0
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 5
+      responses:
+        '200':
+          description: OK
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/PageOrderModel'
+  /v1/order/find-one:
+    get:
+      tags:
+        - order-controller-v-1
+      operationId: findOrder
+      parameters:
+        - name: orderId
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/OrderModel'
+components:
+  schemas:
+    PostDeliveryUpdateDto:
+      type: object
+      properties:
+        orderId:
+          type: string
+        message:
+          type: string
+    CardInfoModel:
+      type: object
+      properties:
+        cardType:
+          type: string
+          enum:
+            - CREDIT
+            - DEBIT
+        cardNumber:
+          type: string
+        bankName:
+          type: string
+        cardHolderName:
+          type: string
+    DeliveryAddressModel:
+      type: object
+      properties:
+        buildingNumber:
+          type: string
+        houseNumber:
+          type: string
+        addressLine1:
+          type: string
+        addressLine2:
+          type: string
+        landMark:
+          type: string
+        contactNumber1:
+          type: string
+        contactNumber2:
+          type: string
+        city:
+          type: string
+        pincode:
+          type: integer
+          format: int32
+    DeliveryInfoModel:
+      type: object
+      properties:
+        deliveryStatus:
+          type: string
+          enum:
+            - NEW
+            - PACKAGED
+            - SHIPPED
+            - OUT_FOR_DELIVERY
+            - DELIVERED
+        deliveryUpdates:
+          type: array
+          items:
+            $ref: '#/components/schemas/DeliveryUpdateModel'
+        deliveryAddress:
+          $ref: '#/components/schemas/DeliveryAddressModel'
+    DeliveryUpdateModel:
+      type: object
+      properties:
+        timeStamp:
+          type: string
+          format: date-time
+        message:
+          type: string
+    OrderItemModel:
+      type: object
+      properties:
+        productId:
+          type: string
+        productTitle:
+          type: string
+        quantity:
+          type: integer
+          format: int64
+        productUnitPrice:
+          type: number
+        orderItemValue:
+          type: number
+    OrderModel:
+      type: object
+      properties:
+        orderId:
+          type: string
+        createdOn:
+          type: string
+          format: date-time
+        userId:
+          type: string
+        orderItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItemModel'
+        orderTotal:
+          type: number
+        deliveryInfo:
+          $ref: '#/components/schemas/DeliveryInfoModel'
+        paymentInfo:
+          $ref: '#/components/schemas/PaymentInfoModel'
+        orderStatus:
+          type: string
+          enum:
+            - NEW
+            - CONFIRMED
+    PaymentInfoModel:
+      type: object
+      properties:
+        paymentId:
+          type: string
+        paymentMode:
+          type: string
+          enum:
+            - CASH_ON_DELIVERY
+            - CARD
+            - UPI
+        paymentStatus:
+          type: string
+          enum:
+            - REQUESTED
+            - FAILED
+            - COMPLETED
+        cardInfo:
+          $ref: '#/components/schemas/CardInfoModel'
+        upiInfo:
+          $ref: '#/components/schemas/UpiInfoModel'
+        paymentGatewayLink:
+          type: string
+    UpiInfoModel:
+      type: object
+      properties:
+        upiId:
+          type: string
+    CardInfo:
+      type: object
+      properties:
+        cardType:
+          type: string
+          enum:
+            - CREDIT
+            - DEBIT
+        cardNumber:
+          type: string
+        bankName:
+          type: string
+        validUptoMonth:
+          type: integer
+          format: int32
+        validUptoYear:
+          type: integer
+          format: int32
+        cvv:
+          type: string
+        cardHolderName:
+          type: string
+    CreateOrderDto:
+      type: object
+      properties:
+        userId:
+          type: string
+        orderItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItemDto'
+        orderTotal:
+          type: number
+        deliveryAddress:
+          $ref: '#/components/schemas/DeliveryAddressDto'
+        paymentInfo:
+          $ref: '#/components/schemas/PaymentInfo'
+    DeliveryAddressDto:
+      type: object
+      properties:
+        buildingNumber:
+          type: string
+        houseNumber:
+          type: string
+        addressLine1:
+          type: string
+        addressLine2:
+          type: string
+        landMark:
+          type: string
+        contactNumber1:
+          type: string
+        contactNumber2:
+          type: string
+        city:
+          type: string
+        pincode:
+          type: integer
+          format: int32
+    OrderItemDto:
+      type: object
+      properties:
+        productId:
+          type: string
+        quantity:
+          type: integer
+          format: int64
+        productUnitPrice:
+          type: number
+        orderItemValue:
+          type: number
+    PaymentInfo:
+      type: object
+      properties:
+        paymentMode:
+          type: string
+          enum:
+            - CASH_ON_DELIVERY
+            - CARD
+            - UPI
+        currency:
+          type: string
+        cardInfo:
+          $ref: '#/components/schemas/CardInfo'
+        upiInfo:
+          $ref: '#/components/schemas/UpiInfo'
+    UpiInfo:
+      type: object
+      properties:
+        upiId:
+          type: string
+    UpdateDeliveryStatusDto:
+      type: object
+      properties:
+        orderId:
+          type: string
+        deliveryStatus:
+          type: string
+          enum:
+            - NEW
+            - PACKAGED
+            - SHIPPED
+            - OUT_FOR_DELIVERY
+            - DELIVERED
+    PageOrderModel:
+      type: object
+      properties:
+        totalPages:
+          type: integer
+          format: int32
+        totalElements:
+          type: integer
+          format: int64
+        size:
+          type: integer
+          format: int32
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderModel'
+        number:
+          type: integer
+          format: int32
+        sort:
+          $ref: '#/components/schemas/SortObject'
+        first:
+          type: boolean
+        last:
+          type: boolean
+        numberOfElements:
+          type: integer
+          format: int32
+        pageable:
+          $ref: '#/components/schemas/PageableObject'
+        empty:
+          type: boolean
+    PageableObject:
+      type: object
+      properties:
+        offset:
+          type: integer
+          format: int64
+        sort:
+          $ref: '#/components/schemas/SortObject'
+        paged:
+          type: boolean
+        unpaged:
+          type: boolean
+        pageSize:
+          type: integer
+          format: int32
+        pageNumber:
+          type: integer
+          format: int32
+    SortObject:
+      type: object
+      properties:
+        empty:
+          type: boolean
+        sorted:
+          type: boolean
+        unsorted:
+          type: boolean

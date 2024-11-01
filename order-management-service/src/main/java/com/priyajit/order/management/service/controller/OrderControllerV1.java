@@ -13,7 +13,8 @@ import org.springframework.web.bind.annotation.*;
 import static org.springframework.http.ResponseEntity.ok;
 
 @Slf4j
-@RestController("/v1/order")
+@RestController
+@RequestMapping("/v1/order")
 public class OrderControllerV1 {
 
     private OrderService orderService;
@@ -24,9 +25,10 @@ public class OrderControllerV1 {
 
     @PostMapping
     public ResponseEntity<OrderModel> createOrder(
+            @RequestHeader("userId") String userId,
             @RequestBody CreateOrderDto dto
     ) {
-        return ok(orderService.createOrder(dto));
+        return ok(orderService.createOrder(dto, userId));
     }
 
     @GetMapping("/find-one")

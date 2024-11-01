@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    workload.user.cattle.io/workloadselector: apps.deployment-local-ecommer-oauth2
+  name: ecommer-oauth2
+  namespace: local
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      workload.user.cattle.io/workloadselector: apps.deployment-local-ecommer-oauth2
+  template:
+    metadata:
+      labels:
+        workload.user.cattle.io/workloadselector: apps.deployment-local-ecommer-oauth2
+    spec:
+      containers:
+        - env:
+            - name: AUTH_TOKEN_USER_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: ecommer-oauth2-secret
+                  key: AUTH_TOKEN_USER_NAME
+            - name: AUTH_TOKEN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: ecommer-oauth2-secret
+                  key: AUTH_TOKEN_PASSWORD
+            - name: JAVA_OPTS
+              value: -Xmx20m
+            - name: AUTH_TOKEN_PRIVATE_KEY_FILE_PATH
+              value: /keys/.private_key
+          volumeMounts:
+            - name: auth-token-private-key-secret-volume
+              mountPath: /keys
+          image: priyajitbera/ecommer_oauth2
+          imagePullPolicy: Always
+          name: ecommer-oauth2
+          ports:
+            - containerPort: 9000
+              name: 9000tcp30000
+              protocol: TCP
+          resources: {}
+          terminationMessagePath: /local/termination-log
+          terminationMessagePolicy: File
+      volumes:
+        - name: auth-token-private-key-secret-volume
+          secret:
+            secretName: auth-token-private-key-secret
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30

@@ -1,5 +1,5 @@
 server:
-  port: 9090
+  port: ${PORT:9090}
 spring:
   application:
     name: ecommerce-facade-service
@@ -12,6 +12,8 @@ user-management-service:
   base-url: ${USER_MANAGEMENT_SERVICE_BASE_URL:http://localhost:8080/user-management-service}
 cart-service:
   base-url: ${CART_SERVICE_BASE_URL:http://localhost:8080/cart-service}
+order-management-service:
+  base-url: ${CART_SERVICE_BASE_URL:http://localhost:8080/order-management-service}
 
 oauth2-authorization-service:
   base-url: ${OAUTH2_AUTHORIZATION_SERVICE_BASE_URL:http://localhost:9000}

@@ -1,3 +1,5 @@
+SERVER:
+  PORT: ${PORT:8080}
 spring:
   main:
     web-application-type: reactive
@@ -16,3 +18,14 @@ management:
 
 auth-token:
   public-key-file-path: ${AUTH_TOKEN_PUBLIC_KEY_FILE_PATCH:./public_key.txt}
+
+product-catalog-service:
+  base-url: ${PRODUCT_CATALOG_SERVICE_BASE_URL:http://localhost:8081}
+user-management-service:
+    base-url: ${USER_MANAGEMENT_SERVICE_BASE_URL:http://localhost:8082}
+cart-service:
+  base-url: ${CART_SERVICE_BASE_URL:http://localhost:8083}
+order-management-service:
+  base-url: ${ORDER_MANAGEMENT_SERVICE_BASE_URL:http://localhost:8084}
+payment-management-service:
+  base-url: ${PAYMENT_SERVICE_BASE_URL:http://localhost:8085}
